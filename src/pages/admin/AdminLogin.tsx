@@ -31,7 +31,7 @@ export default function AdminLogin() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#000' }}>
       <div style={{ width: '100%', maxWidth: 360, padding: 32, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-          <TkweenLogo size={48} showText={true} layout="vertical"/>
+          <TkweenLogo size={52} showText={true} showSubtitle={true} layout="vertical"/>
         </div>
         <h2 style={{ textAlign: 'center', marginBottom: 24, fontSize: 18, fontWeight: 300, color: '#fff' }}>{t('admin_login')}</h2>
         <form onSubmit={handleSubmit}>
