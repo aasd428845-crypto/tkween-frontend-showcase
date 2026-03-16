@@ -1,62 +1,47 @@
-interface TkweenLogoProps {
-  size?: number
-  color?: string
-  accentColor?: string
-  textColor?: string
-}
+export default function TkweenLogo() {
+  const gradientStart = '#0f5b99'
+  const gradientEnd = '#2dd4bf'
+  const pinkAccent = '#f43f5e'
 
-export default function TkweenLogo({
-  size = 65,
-  color = '#2dd4bf',
-  accentColor = '#f43f5e',
-  textColor = '#ffffff',
-}: TkweenLogoProps) {
   return (
-    <div className="flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
-      <svg
-        width={size}
-        height={size * 0.85}
-        viewBox="0 0 100 85"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-lg mb-2"
-      >
-        <path d="M10,5 L90,42.5 L10,80 Z" fill={color} />
-        <rect x="25" y="24" width="30" height="11" rx="2" fill="#0a1e1a" />
-        <rect x="35" y="24" width="10" height="36" rx="2" fill="#0a1e1a" />
+    <div className="flex flex-col items-center justify-center p-4">
+      <svg width="70" height="60" viewBox="0 0 100 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGradient" x1="50%" y1="100%" x2="50%" y2="0%">
+            <stop offset="0%" stopColor={gradientStart} />
+            <stop offset="100%" stopColor={gradientEnd} />
+          </linearGradient>
+          <mask id="mask-t">
+            <rect width="100" height="100" fill="white" />
+            <rect x="30" y="20" width="35" height="11" rx="2" fill="black" />
+            <rect x="42" y="20" width="11" height="38" rx="2" fill="black" />
+          </mask>
+        </defs>
+        <path
+          d="M10,5 L95,42.5 L10,80 Z"
+          fill="url(#logoGradient)"
+          mask="url(#mask-t)"
+        />
       </svg>
 
-      <div className="flex flex-col items-center text-center">
-        <div className="flex items-center gap-1.5 justify-center mb-1">
-          <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
-            <path d="M1,1 L9,5 L1,9 Z" fill={accentColor} />
+      <div className="flex flex-col items-center mt-[-3px]">
+        <div className="flex items-center gap-[2px]">
+          <svg width="9" height="9" viewBox="0 0 10 10">
+            <path d="M1,1 L9,5 L1,9 Z" fill={pinkAccent} />
           </svg>
-          <span
-            style={{ color: textColor }}
-            className="text-3xl font-bold font-['Tajawal'] leading-none tracking-wide"
-          >
-            تكوين
-          </span>
+          <span className="text-3xl font-bold font-['Tajawal'] text-white tracking-tight">تكوين</span>
         </div>
 
-        <span
-          style={{ color: textColor }}
-          className="text-[0.7rem] font-bold tracking-[0.45em] ml-1.5 leading-none mb-2"
-        >
+        <span className="text-[10px] font-bold text-white tracking-[0.5em] mt-1 mb-2">
           TKWEEN
         </span>
 
-        <div
-          className="w-full h-[1px] mb-1.5"
-          style={{
-            background: `linear-gradient(90deg, transparent, ${color}80, transparent)`
-          }}
-        />
+        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#2dd4bf] to-transparent mb-1" />
 
-        <span className="text-[0.5rem] font-['Tajawal'] text-gray-300 tracking-wider mb-0.5">
+        <span className="text-[7px] font-['Tajawal'] text-gray-300 font-light tracking-widest mb-[1px]">
           شركة تكوين للإنتاج الفني
         </span>
-        <span className="text-[0.45rem] text-gray-400 tracking-[0.15em] uppercase">
+        <span className="text-[6px] text-gray-400 tracking-[0.2em] uppercase">
           For Media Production
         </span>
       </div>
