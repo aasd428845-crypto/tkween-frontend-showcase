@@ -34,14 +34,14 @@ export default function Navbar() {
     <>
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: 64, display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', padding: '0 32px',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', padding: '10px 32px',
         background: scrolled ? 'rgba(4,10,6,0.96)' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
         borderBottom: scrolled ? `1px solid ${BORDER}` : 'none',
         transition: 'all 0.3s',
       }}>
-        <Link to="/"><TkweenLogo size={36} /></Link>
+        <Link to="/"><TkweenLogo size={48} showSubtitle={true} /></Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="desktop-nav">
           <div style={{ position: 'relative' }}
@@ -140,7 +140,7 @@ export default function Navbar() {
             background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
           }}>×</button>
 
-          <TkweenLogo size={36} />
+          <TkweenLogo size={48} showSubtitle={true} />
           <div style={{ height: 40 }}/>
 
           {[
