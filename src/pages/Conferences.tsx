@@ -26,6 +26,7 @@ export default function Conferences() {
     const filtered = getVideos()
       .filter(v => v.section === 'conferences' && v.visible)
       .sort((a, b) => a.display_order - b.display_order)
+      .map(v => ({ ...v, thumbnail: (v as any).thumbnail_url || (v as any).thumbnail || '' }))
     if (filtered.length > 0) setVideos(filtered as any)
   }, [])
 

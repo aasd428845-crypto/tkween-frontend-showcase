@@ -1,5 +1,8 @@
+import { getSettings } from '@/lib/storage'
+
 export default function WhatsAppButton() {
-  const number = '966553120141'
+  const settings = getSettings()
+  const number = settings.whatsapp || '966553120141'
   return (
     <a
       href={`https://wa.me/${number}`}

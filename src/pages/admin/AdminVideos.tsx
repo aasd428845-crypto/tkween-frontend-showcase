@@ -53,9 +53,10 @@ export default function AdminVideos() {
   }
 
   const handleSave = () => {
+    const now = new Date().toISOString()
     const updated = editId
-      ? videos.map(v => v.id === editId ? { ...form, id: editId } : v)
-      : [...videos, { ...form, id: Date.now().toString() }]
+      ? videos.map(v => v.id === editId ? { ...form, id: editId, created_at: (v as any).created_at || now } : v)
+      : [...videos, { ...form, id: Date.now().toString(), created_at: now }]
     setVideos(updated); saveVideos(updated as any); setModal(false)
   }
 

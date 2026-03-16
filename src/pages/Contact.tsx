@@ -3,21 +3,23 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { Mail, Phone, MapPin, Instagram, Twitter } from 'lucide-react'
 import { gradText, GRAD_START, BG, BORDER } from '@/lib/brand'
+import { getSettings } from '@/lib/storage'
 
 export default function Contact() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
+  const settings = getSettings()
 
   const items = [
-    { icon: Phone, label: isAr ? 'الهاتف' : 'Phone', value: '0553120141', href: 'tel:0553120141' },
-    { icon: Mail, label: isAr ? 'البريد الإلكتروني' : 'Email', value: 'sales@tkweensa.com', href: 'mailto:sales@tkweensa.com' },
-    { icon: Phone, label: isAr ? 'واتساب' : 'WhatsApp', value: '0553120141', href: 'https://wa.me/966553120141' },
-    { icon: MapPin, label: isAr ? 'العنوان' : 'Address', value: isAr ? 'الرياض، المملكة العربية السعودية' : 'Riyadh, Saudi Arabia', href: undefined },
+    { icon: Phone, label: isAr ? 'الهاتف' : 'Phone', value: settings.phone || '0553120141', href: `tel:${settings.phone || '0553120141'}` },
+    { icon: Mail, label: isAr ? 'البريد الإلكتروني' : 'Email', value: settings.email || 'sales@tkweensa.com', href: `mailto:${settings.email || 'sales@tkweensa.com'}` },
+    { icon: Phone, label: isAr ? 'واتساب' : 'WhatsApp', value: settings.whatsapp || '966553120141', href: `https://wa.me/${settings.whatsapp || '966553120141'}` },
+    { icon: MapPin, label: isAr ? 'العنوان' : 'Address', value: settings.address || (isAr ? 'الرياض، المملكة العربية السعودية' : 'Riyadh, Saudi Arabia'), href: undefined },
   ]
 
   const social = [
-    { icon: Instagram, label: 'Instagram', handle: '@Tkweensa', href: 'https://instagram.com/Tkweensa' },
-    { icon: Twitter, label: 'Twitter / X', handle: '@Tkweensa', href: 'https://twitter.com/Tkweensa' },
+    { icon: Instagram, label: 'Instagram', handle: settings.instagram ? settings.instagram.replace(/.*instagram\.com\//, '@') : '@Tkweensa', href: settings.instagram || 'https://instagram.com/Tkweensa' },
+    { icon: Twitter, label: 'Twitter / X', handle: settings.twitter ? settings.twitter.replace(/.*twitter\.com\//, '@').replace(/.*x\.com\//, '@') : '@Tkweensa', href: settings.twitter || 'https://twitter.com/Tkweensa' },
   ]
 
   return (
@@ -93,6 +95,29 @@ export default function Contact() {
                 </a>
               ))}
             </div>
+            {settings.snapchat && (
+              <div style={{ marginTop: 16 }}>
+                <a href={settings.snapchat} target="_blank" rel="noopener noreferrer"
+                   style={{
+                     display: 'inline-flex', alignItems: 'center', gap: 10,
+                     padding: '14px 24px', border: `1px solid ${BORDER}`,
+                     color: '#888', fontSize: 13, transition: 'all 0.3s',
+                   }}
+                   onMouseEnter={e => {
+                     const el = e.currentTarget as HTMLElement
+                     el.style.borderColor = '#FFFC00'
+                     el.style.color = '#FFFC00'
+                   }}
+                   onMouseLeave={e => {
+                     const el = e.currentTarget as HTMLElement
+                     el.style.borderColor = BORDER
+                     el.style.color = '#888'
+                   }}>
+                  <span>👻</span>
+                  <span>{settings.snapchat.replace(/.*snapchat\.com\/add\//, '@')}</span>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

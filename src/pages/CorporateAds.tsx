@@ -26,6 +26,7 @@ export default function CorporateAds() {
     try {
       const filtered = getVideos().filter((v: any) => v.section === 'corporate_ads' && v.visible)
         .sort((a: any, b: any) => a.display_order - b.display_order)
+        .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
       if (filtered.length > 0) setVideos(filtered)
     } catch {}
   }, [])
