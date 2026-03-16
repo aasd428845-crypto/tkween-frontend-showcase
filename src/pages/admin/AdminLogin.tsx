@@ -23,18 +23,18 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex items-center justify-center" style={{ minHeight: '100vh', background: '#0a1e1a' }}>
-      <div className="w-full max-w-sm p-8" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 16 }}>
+    <div className="flex items-center justify-center" style={{ minHeight: '100vh', background: '#000' }}>
+      <div className="w-full max-w-sm p-8" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12 }}>
         <div className="flex justify-center mb-8">
           <TkweenLogo size={48} showText={true} />
         </div>
         <h2 className="text-center mb-6" style={{ fontSize: 20, fontWeight: 300, color: '#fff' }}>{t('admin_login')}</h2>
         <form onSubmit={handleSubmit}>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={t('admin_password')}
-            style={{ width: '100%', padding: '12px 16px', background: '#0a1e1a', border: '1px solid #1a3530', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none', marginBottom: 16 }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#2dd4bf')} onBlur={e => (e.currentTarget.style.borderColor = '#1a3530')} />
+            style={{ width: '100%', padding: '12px 16px', background: '#000', border: '1px solid #1a1a1a', borderRadius: 6, color: '#fff', fontSize: 14, outline: 'none', marginBottom: 16 }}
+            onFocus={e => (e.currentTarget.style.borderColor = '#FF4500')} onBlur={e => (e.currentTarget.style.borderColor = '#1a1a1a')} />
           {error && <p className="text-center mb-3" style={{ color: '#ef4444', fontSize: 13 }}>{t('admin_wrong')}</p>}
-          <button type="submit" style={{ width: '100%', padding: '12px', background: '#2dd4bf', color: '#0a1e1a', borderRadius: 8, fontSize: 15, fontWeight: 500, border: 'none', cursor: 'pointer' }}>
+          <button type="submit" style={{ width: '100%', padding: '12px', background: '#FF4500', color: '#fff', borderRadius: 6, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}>
             {t('admin_enter')}
           </button>
         </form>
