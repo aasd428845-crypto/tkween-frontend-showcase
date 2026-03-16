@@ -1,76 +1,65 @@
 interface TkweenLogoProps {
   size?: number
-  showText?: boolean
-  showSubtitle?: boolean
-  layout?: 'horizontal' | 'vertical'
+  color?: string
+  accentColor?: string
+  textColor?: string
 }
 
 export default function TkweenLogo({
-  size = 40,
-  showText = true,
-  showSubtitle,
-  layout,
+  size = 65,
+  color = '#2dd4bf',
+  accentColor = '#f43f5e',
+  textColor = '#ffffff',
 }: TkweenLogoProps) {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-    }}>
+    <div className="flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
       <svg
         width={size}
-        height={size}
-        viewBox="0 0 100 100"
+        height={size * 0.85}
+        viewBox="0 0 100 85"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        className="drop-shadow-lg mb-2"
       >
-        <defs>
-          <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1a1a1a"/>
-            <stop offset="100%" stopColor="#0a0a0a"/>
-          </linearGradient>
-        </defs>
-
-        <path
-          d="M12,8 C10,8 8,10 8,12 L8,88 C8,92 12,95 16,93 L90,55 C94,53 94,47 90,45 L16,7 C15,7.5 13,8 12,8 Z"
-          fill="url(#triGrad)"
-        />
-
-        <rect x="16" y="18" width="10" height="64" fill="#000000" rx="1"/>
-        <rect x="16" y="18" width="30" height="11" fill="#000000" rx="1"/>
-        <rect x="16" y="71" width="30" height="11" fill="#000000" rx="1"/>
-
-        <circle cx="68" cy="50" r="7" fill="#2dd4bf"/>
+        <path d="M10,5 L90,42.5 L10,80 Z" fill={color} />
+        <rect x="25" y="24" width="30" height="11" rx="2" fill="#0a1e1a" />
+        <rect x="35" y="24" width="10" height="36" rx="2" fill="#0a1e1a" />
       </svg>
 
-      {showText && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          lineHeight: 1.15,
-        }}>
-          <span style={{
-            fontFamily: "'Tajawal', sans-serif",
-            fontSize: size * 0.5,
-            fontWeight: 700,
-            color: '#ffffff',
-            direction: 'rtl',
-            letterSpacing: '0.02em',
-          }}>
+      <div className="flex flex-col items-center text-center">
+        <div className="flex items-center gap-1.5 justify-center mb-1">
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
+            <path d="M1,1 L9,5 L1,9 Z" fill={accentColor} />
+          </svg>
+          <span
+            style={{ color: textColor }}
+            className="text-3xl font-bold font-['Tajawal'] leading-none tracking-wide"
+          >
             تكوين
           </span>
-          <span style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: size * 0.2,
-            fontWeight: 300,
-            color: '#2dd4bf',
-            letterSpacing: '0.3em',
-          }}>
-            TKWEEN
-          </span>
         </div>
-      )}
+
+        <span
+          style={{ color: textColor }}
+          className="text-[0.7rem] font-bold tracking-[0.45em] ml-1.5 leading-none mb-2"
+        >
+          TKWEEN
+        </span>
+
+        <div
+          className="w-full h-[1px] mb-1.5"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${color}80, transparent)`
+          }}
+        />
+
+        <span className="text-[0.5rem] font-['Tajawal'] text-gray-300 tracking-wider mb-0.5">
+          شركة تكوين للإنتاج الفني
+        </span>
+        <span className="text-[0.45rem] text-gray-400 tracking-[0.15em] uppercase">
+          For Media Production
+        </span>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,84 @@
+​**"أريد تعديل الشعار في موقعي ليكون مطابقاً تماماً لتصميم شركة 'تكوين' الرأسي الاحترافي. قم بفتح ملف src/components/TkweenLogo.tsx واستبدل الكود الحالي بهذا الكود الذي يضمن الترتيب التالي:
+​مثلث كبير بالأعلى باللون التركوازي #2dd4bf.
+​كلمة 'تكوين' بالعربي أسفله، وبجوارها مثلث صغير باللون الوردي #f43f5e.
+​كلمة 'TKWEEN' بالإنجليزية بتباعد أحرف واسع.
+​السطر السفلي 'شركة تكوين للإنتاج الفني' و 'For Media Production' مفصول بخط نحيف.
+​اجعل الشعار يظهر بشكل رأسي (Stacked) ومنظم، وتأكد أن اللون التركوازي هو المسيطر مع لمسة وردية بسيطة في المثلث الصغير فقط."**
+
+
+'use client'
+
+interface TkweenLogoProps {
+  size?: number
+  color?: string
+  accentColor?: string
+  textColor?: string
+}
+
+export default function TkweenLogo({
+  size = 65,
+  color = '#2dd4bf',        // اللون التركوازي المسيطر
+  accentColor = '#f43f5e',  // اللمسة الوردية الخفيفة
+  textColor = '#ffffff',
+}: TkweenLogoProps) {
+  return (
+    <div className="flex flex-col items-center justify-center hover:scale-105 transition-transform duration-300">
+      {/* 1. المثلث العلوي مع حرف T المفرغ (باللون التركوازي المسيطر) */}
+      <svg
+        width={size}
+        height={size * 0.85}
+        viewBox="0 0 100 85"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="drop-shadow-lg mb-2"
+      >
+        <path d="M10,5 L90,42.5 L10,80 Z" fill={color} />
+        {/* حرف T المفرغ */}
+        <rect x="25" y="24" width="30" height="11" rx="2" fill="#0a1e1a" />
+        <rect x="35" y="24" width="10" height="36" rx="2" fill="#0a1e1a" />
+      </svg>
+
+      {/* 2. كتلة النصوص الرأسية */}
+      <div className="flex flex-col items-center text-center">
+        
+        {/* كلمة تكوين بالعربي مع المثلث الصغير (هنا وضعنا اللمسة الوردية!) */}
+        <div className="flex items-center gap-1.5 justify-center mb-1">
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
+            {/* المثلث الصغير باللون الوردي */}
+            <path d="M1,1 L9,5 L1,9 Z" fill={accentColor} />
+          </svg>
+          <span
+            style={{ color: textColor }}
+            className="text-3xl font-bold font-['Tajawal'] leading-none tracking-wide"
+          >
+            تكوين
+          </span>
+        </div>
+
+        {/* كلمة TKWEEN بالانجليزي */}
+        <span
+          style={{ color: textColor }}
+          className="text-[0.7rem] font-bold tracking-[0.45em] ml-1.5 leading-none mb-2"
+        >
+          TKWEEN
+        </span>
+
+        {/* خط فاصل رفيع متدرج (تركوازي) */}
+        <div
+          className="w-full h-[1px] mb-1.5"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${color}80, transparent)`
+          }}
+        />
+
+        {/* الوصف السفلي */}
+        <span className="text-[0.5rem] font-['Tajawal'] text-gray-300 tracking-wider mb-0.5">
+          شركة تكوين للإنتاج الفني
+        </span>
+        <span className="text-[0.45rem] text-gray-400 tracking-[0.15em] uppercase">
+          For Media Production
+        </span>
+      </div>
+    </div>
+  )
+}
