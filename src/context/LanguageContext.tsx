@@ -33,7 +33,7 @@ const translations: Record<string, Record<string, string>> = {
     footer_quick: 'Quick Links', footer_follow: 'Follow Us', footer_rights: '© 2025 TKWEEN Media Production. All rights reserved.',
     admin_login: 'Admin Login', admin_password: 'Password', admin_enter: 'Login',
     admin_wrong: 'Incorrect password', admin_overview: 'Overview', admin_projects: 'Projects & Videos',
-    admin_requests: 'Client Requests', admin_settings: 'Site Settings', admin_logout: 'Logout',
+    admin_requests: 'Client Requests', admin_settings: 'Site Settings', admin_videos: 'Video Sections', admin_logout: 'Logout',
     admin_total_projects: 'Total Projects', admin_total_requests: 'Total Requests',
     admin_new_requests: 'New Requests', admin_visits: 'Visit Count',
     admin_recent: 'Recent Requests', admin_add: 'Add Project', admin_edit: 'Edit',
