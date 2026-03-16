@@ -1,31 +1,46 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { LanguageProvider } from "@/context/LanguageContext";
-import PublicSite from "./pages/PublicSite";
-import ContactFull from "./pages/ContactFull";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProjects from "./pages/admin/AdminProjects";
-import AdminRequests from "./pages/admin/AdminRequests";
-import AdminSettings from "./pages/admin/AdminSettings";
-import AdminVideos from "./pages/admin/AdminVideos";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { LanguageProvider } from '@/context/LanguageContext'
+import Home from '@/pages/Home'
+import Conferences from '@/pages/Conferences'
+import CorporateAds from '@/pages/CorporateAds'
+import Designs from '@/pages/Designs'
+import OurWork from '@/pages/OurWork'
+import Contact from '@/pages/Contact'
+import Quote from '@/pages/Quote'
+import AdminLogin from '@/pages/admin/AdminLogin'
+import AdminLayout from '@/components/admin/AdminLayout'
+import AdminDashboard from '@/pages/admin/AdminDashboard'
+import AdminProjects from '@/pages/admin/AdminProjects'
+import AdminRequests from '@/pages/admin/AdminRequests'
+import AdminSettings from '@/pages/admin/AdminSettings'
+import AdminVideos from '@/pages/admin/AdminVideos'
 
-const App = () => (
-  <LanguageProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PublicSite />} />
-        <Route path="/contact" element={<ContactFull />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/projects" element={<AdminProjects />} />
-        <Route path="/admin/requests" element={<AdminRequests />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/videos" element={<AdminVideos />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
-  </LanguageProvider>
-);
+export default function App() {
+  return (
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/conferences" element={<Conferences />} />
+          <Route path="/corporate-ads" element={<CorporateAds />} />
+          <Route path="/designs" element={<Designs />} />
+          <Route path="/our-work" element={<OurWork />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/quote" element={<Quote />} />
 
-export default App;
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="requests" element={<AdminRequests />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="videos" element={<AdminVideos />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </LanguageProvider>
+  )
+}

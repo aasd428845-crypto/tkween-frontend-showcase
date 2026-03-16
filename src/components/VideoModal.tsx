@@ -1,60 +1,80 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 interface VideoModalProps {
-  url: string;
-  onClose: () => void;
+  url: string
+  title: string
+  onClose: () => void
 }
 
-const VideoModal = ({ url, onClose }: VideoModalProps) => {
+export default function VideoModal({ url, title, onClose }: VideoModalProps) {
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [onClose]);
-
-  const getEmbedUrl = () => {
-    if (url.includes('vimeo.com')) {
-      const id = url.split('/').pop()?.split('?')[0];
-      return `https://player.vimeo.com/video/${id}?autoplay=1`;
+    const fn = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', fn)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', fn)
+      document.body.style.overflow = ''
     }
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      const id = url.includes('youtu.be')
-        ? url.split('/').pop()?.split('?')[0]
-        : new URL(url).searchParams.get('v');
-      return `https://www.youtube.com/embed/${id}?autoplay=1`;
-    }
-    return null;
-  };
+  }, [onClose])
 
-  const embedUrl = getEmbedUrl();
-  const isDirectVideo = url.match(/\.(mp4|webm|ogg)$/i);
+  const getEmbedUrl = (rawUrl: string) => {
+    if (rawUrl.includes('vimeo.com')) {
+      const id = rawUrl.split('/').filter(Boolean).pop()?.split('?')[0]
+      return `https://player.vimeo.com/video/${id}?autoplay=1&color=FF3B30`
+    }
+    if (rawUrl.includes('youtube.com') || rawUrl.includes('youtu.be')) {
+      const id = rawUrl.includes('v=')
+        ? rawUrl.split('v=')[1]?.split('&')[0]
+        : rawUrl.split('/').pop()?.split('?')[0]
+      return `https://www.youtube.com/embed/${id}?autoplay=1`
+    }
+    return null
+  }
+
+  const embedUrl = getEmbedUrl(url)
 
   return (
-    <div onClick={onClose} style={{
-      position: 'fixed', inset: 0, zIndex: 200,
-      background: 'rgba(0,0,0,0.95)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: '90%', maxWidth: 1000, aspectRatio: '16/9', position: 'relative' }}>
-        <button onClick={onClose} style={{
-          position: 'absolute', top: -40, right: 0,
-          background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer',
-        }}>×</button>
-        {embedUrl && (
-          <iframe src={embedUrl} style={{ width: '100%', height: '100%', border: 'none', borderRadius: 4 }}
-            allow="autoplay; fullscreen" allowFullScreen />
-        )}
-        {isDirectVideo && (
-          <video controls autoPlay style={{ width: '100%', height: '100%' }}>
-            <source src={url} />
-          </video>
-        )}
-        {!embedUrl && !isDirectVideo && (
-          <p style={{ color: '#fff', textAlign: 'center' }}>Unsupported video URL</p>
-        )}
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 2000,
+        background: 'rgba(0,0,0,0.96)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute', top: 20, right: 24,
+          background: 'none', border: 'none', color: '#fff',
+          fontSize: 36, cursor: 'pointer', lineHeight: 1,
+        }}
+      >×</button>
+
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ width: '92vw', maxWidth: 1000 }}
+      >
+        <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%', border: 'none',
+              }}
+              allowFullScreen
+              allow="autoplay; fullscreen"
+            />
+          ) : (
+            <video
+              src={url} controls autoPlay
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+            />
+          )}
+        </div>
+        <p style={{ color: '#888', fontSize: 13, marginTop: 12, textAlign: 'center' }}>{title}</p>
       </div>
     </div>
-  );
-};
-
-export default VideoModal;
+  )
+}
