@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      videos: {
+        Row: {
+          created_at: string | null
+          description_ar: string | null
+          description_en: string | null
+          display_order: number | null
+          duration: number | null
+          featured: boolean | null
+          id: string
+          section: string
+          thumbnail_url: string | null
+          title_ar: string
+          title_en: string
+          vimeo_id: string | null
+          vimeo_url: string | null
+          visible: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          display_order?: number | null
+          duration?: number | null
+          featured?: boolean | null
+          id?: string
+          section: string
+          thumbnail_url?: string | null
+          title_ar: string
+          title_en: string
+          vimeo_id?: string | null
+          vimeo_url?: string | null
+          visible?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          display_order?: number | null
+          duration?: number | null
+          featured?: boolean | null
+          id?: string
+          section?: string
+          thumbnail_url?: string | null
+          title_ar?: string
+          title_en?: string
+          vimeo_id?: string | null
+          vimeo_url?: string | null
+          visible?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
