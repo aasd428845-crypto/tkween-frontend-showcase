@@ -6,34 +6,34 @@
 
 @layer base {
   :root {
-    --background: 160 50% 8%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 100%;
-    --card: 160 40% 10%;
+    --card: 0 0% 4%;
     --card-foreground: 0 0% 100%;
-    --popover: 160 40% 10%;
+    --popover: 0 0% 4%;
     --popover-foreground: 0 0% 100%;
-    --primary: 174 70% 50%;
-    --primary-foreground: 160 50% 8%;
-    --secondary: 160 30% 14%;
+    --primary: 16 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 160 20% 18%;
+    --muted: 0 0% 15%;
     --muted-foreground: 215 16% 62%;
-    --accent: 174 70% 50%;
-    --accent-foreground: 160 50% 8%;
+    --accent: 16 100% 50%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 160 30% 16%;
-    --input: 160 30% 16%;
-    --ring: 174 70% 50%;
+    --border: 0 0% 10%;
+    --input: 0 0% 10%;
+    --ring: 16 100% 50%;
     --radius: 0.75rem;
-    --sidebar-background: 160 50% 6%;
+    --sidebar-background: 0 0% 3%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 174 70% 50%;
-    --sidebar-primary-foreground: 160 50% 8%;
-    --sidebar-accent: 160 30% 14%;
+    --sidebar-primary: 16 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 160 30% 16%;
-    --sidebar-ring: 174 70% 50%;
+    --sidebar-border: 0 0% 10%;
+    --sidebar-ring: 16 100% 50%;
   }
 }
 
@@ -79,4 +79,8 @@ html {
 
 .animate-count-up {
   animation: countUp 0.6s ease-out forwards;
+}
+
+.work-card:hover .play-icon {
+  opacity: 1 !important;
 }
