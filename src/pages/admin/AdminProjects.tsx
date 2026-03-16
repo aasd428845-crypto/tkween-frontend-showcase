@@ -36,16 +36,16 @@ const AdminProjects = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>{t('admin_projects')}</h1>
         <button onClick={() => setModal({ ...emptyProject })} className="flex items-center gap-2"
-          style={{ padding: '8px 20px', background: '#2dd4bf', color: '#0a1e1a', borderRadius: 8, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer' }}>
+          style={{ padding: '8px 20px', background: '#FF4500', color: '#000', borderRadius: 8, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer' }}>
           <Plus size={16} /> {t('admin_add')}
         </button>
       </div>
 
-      <div style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, overflow: 'hidden' }}>
         <div className="overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #1a3530' }}>
+              <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
                 <th style={{ padding: '12px 16px', textAlign: 'start', color: '#94a3b8', fontSize: 12, fontWeight: 400 }}>Image</th>
                 <th style={{ padding: '12px 16px', textAlign: 'start', color: '#94a3b8', fontSize: 12, fontWeight: 400 }}>{t('admin_title_en')}</th>
                 <th style={{ padding: '12px 16px', textAlign: 'start', color: '#94a3b8', fontSize: 12, fontWeight: 400 }}>{t('admin_title_ar')}</th>
@@ -58,23 +58,23 @@ const AdminProjects = () => {
             </thead>
             <tbody>
               {projects.sort((a, b) => a.display_order - b.display_order).map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #1a3530' }}>
+                <tr key={p.id} style={{ borderBottom: '1px solid #1a1a1a' }}>
                   <td style={{ padding: '8px 16px' }}>
                     <img src={p.thumbnail} alt="" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 4 }} />
                   </td>
                   <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{p.title_en}</td>
                   <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{p.title_ar}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{ padding: '3px 8px', borderRadius: 4, fontSize: 11, background: 'rgba(45,212,191,0.1)', color: '#2dd4bf' }}>{p.category}</span>
+                    <span style={{ padding: '3px 8px', borderRadius: 4, fontSize: 11, background: 'rgba(45,212,191,0.1)', color: '#FF4500' }}>{p.category}</span>
                   </td>
-                  <td style={{ padding: '12px 16px', color: p.video_url ? '#2dd4bf' : '#94a3b8', fontSize: 13 }}>{p.video_url ? '✓' : '—'}</td>
+                  <td style={{ padding: '12px 16px', color: p.video_url ? '#FF4500' : '#94a3b8', fontSize: 13 }}>{p.video_url ? '✓' : '—'}</td>
                   <td style={{ padding: '12px 16px' }}>
                     <button onClick={() => toggleFeatured(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.featured ? '#f59e0b' : '#94a3b8' }}>
                       <Star size={18} fill={p.featured ? '#f59e0b' : 'none'} />
                     </button>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    <button onClick={() => toggleVisible(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.visible ? '#2dd4bf' : '#94a3b8' }}>
+                    <button onClick={() => toggleVisible(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.visible ? '#FF4500' : '#94a3b8' }}>
                       {p.visible ? <Eye size={18} /> : <EyeOff size={18} />}
                     </button>
                   </td>
@@ -98,7 +98,7 @@ const AdminProjects = () => {
       {/* Edit/Add Modal */}
       {modal && (
         <div className="flex items-center justify-center" style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.7)' }} onClick={() => setModal(null)}>
-          <div className="w-full max-w-lg p-6" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-lg p-6" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 16 }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h3 style={{ fontSize: 18, fontWeight: 300, color: '#fff' }}>{modal.id ? t('admin_edit') : t('admin_add')}</h3>
               <button onClick={() => setModal(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><X size={20} /></button>
@@ -111,20 +111,20 @@ const AdminProjects = () => {
                 <div key={f.key}>
                   <label style={{ color: '#94a3b8', fontSize: 12, display: 'block', marginBottom: 4 }}>{t(f.label)}</label>
                   <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })}
-                    style={{ width: '100%', padding: '10px 14px', background: '#0a1e1a', border: '1px solid #1a3530', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }} />
+                    style={{ width: '100%', padding: '10px 14px', background: '#000', border: '1px solid #1a1a1a', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }} />
                 </div>
               ))}
               <div>
                 <label style={{ color: '#94a3b8', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_category')}</label>
                 <select value={modal.category} onChange={e => setModal({ ...modal, category: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', background: '#0a1e1a', border: '1px solid #1a3530', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }}>
+                  style={{ width: '100%', padding: '10px 14px', background: '#000', border: '1px solid #1a1a1a', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }}>
                   {['CONFERENCES', 'CORPORATE', 'BRAND', 'EVENTS'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label style={{ color: '#94a3b8', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_order')}</label>
                 <input type="number" value={modal.display_order} onChange={e => setModal({ ...modal, display_order: Number(e.target.value) })}
-                  style={{ width: '100%', padding: '10px 14px', background: '#0a1e1a', border: '1px solid #1a3530', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }} />
+                  style={{ width: '100%', padding: '10px 14px', background: '#000', border: '1px solid #1a1a1a', borderRadius: 8, color: '#fff', fontSize: 14, outline: 'none' }} />
               </div>
               <div className="flex gap-6">
                 <label className="flex items-center gap-2" style={{ color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
@@ -136,8 +136,8 @@ const AdminProjects = () => {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={handleSave} style={{ flex: 1, padding: '10px', background: '#2dd4bf', color: '#0a1e1a', borderRadius: 8, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer' }}>{t('admin_save')}</button>
-              <button onClick={() => setModal(null)} style={{ flex: 1, padding: '10px', background: 'transparent', border: '1px solid #1a3530', color: '#94a3b8', borderRadius: 8, fontSize: 14, cursor: 'pointer' }}>{t('admin_cancel')}</button>
+              <button onClick={handleSave} style={{ flex: 1, padding: '10px', background: '#FF4500', color: '#000', borderRadius: 8, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer' }}>{t('admin_save')}</button>
+              <button onClick={() => setModal(null)} style={{ flex: 1, padding: '10px', background: 'transparent', border: '1px solid #1a1a1a', color: '#94a3b8', borderRadius: 8, fontSize: 14, cursor: 'pointer' }}>{t('admin_cancel')}</button>
             </div>
           </div>
         </div>
@@ -146,11 +146,11 @@ const AdminProjects = () => {
       {/* Delete confirm */}
       {confirmDelete && (
         <div className="flex items-center justify-center" style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.7)' }}>
-          <div className="p-6" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 12 }}>
+          <div className="p-6" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12 }}>
             <p style={{ color: '#fff', marginBottom: 16 }}>{t('admin_confirm_delete')}</p>
             <div className="flex gap-3">
               <button onClick={() => handleDelete(confirmDelete)} style={{ padding: '8px 20px', background: '#ef4444', color: '#fff', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 14 }}>{t('admin_delete')}</button>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', background: 'transparent', border: '1px solid #1a3530', color: '#94a3b8', borderRadius: 8, cursor: 'pointer', fontSize: 14 }}>{t('admin_cancel')}</button>
+              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', background: 'transparent', border: '1px solid #1a1a1a', color: '#94a3b8', borderRadius: 8, cursor: 'pointer', fontSize: 14 }}>{t('admin_cancel')}</button>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ const AdminRequests = () => {
   };
 
   const statuses = ['ALL', 'new', 'reviewed', 'contacted', 'closed'];
-  const statusColors: Record<string, string> = { new: '#f59e0b', reviewed: '#60a5fa', contacted: '#2dd4bf', closed: '#94a3b8' };
+  const statusColors: Record<string, string> = { new: '#f59e0b', reviewed: '#60a5fa', contacted: '#FF4500', closed: '#94a3b8' };
 
   return (
     <AdminLayout>
@@ -42,15 +42,15 @@ const AdminRequests = () => {
       <div className="flex flex-wrap gap-3 mb-4">
         {statuses.map(s => (
           <button key={s} onClick={() => setFilter(s)}
-            style={{ padding: '6px 16px', borderRadius: 6, border: filter === s ? 'none' : '1px solid #1a3530',
-              background: filter === s ? '#2dd4bf' : 'transparent', color: filter === s ? '#0a1e1a' : '#94a3b8',
+            style={{ padding: '6px 16px', borderRadius: 6, border: filter === s ? 'none' : '1px solid #1a1a1a',
+              background: filter === s ? '#FF4500' : 'transparent', color: filter === s ? '#000' : '#94a3b8',
               fontSize: 13, cursor: 'pointer', fontWeight: filter === s ? 500 : 300 }}>
             {s === 'ALL' ? 'ALL' : t(`status_${s}`)}
           </button>
         ))}
       </div>
 
-      <div className="flex items-center gap-2 mb-6" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 8, padding: '0 12px' }}>
+      <div className="flex items-center gap-2 mb-6" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 8, padding: '0 12px' }}>
         <Search size={16} style={{ color: '#94a3b8' }} />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('admin_search')}
           style={{ flex: 1, padding: '10px 0', background: 'transparent', border: 'none', color: '#fff', fontSize: 14, outline: 'none' }} />
@@ -58,11 +58,11 @@ const AdminRequests = () => {
 
       <div className="flex gap-6">
         {/* Table */}
-        <div className="flex-1" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 12, overflow: 'hidden' }}>
+        <div className="flex-1" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, overflow: 'hidden' }}>
           <div className="overflow-x-auto">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #1a3530' }}>
+                <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
                   {['form_name', 'form_org', 'form_phone', 'status_new'].map(h => (
                     <th key={h} style={{ padding: '12px 16px', textAlign: 'start', color: '#94a3b8', fontSize: 12, fontWeight: 400 }}>{t(h)}</th>
                   ))}
@@ -72,7 +72,7 @@ const AdminRequests = () => {
                 {filtered.length === 0 ? (
                   <tr><td colSpan={4} className="text-center" style={{ padding: 32, color: '#94a3b8' }}>No requests</td></tr>
                 ) : filtered.map(r => (
-                  <tr key={r.id} onClick={() => setSelected(r)} style={{ borderBottom: '1px solid #1a3530', cursor: 'pointer', background: selected?.id === r.id ? 'rgba(45,212,191,0.05)' : 'transparent' }}>
+                  <tr key={r.id} onClick={() => setSelected(r)} style={{ borderBottom: '1px solid #1a1a1a', cursor: 'pointer', background: selected?.id === r.id ? 'rgba(45,212,191,0.05)' : 'transparent' }}>
                     <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{r.full_name}</td>
                     <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 14 }}>{r.organization}</td>
                     <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: 14 }}>{r.phone}</td>
@@ -89,7 +89,7 @@ const AdminRequests = () => {
 
         {/* Detail panel */}
         {selected && (
-          <div className="hidden lg:block" style={{ width: 360, background: '#0d2420', border: '1px solid #1a3530', borderRadius: 12, padding: 24, flexShrink: 0 }}>
+          <div className="hidden lg:block" style={{ width: 360, background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, padding: 24, flexShrink: 0 }}>
             <div className="flex items-center justify-between mb-6">
               <h3 style={{ fontSize: 16, fontWeight: 400, color: '#fff' }}>{selected.full_name}</h3>
               <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><X size={18} /></button>
@@ -117,9 +117,9 @@ const AdminRequests = () => {
               {(['new', 'reviewed', 'contacted', 'closed'] as const).map(s => (
                 <button key={s} onClick={() => updateStatus(selected.id, s)}
                   style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: selected.status === s ? 500 : 300,
-                    border: selected.status === s ? 'none' : '1px solid #1a3530',
+                    border: selected.status === s ? 'none' : '1px solid #1a1a1a',
                     background: selected.status === s ? statusColors[s] : 'transparent',
-                    color: selected.status === s ? '#0a1e1a' : statusColors[s] }}>
+                    color: selected.status === s ? '#000' : statusColors[s] }}>
                   {t(`status_${s}`)}
                 </button>
               ))}
@@ -134,11 +134,11 @@ const AdminRequests = () => {
 
       {confirmDelete && (
         <div className="flex items-center justify-center" style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.7)' }}>
-          <div className="p-6" style={{ background: '#0d2420', border: '1px solid #1a3530', borderRadius: 12 }}>
+          <div className="p-6" style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12 }}>
             <p style={{ color: '#fff', marginBottom: 16 }}>{t('admin_confirm_delete')}</p>
             <div className="flex gap-3">
               <button onClick={() => handleDelete(confirmDelete)} style={{ padding: '8px 20px', background: '#ef4444', color: '#fff', borderRadius: 8, border: 'none', cursor: 'pointer' }}>{t('admin_delete')}</button>
-              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', background: 'transparent', border: '1px solid #1a3530', color: '#94a3b8', borderRadius: 8, cursor: 'pointer' }}>{t('admin_cancel')}</button>
+              <button onClick={() => setConfirmDelete(null)} style={{ padding: '8px 20px', background: 'transparent', border: '1px solid #1a1a1a', color: '#94a3b8', borderRadius: 8, cursor: 'pointer' }}>{t('admin_cancel')}</button>
             </div>
           </div>
         </div>
