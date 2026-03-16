@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { GRAD, gradText } from '@/lib/brand'
 
 interface VideoCardProps {
   title: string
@@ -21,7 +22,7 @@ export default function VideoCard({
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative', width: '100%', height,
-        overflow: 'hidden', background: '#111',
+        overflow: 'hidden', background: '#111814',
         cursor: onClick ? 'pointer' : 'default', display: 'block',
       }}
     >
@@ -36,7 +37,7 @@ export default function VideoCard({
 
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)',
+        background: 'linear-gradient(to top, rgba(4,10,6,0.75) 0%, transparent 60%)',
       }}/>
 
       {videoUrl && hovered && (
@@ -44,7 +45,7 @@ export default function VideoCard({
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
           width: 64, height: 64, borderRadius: '50%',
-          background: 'rgba(255,59,48,0.9)',
+          background: GRAD,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.3s',
         }}>
@@ -60,8 +61,8 @@ export default function VideoCard({
       }}>
         {category && (
           <span style={{
-            display: 'block', color: '#FF3B30', fontSize: 10,
-            letterSpacing: '0.25em', marginBottom: 6, fontWeight: 400,
+            display: 'block', fontSize: 10, letterSpacing: '0.25em',
+            marginBottom: 6, fontWeight: 400, ...gradText,
           }}>
             {category.toUpperCase()}
           </span>

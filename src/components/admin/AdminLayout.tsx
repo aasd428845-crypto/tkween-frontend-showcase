@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut } from 'lucide-react'
+import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
 
 const links = [
   { path: '/admin/dashboard', icon: LayoutDashboard, key: 'admin_overview' },
@@ -18,9 +19,7 @@ export default function AdminLayout() {
   const { t, lang, setLang } = useLanguage()
 
   useEffect(() => {
-    if (sessionStorage.getItem('tkween_admin') !== '1') {
-      navigate('/admin/login')
-    }
+    if (sessionStorage.getItem('tkween_admin') !== '1') navigate('/admin/login')
   }, [navigate])
 
   const handleLogout = () => {
@@ -31,9 +30,9 @@ export default function AdminLayout() {
   if (sessionStorage.getItem('tkween_admin') !== '1') return null
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#000' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: BG }}>
       <aside style={{
-        width: 260, background: '#0a0a0a', borderRight: '1px solid #1c1c1c',
+        width: 260, background: BG_SOFT, borderRight: `1px solid ${BORDER}`,
         display: 'flex', flexDirection: 'column',
       }} className="hidden lg:flex">
         <div style={{ padding: 24 }}>
@@ -46,8 +45,8 @@ export default function AdminLayout() {
               <Link key={l.path} to={l.path} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '10px 16px', borderRadius: 8,
-                color: active ? '#FF3B30' : '#94a3b8',
-                background: active ? 'rgba(255,59,48,0.08)' : 'transparent',
+                color: active ? '#fff' : '#94a3b8',
+                background: active ? GRAD : 'transparent',
                 textDecoration: 'none', fontSize: 14,
                 fontWeight: active ? 500 : 300, transition: 'all 0.2s',
               }}>
@@ -58,7 +57,7 @@ export default function AdminLayout() {
         </nav>
         <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <button onClick={() => setLang(lang === 'en' ? 'ar' : 'en')} style={{
-            width: '100%', padding: '8px', border: '1px solid #1c1c1c',
+            width: '100%', padding: '8px', border: `1px solid ${BORDER}`,
             borderRadius: 8, background: 'transparent', color: '#94a3b8',
             fontSize: 13, cursor: 'pointer',
           }}>
@@ -66,7 +65,7 @@ export default function AdminLayout() {
           </button>
           <button onClick={handleLogout} style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: 8, padding: '8px', border: '1px solid #1c1c1c',
+            gap: 8, padding: '8px', border: `1px solid ${BORDER}`,
             borderRadius: 8, background: 'transparent', color: '#ef4444',
             fontSize: 13, cursor: 'pointer',
           }}>
@@ -78,7 +77,7 @@ export default function AdminLayout() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <header style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 16px', height: 56, borderBottom: '1px solid #1c1c1c',
+          padding: '0 16px', height: 56, borderBottom: `1px solid ${BORDER}`,
         }} className="lg:hidden">
           <TkweenLogo size={28} showText={false} />
           <div style={{ display: 'flex', gap: 8 }}>
@@ -87,8 +86,8 @@ export default function AdminLayout() {
               return (
                 <Link key={l.path} to={l.path} style={{
                   padding: 8, borderRadius: 6,
-                  background: active ? 'rgba(255,59,48,0.08)' : 'transparent',
-                  color: active ? '#FF3B30' : '#94a3b8',
+                  background: active ? GRAD : 'transparent',
+                  color: active ? '#fff' : '#94a3b8',
                 }}>
                   <l.icon size={18} />
                 </Link>

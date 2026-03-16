@@ -2,14 +2,14 @@ import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
+import { GRAD, BG, BORDER, gradText, gradBorder } from '@/lib/brand'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
   background: 'transparent', border: 'none',
-  borderBottom: '1px solid #2a2a2a',
+  borderBottom: `1px solid #2a352e`,
   color: '#fff', fontSize: 15, outline: 'none',
-  fontFamily: 'inherit',
-  transition: 'border-color 0.2s',
+  fontFamily: 'inherit', transition: 'border-color 0.2s',
 }
 
 export default function Quote() {
@@ -25,17 +25,11 @@ export default function Quote() {
     e.preventDefault()
     try {
       const reqs = JSON.parse(localStorage.getItem('tkween_requests') || '[]')
-      reqs.push({
-        ...formData,
-        id: Date.now().toString(),
-        status: 'new',
-        created_at: new Date().toISOString(),
-      })
+      reqs.push({ ...formData, id: Date.now().toString(), status: 'new', created_at: new Date().toISOString() })
       localStorage.setItem('tkween_requests', JSON.stringify(reqs))
     } catch {}
     setSent(true)
-    setFormData({ full_name: '', organization: '', phone: '', email: '',
-      event_date: '', location: '', service_type: '', details: '' })
+    setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
     setTimeout(() => setSent(false), 5000)
   }
 
@@ -49,11 +43,11 @@ export default function Quote() {
   ]
 
   return (
-    <div style={{ background: '#000', minHeight: '100vh' }}>
+    <div style={{ background: BG, minHeight: '100vh' }}>
       <Navbar />
       <div style={{ paddingTop: 64 }}>
         <div style={{ padding: '80px 32px 60px', maxWidth: 700, margin: '0 auto' }}>
-          <span style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em' }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em' }}>
             {isAr ? 'تكوين' : 'TKWEEN'}
           </span>
           <h1 style={{ fontSize: 'clamp(2.5rem,6vw,5rem)', fontWeight: 200, color: '#fff', marginTop: 12, marginBottom: 12 }}>
@@ -65,8 +59,9 @@ export default function Quote() {
 
           {sent && (
             <div style={{
-              padding: '16px 20px', border: '1px solid #FF3B30',
-              color: '#FF3B30', fontSize: 14, marginBottom: 32,
+              padding: '16px 20px',
+              ...gradBorder(BG),
+              color: '#FF5F57', fontSize: 14, marginBottom: 32,
             }}>
               {isAr ? 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' : 'Your request has been submitted! We\'ll be in touch soon.'}
             </div>
@@ -79,14 +74,12 @@ export default function Quote() {
                   <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.15em', display: 'block', marginBottom: 8 }}>
                     {f.label.toUpperCase()}{f.required && ' *'}
                   </label>
-                  <input
-                    type={f.type}
-                    required={f.required}
+                  <input type={f.type} required={f.required}
                     value={(formData as any)[f.key]}
                     onChange={e => setFormData({ ...formData, [f.key]: e.target.value })}
                     style={inputStyle}
-                    onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF3B30')}
-                    onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2a2a')}
+                    onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF5F57')}
+                    onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a352e')}
                   />
                 </div>
               ))}
@@ -96,22 +89,13 @@ export default function Quote() {
               <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.15em', display: 'block', marginBottom: 8 }}>
                 {t('form_service').toUpperCase()}
               </label>
-              <select
-                value={formData.service_type}
-                onChange={e => setFormData({ ...formData, service_type: e.target.value })}
+              <select value={formData.service_type} onChange={e => setFormData({ ...formData, service_type: e.target.value })}
                 style={{ ...inputStyle, cursor: 'pointer' }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF3B30')}
-                onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2a2a')}
-              >
-                <option value="" style={{ background: '#111' }}>{t('form_service')}</option>
-                {[
-                  { key: 'form_svc_photo', value: 'form_svc_photo' },
-                  { key: 'form_svc_video', value: 'form_svc_video' },
-                  { key: 'form_svc_aerial', value: 'form_svc_aerial' },
-                  { key: 'form_svc_live', value: 'form_svc_live' },
-                  { key: 'form_svc_other', value: 'form_svc_other' },
-                ].map(s => (
-                  <option key={s.key} value={s.key} style={{ background: '#111' }}>{t(s.key)}</option>
+                onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF5F57')}
+                onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a352e')}>
+                <option value="" style={{ background: '#111814' }}>{t('form_service')}</option>
+                {['form_svc_photo','form_svc_video','form_svc_aerial','form_svc_live','form_svc_other'].map(s => (
+                  <option key={s} value={s} style={{ background: '#111814' }}>{t(s)}</option>
                 ))}
               </select>
             </div>
@@ -120,18 +104,16 @@ export default function Quote() {
               <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.15em', display: 'block', marginBottom: 8 }}>
                 {t('form_details').toUpperCase()}
               </label>
-              <textarea
-                rows={5}
-                value={formData.details}
+              <textarea rows={5} value={formData.details}
                 onChange={e => setFormData({ ...formData, details: e.target.value })}
-                style={{ ...inputStyle, resize: 'vertical', borderBottom: '1px solid #2a2a2a' }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF3B30')}
-                onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2a2a')}
+                style={{ ...inputStyle, resize: 'vertical' }}
+                onFocus={e => (e.currentTarget.style.borderBottomColor = '#FF5F57')}
+                onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a352e')}
               />
             </div>
 
             <button type="submit" style={{
-              width: '100%', padding: '16px', background: '#FF3B30',
+              width: '100%', padding: '16px', background: GRAD,
               border: 'none', color: '#fff', fontSize: 11,
               letterSpacing: '0.2em', cursor: 'pointer', transition: 'opacity 0.3s',
             }}

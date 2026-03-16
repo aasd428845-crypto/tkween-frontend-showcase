@@ -7,21 +7,22 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --black: #000000;
-  --black-soft: #0a0a0a;
-  --card-bg: #111111;
-  --border: #1c1c1c;
-  --text-primary: #ffffff;
+  --bg:       #040a06;
+  --bg-soft:  #0a130c;
+  --card-bg:  #111814;
+  --border:   #1c231e;
+  --text-primary:   #ffffff;
   --text-secondary: #888888;
-  --accent: #FF3B30;
-  --accent-dark: #D62828;
-  --accent-darker: #8B0000;
+  --grad: linear-gradient(135deg, #FF5F57 0%, #FF3F9D 50%, #00B4D8 100%);
+  --grad-start: #FF5F57;
+  --grad-mid:   #FF3F9D;
+  --grad-end:   #00B4D8;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--black);
+  background: var(--bg);
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   font-weight: 300;
@@ -34,7 +35,32 @@ body.lang-ar {
 }
 
 ::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: var(--black); }
-::-webkit-scrollbar-thumb { background: var(--accent); }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--grad); }
 
 a { color: inherit; text-decoration: none; }
+
+/* ── Gradient utilities ─────────────────────────── */
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.grad-bg { background: var(--grad) !important; }
+
+.grad-border {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    var(--grad) border-box !important;
+}
+
+.hover-grad-text:hover {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent !important;
+}

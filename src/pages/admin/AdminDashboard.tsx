@@ -1,5 +1,6 @@
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
+import { GRAD, GRAD_START, BG_SOFT, BORDER } from '@/lib/brand'
 
 function getProjects() {
   try { return JSON.parse(localStorage.getItem('tkween_projects') || '[]') } catch { return [] }
@@ -19,7 +20,7 @@ export default function AdminDashboard() {
   const newReqs = requests.filter((r: any) => r.status === 'new')
 
   const cards = [
-    { icon: Film, label: t('admin_total_projects'), value: projects.length, color: '#FF3B30' },
+    { icon: Film, label: t('admin_total_projects'), value: projects.length, color: GRAD_START },
     { icon: MessageSquare, label: t('admin_total_requests'), value: requests.length, color: '#60a5fa' },
     { icon: Bell, label: t('admin_new_requests'), value: newReqs.length, color: '#f59e0b' },
     { icon: Eye, label: t('admin_visits'), value: settings.visit_count || 0, color: '#a78bfa' },
@@ -30,7 +31,7 @@ export default function AdminDashboard() {
     .slice(0, 8)
 
   const statusColors: Record<string, string> = {
-    new: '#f59e0b', reviewed: '#60a5fa', contacted: '#FF3B30', closed: '#666',
+    new: '#f59e0b', reviewed: '#60a5fa', contacted: GRAD_START, closed: '#666',
   }
 
   return (
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32 }}>
         {cards.map(c => (
-          <div key={c.label} style={{ padding: 20, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
+          <div key={c.label} style={{ padding: 20, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <c.icon size={18} style={{ color: c.color }} />
               <span style={{ color: '#666', fontSize: 13 }}>{c.label}</span>
@@ -50,13 +51,13 @@ export default function AdminDashboard() {
       </div>
 
       <h2 style={{ fontSize: 18, fontWeight: 300, color: '#fff', marginBottom: 16 }}>{t('admin_recent')}</h2>
-      <div style={{ background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #1c1c1c' }}>
+              <tr>
                 {[t('form_name'), t('form_org'), t('form_service'), t('form_phone'), 'Status'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'start', color: '#555', fontSize: 12, fontWeight: 400 }}>{h}</th>
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'start', color: '#555', fontSize: 12, fontWeight: 400, borderBottom: `1px solid ${BORDER}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
               {recent.length === 0 ? (
                 <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: '#555' }}>No requests yet</td></tr>
               ) : recent.map((r: any) => (
-                <tr key={r.id} style={{ borderBottom: '1px solid #1c1c1c' }}>
+                <tr key={r.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
                   <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{r.full_name}</td>
                   <td style={{ padding: '12px 16px', color: '#888', fontSize: 14 }}>{r.organization}</td>
                   <td style={{ padding: '12px 16px', color: '#888', fontSize: 14 }}>{r.service_type || '-'}</td>

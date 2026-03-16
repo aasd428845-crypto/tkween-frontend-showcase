@@ -4,6 +4,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
+import { gradText, BG, BORDER } from '@/lib/brand'
 
 const PLACEHOLDER = [
   { id: 'd1', title_en: 'Motion Graphics Reel', title_ar: 'حزمة موشن جرافيك',
@@ -30,11 +31,11 @@ export default function Designs() {
   }, [])
 
   return (
-    <div style={{ background: '#000', minHeight: '100vh' }}>
+    <div style={{ background: BG, minHeight: '100vh' }}>
       <Navbar />
       <div style={{ paddingTop: 64 }}>
-        <div style={{ padding: '48px 32px 24px', borderBottom: '1px solid #1c1c1c' }}>
-          <span style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em' }}>
+        <div style={{ padding: '48px 32px 24px', borderBottom: `1px solid ${BORDER}` }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em' }}>
             {isAr ? 'تكوين' : 'TKWEEN'}
           </span>
           <h1 style={{ fontSize: 'clamp(2rem,5vw,4rem)', fontWeight: 200, color: '#fff', marginTop: 8 }}>
@@ -42,15 +43,12 @@ export default function Designs() {
           </h1>
         </div>
         {videos.map(v => (
-          <VideoCard
-            key={v.id}
+          <VideoCard key={v.id}
             title={isAr ? (v as any).title_ar || v.title_en : v.title_en}
             thumbnail={v.thumbnail}
             videoUrl={(v as any).vimeo_url || ''}
             height="65vw"
-            onClick={(v as any).vimeo_url
-              ? () => setModal({ url: (v as any).vimeo_url, title: v.title_en })
-              : undefined}
+            onClick={(v as any).vimeo_url ? () => setModal({ url: (v as any).vimeo_url, title: v.title_en }) : undefined}
           />
         ))}
       </div>

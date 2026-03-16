@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Save, Trash2, Plus } from 'lucide-react'
+import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
 
 interface TkweenSettings {
   phone: string; email: string; whatsapp: string; address: string
@@ -18,18 +19,14 @@ const defaultSettings: TkweenSettings = {
 }
 
 function loadSettings(): TkweenSettings {
-  try {
-    const raw = localStorage.getItem('tkween_settings')
-    return raw ? { ...defaultSettings, ...JSON.parse(raw) } : defaultSettings
-  } catch { return defaultSettings }
+  try { const raw = localStorage.getItem('tkween_settings'); return raw ? { ...defaultSettings, ...JSON.parse(raw) } : defaultSettings }
+  catch { return defaultSettings }
 }
-function saveSettings(s: TkweenSettings) {
-  localStorage.setItem('tkween_settings', JSON.stringify(s))
-}
+function saveSettings(s: TkweenSettings) { localStorage.setItem('tkween_settings', JSON.stringify(s)) }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 14px', background: '#000',
-  border: '1px solid #1c1c1c', borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none',
+  width: '100%', padding: '10px 14px', background: BG,
+  border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none',
 }
 
 export default function AdminSettings() {
@@ -42,9 +39,7 @@ export default function AdminSettings() {
   try { heroImages = JSON.parse(settings.hero_images) } catch {}
 
   const saveField = (key: string) => {
-    saveSettings(settings)
-    setSaved(key)
-    setTimeout(() => setSaved(null), 2000)
+    saveSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
   }
 
   const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
@@ -65,16 +60,15 @@ export default function AdminSettings() {
   const contactFields = [
     { key: 'phone', label: 'Phone' }, { key: 'email', label: 'Email' },
     { key: 'whatsapp', label: 'WhatsApp' }, { key: 'address', label: 'Address' },
-    { key: 'instagram', label: 'Instagram' }, { key: 'twitter', label: 'Twitter' },
-    { key: 'snapchat', label: 'Snapchat' },
+    { key: 'instagram', label: 'Instagram' }, { key: 'twitter', label: 'Twitter' }, { key: 'snapchat', label: 'Snapchat' },
   ]
 
   const SaveBtn = ({ k }: { k: string }) => (
     <button onClick={() => saveField(k)} style={{
       padding: '10px 14px',
-      background: saved === k ? '#FF3B30' : 'rgba(255,59,48,0.08)',
+      background: saved === k ? GRAD : `${GRAD_START}12`,
       border: 'none', borderRadius: 4, cursor: 'pointer',
-      color: saved === k ? '#fff' : '#FF3B30', transition: 'all 0.3s',
+      color: saved === k ? '#fff' : GRAD_START, transition: 'all 0.3s',
     }}><Save size={16}/></button>
   )
 
@@ -82,8 +76,8 @@ export default function AdminSettings() {
     <div>
       <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff', marginBottom: 24 }}>{t('admin_settings')}</h1>
 
-      <div style={{ marginBottom: 24, padding: 24, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: '#FF3B30', marginBottom: 20 }}>{t('admin_contact_social')}</h2>
+      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_contact_social')}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {contactFields.map(f => (
             <div key={f.key} style={{ display: 'flex', gap: 8 }}>
@@ -97,16 +91,16 @@ export default function AdminSettings() {
         </div>
       </div>
 
-      <div style={{ marginBottom: 24, padding: 24, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: '#FF3B30', marginBottom: 20 }}>{t('admin_change_password')}</h2>
+      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_change_password')}</h2>
         <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
           <input type="password" value={settings.admin_password} onChange={e => update('admin_password', e.target.value)} style={{ ...inputStyle, flex: 1 }}/>
           <SaveBtn k="admin_password"/>
         </div>
       </div>
 
-      <div style={{ marginBottom: 24, padding: 24, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: '#FF3B30', marginBottom: 20 }}>{t('admin_visit_counter')}</h2>
+      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_visit_counter')}</h2>
         <div style={{ display: 'flex', gap: 8, maxWidth: 300, alignItems: 'center' }}>
           <span style={{ color: '#888', fontSize: 14 }}>Current: <strong style={{ color: '#fff' }}>{settings.visit_count}</strong></span>
           <input type="number" value={settings.visit_count} onChange={e => update('visit_count', e.target.value)} style={{ ...inputStyle, flex: 1 }}/>
@@ -114,36 +108,31 @@ export default function AdminSettings() {
         </div>
       </div>
 
-      <div style={{ marginBottom: 24, padding: 24, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: '#FF3B30', marginBottom: 20 }}>{t('admin_hero_images')}</h2>
+      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_hero_images')}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
           {heroImages.map((img, i) => (
-            <div key={i} style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', border: '1px solid #1c1c1c' }}>
+            <div key={i} style={{ position: 'relative', borderRadius: 4, overflow: 'hidden', border: `1px solid ${BORDER}` }}>
               <img src={img} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }}/>
-              <button onClick={() => removeHeroImage(i)} style={{
-                position: 'absolute', top: 4, right: 4, width: 24, height: 24, borderRadius: '50%',
-                background: 'rgba(239,68,68,0.9)', border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}><Trash2 size={12} style={{ color: '#fff' }}/></button>
+              <button onClick={() => removeHeroImage(i)} style={{ position: 'absolute', top: 4, right: 4, width: 24, height: 24, borderRadius: '50%', background: 'rgba(239,68,68,0.9)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Trash2 size={12} style={{ color: '#fff' }}/>
+              </button>
             </div>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image')}
-            style={{ ...inputStyle, flex: 1 }}/>
-          <button onClick={addHeroImage} style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
-            background: '#FF3B30', color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer',
-          }}><Plus size={16}/> Add</button>
+          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image')} style={{ ...inputStyle, flex: 1 }}/>
+          <button onClick={addHeroImage} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: GRAD, color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}>
+            <Plus size={16}/> Add
+          </button>
         </div>
       </div>
 
-      <div style={{ padding: 24, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: '#FF3B30', marginBottom: 8 }}>Vimeo Access Token</h2>
+      <div style={{ padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 8 }}>Vimeo Access Token</h2>
         <p style={{ color: '#444', fontSize: 12, marginBottom: 16 }}>For private videos. Get it from developer.vimeo.com</p>
         <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input type="password" value={(settings as any).vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)}
-            placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
+          <input type="password" value={(settings as any).vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)} placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
           <SaveBtn k="vimeo_access_token"/>
         </div>
       </div>

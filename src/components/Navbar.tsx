@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
+import { GRAD, BG, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -32,14 +33,12 @@ export default function Navbar() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         height: 64, display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', padding: '0 32px',
-        background: scrolled ? 'rgba(0,0,0,0.96)' : 'transparent',
+        background: scrolled ? 'rgba(4,10,6,0.96)' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid #1c1c1c' : 'none',
+        borderBottom: scrolled ? `1px solid ${BORDER}` : 'none',
         transition: 'all 0.3s',
       }}>
-        <Link to="/">
-          <TkweenLogo size={34} />
-        </Link>
+        <Link to="/"><TkweenLogo size={34} /></Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="desktop-nav">
           <div style={{ position: 'relative' }}
@@ -47,12 +46,10 @@ export default function Navbar() {
                onMouseLeave={() => setWorkOpen(false)}>
             <span style={{
               color: '#fff', fontSize: 11, letterSpacing: '0.15em',
-              cursor: 'pointer', fontWeight: 300,
-              paddingBottom: 2,
-              borderBottom: '1px solid transparent',
-              transition: 'border-color 0.2s',
+              cursor: 'pointer', fontWeight: 300, paddingBottom: 2,
+              borderBottom: '1px solid transparent', transition: 'border-color 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = '#FF3B30'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = '#FF5F57'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'}>
               {isAr ? 'أعمالنا ▾' : 'WORK ▾'}
             </span>
@@ -60,17 +57,16 @@ export default function Navbar() {
               <div style={{
                 position: 'absolute', top: '100%',
                 ...(isAr ? { right: 0 } : { left: 0 }),
-                background: '#0a0a0a', border: '1px solid #1c1c1c',
+                background: BG, border: `1px solid ${BORDER}`,
                 padding: '8px 0', minWidth: 180, marginTop: 8,
               }}>
                 {workLinks.map(l => (
                   <Link key={l.href} to={l.href} style={{
                     display: 'block', padding: '10px 20px',
-                    color: '#888', fontSize: 12, letterSpacing: '0.1em',
-                    transition: 'color 0.2s',
+                    color: '#888', fontSize: 12, letterSpacing: '0.1em', transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
-                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#888'}>
+                  onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+                  onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#888')}>
                     {isAr ? l.labelAr : l.labelEn.toUpperCase()}
                   </Link>
                 ))}
@@ -85,23 +81,22 @@ export default function Navbar() {
             { label: 'Contact', arLabel: 'تواصل معنا', href: '/contact' },
           ].map(item => (
             <Link key={item.label} to={item.href} style={{
-              color: '#fff', fontSize: 11, letterSpacing: '0.15em',
-              fontWeight: 300, transition: 'color 0.2s',
+              color: '#fff', fontSize: 11, letterSpacing: '0.15em', fontWeight: 300, transition: 'all 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+            onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+            onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#fff')}>
               {isAr ? item.arLabel : item.label.toUpperCase()}
             </Link>
           ))}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', border: '1px solid #333', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', border: `1px solid ${BORDER}`, overflow: 'hidden' }}>
             {(['en', 'ar'] as const).map(l => (
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
                 border: 'none', cursor: 'pointer',
-                background: lang === l ? '#FF3B30' : 'transparent',
+                background: lang === l ? GRAD : 'transparent',
                 color: lang === l ? '#fff' : '#666',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
@@ -109,18 +104,14 @@ export default function Navbar() {
           </div>
 
           <Link to="/quote" style={{
-            border: '1px solid #FF3B30', color: '#FF3B30',
+            border: '1px solid transparent',
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
+            color: '#FF5F57',
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
           }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = '#FF3B30'
-            ;(e.currentTarget as HTMLElement).style.color = '#fff'
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.background = 'transparent'
-            ;(e.currentTarget as HTMLElement).style.color = '#FF3B30'
-          }}>
+          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = GRAD; el.style.color = '#fff' }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`; el.style.color = '#FF5F57' }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
 
@@ -136,7 +127,7 @@ export default function Navbar() {
 
       {menuOpen && (
         <div style={{
-          position: 'fixed', inset: 0, background: '#000', zIndex: 200,
+          position: 'fixed', inset: 0, background: BG, zIndex: 200,
           display: 'flex', flexDirection: 'column',
           alignItems: isAr ? 'flex-end' : 'flex-start',
           justifyContent: 'center', padding: '0 48px',
@@ -144,8 +135,7 @@ export default function Navbar() {
           <button onClick={() => setMenuOpen(false)} style={{
             position: 'absolute', top: 20,
             left: isAr ? 'auto' : 28, right: isAr ? 28 : 'auto',
-            background: 'none', border: 'none', color: '#fff',
-            fontSize: 32, cursor: 'pointer',
+            background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
           }}>×</button>
 
           <TkweenLogo size={36} />
@@ -159,12 +149,11 @@ export default function Navbar() {
             <Link key={i} to={link.href} style={{
               display: 'block', padding: '14px 0',
               color: '#fff', fontSize: 24, fontWeight: 200,
-              borderBottom: '1px solid #111',
-              width: '100%', textAlign: isAr ? 'right' : 'left',
-              transition: 'color 0.2s',
+              borderBottom: `1px solid ${BORDER}`,
+              width: '100%', textAlign: isAr ? 'right' : 'left', transition: 'all 0.3s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+            onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+            onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#fff')}>
               {link.label}
             </Link>
           ))}

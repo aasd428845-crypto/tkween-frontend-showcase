@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
+import { GRAD, BG, BG_SOFT, BORDER } from '@/lib/brand'
 
 function getAdminPassword() {
   try {
@@ -28,8 +29,8 @@ export default function AdminLogin() {
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#000' }}>
-      <div style={{ width: '100%', maxWidth: 360, padding: 32, background: '#0a0a0a', border: '1px solid #1c1c1c', borderRadius: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: BG }}>
+      <div style={{ width: '100%', maxWidth: 360, padding: 32, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
           <TkweenLogo size={52} showText={true} showSubtitle={true} layout="vertical"/>
         </div>
@@ -41,13 +42,12 @@ export default function AdminLogin() {
             onChange={e => setPassword(e.target.value)}
             placeholder={t('admin_password')}
             style={{
-              width: '100%', padding: '12px 16px', background: '#000',
-              border: '1px solid #1c1c1c', borderRadius: 4, color: '#fff',
-              fontSize: 14, outline: 'none', marginBottom: 16,
-              transition: 'border-color 0.2s',
+              width: '100%', padding: '12px 16px', background: BG,
+              border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff',
+              fontSize: 14, outline: 'none', marginBottom: 16, transition: 'border-color 0.2s',
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#FF3B30')}
-            onBlur={e => (e.currentTarget.style.borderColor = '#1c1c1c')}
+            onFocus={e => (e.currentTarget.style.borderColor = '#FF5F57')}
+            onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
           />
           {error && (
             <p style={{ color: '#ef4444', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
@@ -55,7 +55,7 @@ export default function AdminLogin() {
             </p>
           )}
           <button type="submit" style={{
-            width: '100%', padding: 12, background: '#FF3B30', color: '#fff',
+            width: '100%', padding: 12, background: GRAD, color: '#fff',
             borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none',
             cursor: 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
           }}

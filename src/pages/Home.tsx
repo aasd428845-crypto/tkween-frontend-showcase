@@ -5,6 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
+import { GRAD, BG, BG_SOFT, BORDER, gradText, gradBorder, applyGradText, removeGradText } from '@/lib/brand'
 
 const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
@@ -67,7 +68,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div style={{ background: '#000', minHeight: '100vh' }}>
+    <div style={{ background: BG, minHeight: '100vh' }}>
       <Navbar />
 
       {/* HERO */}
@@ -84,7 +85,7 @@ export default function Home() {
         ))}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)',
+          background: 'linear-gradient(to bottom, rgba(4,10,6,0.2) 0%, rgba(4,10,6,0.88) 100%)',
         }}/>
         <div style={{
           position: 'relative', zIndex: 10,
@@ -92,7 +93,7 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
             {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
           </span>
           <h1 style={{
@@ -109,18 +110,13 @@ export default function Home() {
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
           <Link to="/our-work" style={{
-            border: '1px solid #FF3B30', color: '#FF3B30',
+            ...gradBorder(BG),
+            color: '#FF5F57',
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
             transition: 'all 0.3s', display: 'inline-block',
           }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = '#FF3B30'
-            ;(e.currentTarget as HTMLElement).style.color = '#fff'
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.background = 'transparent'
-            ;(e.currentTarget as HTMLElement).style.color = '#FF3B30'
-          }}>
+          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = GRAD; el.style.color = '#fff' }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; Object.assign(el.style, gradBorder(BG)); el.style.color = '#FF5F57' }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
           </Link>
         </div>
@@ -132,7 +128,7 @@ export default function Home() {
           {HERO_IMAGES.map((_, i) => (
             <button key={i} onClick={() => setHeroIdx(i)} style={{
               width: i === heroIdx ? 28 : 6, height: 2,
-              background: i === heroIdx ? '#FF3B30' : 'rgba(255,255,255,0.3)',
+              background: i === heroIdx ? GRAD : 'rgba(255,255,255,0.3)',
               border: 'none', cursor: 'pointer', padding: 0,
               transition: 'all 0.3s',
             }}/>
@@ -141,9 +137,9 @@ export default function Home() {
       </section>
 
       {/* FEATURED WORK */}
-      <section style={{ background: '#000', paddingTop: 2 }}>
+      <section style={{ background: BG, paddingTop: 2 }}>
         <div style={{ padding: '60px 32px 20px' }}>
-          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 8 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 8 }}>
             {isAr ? '——— أبرز أعمالنا ———' : '——— FEATURED WORK ———'}
           </p>
         </div>
@@ -161,9 +157,9 @@ export default function Home() {
       </section>
 
       {/* BROWSE BY SECTION */}
-      <section style={{ padding: '80px 32px', background: '#000', borderTop: '1px solid #1c1c1c' }}>
+      <section style={{ padding: '80px 32px', background: BG, borderTop: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 48 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 48 }}>
             {isAr ? 'تصفح حسب القسم' : 'BROWSE BY SECTION'}
           </p>
           {[
@@ -174,12 +170,12 @@ export default function Home() {
           ].map(item => (
             <Link key={item.href} to={item.href} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '22px 0', borderBottom: '1px solid #1c1c1c',
+              padding: '22px 0', borderBottom: `1px solid ${BORDER}`,
               color: '#fff', fontSize: 'clamp(1.2rem, 3vw, 2rem)',
-              fontWeight: 200, letterSpacing: '0.04em', transition: 'color 0.2s',
+              fontWeight: 200, letterSpacing: '0.04em', transition: 'all 0.3s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+            onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+            onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#fff')}>
               <span>{isAr ? item.ar : item.en}</span>
               <span style={{ fontSize: 20, opacity: 0.4 }}>→</span>
             </Link>
@@ -188,20 +184,22 @@ export default function Home() {
       </section>
 
       {/* SERVICES */}
-      <section id="services" style={{ padding: '80px 32px', background: '#0a0a0a' }}>
+      <section id="services" style={{ padding: '80px 32px', background: BG_SOFT }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 52 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 52 }}>
             {isAr ? 'خدماتنا' : 'OUR SERVICES'}
           </p>
           {SERVICES.map((s, i) => (
             <div key={s.num} style={{
               display: 'flex', gap: 36, alignItems: 'flex-start',
               padding: '32px 0',
-              borderBottom: i < SERVICES.length - 1 ? '1px solid #1c1c1c' : 'none',
+              borderBottom: i < SERVICES.length - 1 ? `1px solid ${BORDER}` : 'none',
             }}>
               <span style={{
                 fontSize: 80, fontWeight: 200, lineHeight: 1,
-                color: 'rgba(255,59,48,0.06)', minWidth: 80, flexShrink: 0,
+                background: GRAD, WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                opacity: 0.12, minWidth: 80, flexShrink: 0,
               }}>{s.num}</span>
               <div>
                 <h3 style={{ fontSize: 20, fontWeight: 300, color: '#fff', marginBottom: 10 }}>
@@ -217,7 +215,7 @@ export default function Home() {
       </section>
 
       {/* STATS */}
-      <section style={{ padding: '60px 32px', borderTop: '1px solid #1c1c1c', borderBottom: '1px solid #1c1c1c' }}>
+      <section style={{ padding: '60px 32px', borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{
           maxWidth: 900, margin: '0 auto',
           display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
@@ -230,7 +228,10 @@ export default function Home() {
             { n: '16', ar: 'مؤسسة', en: 'Organizations' },
           ].map((s, i) => (
             <div key={i}>
-              <div style={{ fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200, color: '#FF3B30' }}>
+              <div style={{
+                fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200,
+                ...gradText,
+              }}>
                 {s.n}
               </div>
               <p style={{ color: '#555', fontSize: 11, letterSpacing: '0.1em', marginTop: 8 }}>
@@ -242,25 +243,27 @@ export default function Home() {
       </section>
 
       {/* CLIENTS */}
-      <section id="clients" style={{ padding: '80px 32px', background: '#000' }}>
+      <section id="clients" style={{ padding: '80px 32px', background: BG }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2 }}>
             {CLIENTS.map((c, i) => (
               <div key={i} style={{
-                border: '1px solid #1c1c1c', padding: '20px 12px',
+                border: `1px solid ${BORDER}`, padding: '20px 12px',
                 textAlign: 'center', fontSize: 12, color: '#555',
                 transition: 'all 0.3s',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = '#FF3B30'
-                ;(e.currentTarget as HTMLElement).style.color = '#fff'
+                const el = e.currentTarget as HTMLElement
+                el.style.borderColor = '#FF5F57'
+                el.style.color = '#fff'
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = '#1c1c1c'
-                ;(e.currentTarget as HTMLElement).style.color = '#555'
+                const el = e.currentTarget as HTMLElement
+                el.style.borderColor = BORDER
+                el.style.color = '#555'
               }}>
                 {c}
               </div>
@@ -271,7 +274,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer style={{
-        padding: '40px 32px 28px', borderTop: '1px solid #1c1c1c',
+        padding: '40px 32px 28px', borderTop: `1px solid ${BORDER}`,
         display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', flexWrap: 'wrap', gap: 20,
       }}>
@@ -284,10 +287,10 @@ export default function Home() {
             { label: isAr ? 'طلب عرض سعر' : 'Get a Quote', href: '/quote' },
           ].map(l => (
             <Link key={l.href} to={l.href} style={{
-              color: '#444', fontSize: 11, letterSpacing: '0.12em', transition: 'color 0.2s',
+              color: '#444', fontSize: 11, letterSpacing: '0.12em', transition: 'all 0.3s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#444'}>
+            onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+            onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#444')}>
               {l.label}
             </Link>
           ))}
