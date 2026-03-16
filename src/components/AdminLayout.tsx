@@ -36,7 +36,7 @@ const AdminLayout = ({ children }: { children?: ReactNode }) => {
     <div className="flex" style={{ minHeight: '100vh', background: '#000' }}>
       <aside className="hidden lg:flex flex-col" style={{ width: 260, background: '#0a0a0a', borderRight: '1px solid #1a1a1a' }}>
         <div className="p-6">
-          <TkweenLogo size={32} showText={true} />
+          <TkweenLogo size={30} layout="horizontal" />
         </div>
         <nav className="flex flex-col gap-1 px-3 flex-1">
           {links.map(l => {

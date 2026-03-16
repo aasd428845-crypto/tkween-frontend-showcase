@@ -1,0 +1,177 @@
+REPLACE src/components/TkweenLogo.tsx ENTIRELY with this exact code.
+This matches the real TKWEEN logo precisely.
+
+import React from 'react'
+
+export default function TkweenLogo({
+  size = 44,
+  showText = true,
+  layout = 'horizontal'
+}: {
+  size?: number
+  showText?: boolean
+  layout?: 'horizontal' | 'vertical'
+}) {
+  const iconSize = size
+  const uniqueId = 'tk' + Math.random().toString(36).substr(2, 5)
+
+  const icon = (
+    <svg
+      width={iconSize}
+      height={iconSize}
+      viewBox="0 0 120 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        {/* Main gradient: teal top-left → dark blue bottom-right */}
+        <linearGradient
+          id={`${uniqueId}-grad`}
+          x1="20%" y1="0%"
+          x2="80%" y2="100%"
+        >
+          <stop offset="0%"   stopColor="#2dd4bf"/>
+          <stop offset="40%"  stopColor="#14b8a6"/>
+          <stop offset="100%" stopColor="#1e40af"/>
+        </linearGradient>
+      </defs>
+
+      {/*
+        Play button shape — rounded soft triangle pointing right.
+        Uses a path so corners are smooth (not sharp polygon).
+        Left side is a rounded vertical edge.
+        Right side comes to a soft point.
+      */}
+      <path
+        d="
+          M 22, 8
+          C 14, 8  8, 14  8, 22
+          L 8, 98
+          C 8, 106  14, 112  22, 112
+          C 26, 112  30, 110  33, 107
+          L 108, 65
+          C 114, 61  114, 59  114, 60
+          C 114, 61  114, 59  108, 55
+          L 33, 13
+          C 30, 10  26, 8  22, 8
+          Z
+        "
+        fill={`url(#${uniqueId}-grad)`}
+      />
+
+      {/*
+        White bracket cutout = ك shape
+        - Left vertical bar
+        - Top horizontal arm
+        - Bottom horizontal arm
+      */}
+      {/* Left vertical bar */}
+      <rect x="22" y="24" width="12" height="72" rx="3" fill="white"/>
+      {/* Top horizontal arm */}
+      <rect x="22" y="24" width="38" height="13" rx="3" fill="white"/>
+      {/* Bottom horizontal arm */}
+      <rect x="22" y="83" width="38" height="13" rx="3" fill="white"/>
+
+      {/*
+        Small teal-to-blue gradient circle (accent dot)
+        positioned to the right inside the bracket gap
+      */}
+      <circle cx="76" cy="60" r="9" fill="white" opacity="0.25"/>
+      <circle cx="76" cy="60" r="6" fill="white" opacity="0.9"/>
+    </svg>
+  )
+
+  if (!showText) return icon
+
+  if (layout === 'vertical') {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 6,
+      }}>
+        {icon}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            fontFamily: "'Tajawal', sans-serif",
+            fontSize: size * 0.38,
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #2dd4bf 0%, #1e40af 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            direction: 'rtl',
+          }}>
+            تكوين
+          </div>
+          <div style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: size * 0.18,
+            fontWeight: 400,
+            color: '#2dd4bf',
+            letterSpacing: '0.28em',
+            marginTop: 1,
+          }}>
+            TKWEEN
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  /* Default: horizontal — icon on left, text on right */
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    }}>
+      {icon}
+      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+        <span style={{
+          fontFamily: "'Tajawal', sans-serif",
+          fontSize: size * 0.48,
+          fontWeight: 700,
+          background: 'linear-gradient(135deg, #2dd4bf 0%, #1e40af 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          direction: 'rtl',
+        }}>
+          تكوين
+        </span>
+        <span style={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: size * 0.2,
+          fontWeight: 300,
+          color: '#2dd4bf',
+          letterSpacing: '0.28em',
+        }}>
+          TKWEEN
+        </span>
+      </div>
+    </div>
+  )
+}
+
+IMPORTANT: After replacing this file, make sure:
+1. Navbar.tsx uses <TkweenLogo size={36} layout="horizontal" />
+2. AdminLayout.tsx uses <TkweenLogo size={30} layout="horizontal" />
+3. Footer uses <TkweenLogo size={28} layout="horizontal" />
+4. AdminLogin.tsx uses <TkweenLogo size={52} layout="vertical" showText={true} />
+5. Fix the unique gradient ID issue — since Math.random() in render
+   causes issues, change to a fixed string ID:
+   Replace: const uniqueId = 'tk' + Math.random().toString(36).substr(2, 5)
+   With:    const uniqueId = 'tkween-logo'
+   But since multiple logos on same page share the same SVG defs,
+   use React.useId() if available, or just use a static counter:
+   
+   Add at top of file outside component:
+   let _logoCounter = 0
+   
+   Inside component:
+   const [uniqueId] = React.useState(() => 'tklogo-' + (++_logoCounter))
+
+No other changes needed. Only TkweenLogo.tsx.

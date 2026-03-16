@@ -41,7 +41,7 @@ export default function Navbar() {
         borderBottom: scrolled ? `1px solid ${BORDER}` : 'none',
         transition: 'all 0.3s',
       }}>
-        <Link to="/"><TkweenLogo size={34} /></Link>
+        <Link to="/"><TkweenLogo size={36} layout="horizontal" /></Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="desktop-nav">
           <div style={{ position: 'relative' }}
@@ -140,7 +140,7 @@ export default function Navbar() {
             background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
           }}>×</button>
 
-          <TkweenLogo size={36} />
+          <TkweenLogo size={36} layout="horizontal" />
           <div style={{ height: 40 }}/>
 
           {[
