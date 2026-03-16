@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GRAD, gradText } from '@/lib/brand'
+import { gradText } from '@/lib/brand'
 
 interface VideoCardProps {
   title: string
@@ -45,7 +45,7 @@ export default function VideoCard({
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
           width: 64, height: 64, borderRadius: '50%',
-          background: GRAD,
+          background: 'rgba(45,212,191,0.9)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.3s',
         }}>
@@ -62,7 +62,7 @@ export default function VideoCard({
         {category && (
           <span style={{
             display: 'block', fontSize: 10, letterSpacing: '0.25em',
-            marginBottom: 6, fontWeight: 400, ...gradText,
+            marginBottom: 6, fontWeight: 400, color: '#2dd4bf',
           }}>
             {category.toUpperCase()}
           </span>

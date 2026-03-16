@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
+import { getVideos, saveVideos } from '@/lib/storage'
 
 interface Video {
   id: string
@@ -28,13 +29,8 @@ const inputStyle: React.CSSProperties = {
   padding: '10px 12px', fontSize: 13, outline: 'none', fontFamily: 'inherit', borderRadius: 4,
 }
 
-function load(): Video[] {
-  try { return JSON.parse(localStorage.getItem('tkween_videos') || '[]') } catch { return [] }
-}
-function save(vids: Video[]) { localStorage.setItem('tkween_videos', JSON.stringify(vids)) }
-
 export default function AdminVideos() {
-  const [videos, setVideos] = useState<Video[]>(load)
+  const [videos, setVideos] = useState<Video[]>(() => getVideos() as Video[])
   const [tab, setTab] = useState<string>('conferences')
   const [modal, setModal] = useState(false)
   const [form, setForm] = useState<Omit<Video, 'id'>>(blank)
@@ -60,18 +56,18 @@ export default function AdminVideos() {
     const updated = editId
       ? videos.map(v => v.id === editId ? { ...form, id: editId } : v)
       : [...videos, { ...form, id: Date.now().toString() }]
-    setVideos(updated); save(updated); setModal(false)
+    setVideos(updated); saveVideos(updated as any); setModal(false)
   }
 
   const handleDelete = (id: string) => {
     if (!confirm('Delete this video?')) return
     const updated = videos.filter(v => v.id !== id)
-    setVideos(updated); save(updated)
+    setVideos(updated); saveVideos(updated as any)
   }
 
   const toggle = (id: string, field: 'featured' | 'visible') => {
     const updated = videos.map(v => v.id === id ? { ...v, [field]: !v[field] } : v)
-    setVideos(updated); save(updated)
+    setVideos(updated); saveVideos(updated as any)
   }
 
   return (

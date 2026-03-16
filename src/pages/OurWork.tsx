@@ -5,6 +5,7 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { gradText, BG, BORDER } from '@/lib/brand'
+import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
   { id: 'w1', title_en: 'Red Sea Film Series', title_ar: 'سلسلة أفلام البحر الأحمر',
@@ -23,8 +24,7 @@ export default function OurWork() {
 
   useEffect(() => {
     try {
-      const all = JSON.parse(localStorage.getItem('tkween_videos') || '[]')
-      const filtered = all.filter((v: any) => v.section === 'our_work' && v.visible)
+      const filtered = getVideos().filter((v: any) => v.section === 'our_work' && v.visible)
         .sort((a: any, b: any) => a.display_order - b.display_order)
       if (filtered.length > 0) setVideos(filtered)
     } catch {}

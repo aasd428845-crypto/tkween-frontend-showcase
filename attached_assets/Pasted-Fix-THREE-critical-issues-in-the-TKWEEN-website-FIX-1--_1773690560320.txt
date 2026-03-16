@@ -1,0 +1,468 @@
+Fix THREE critical issues in the TKWEEN website.
+
+════════════════════════════════════════
+FIX 1 — LOGO (src/components/TkweenLogo.tsx)
+REPLACE ENTIRELY
+════════════════════════════════════════
+
+The real TKWEEN logo has:
+- A smooth play-button triangle (NO sharp corners, rounded feel)
+- Inside the triangle: a white bracket cutout shaped like ك
+- Text is BESIDE the logo (horizontal layout), NOT below it
+- Arabic "تكوين" on one line, "TKWEEN" smaller below it — both to the left of the SVG
+- Colors: dark triangle (#111 or gradient dark-to-darker), teal accent dot
+
+export default function TkweenLogo({
+  size = 40,
+  showText = true,
+}: {
+  size?: number
+  showText?: boolean
+}) {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    }}>
+      {/* SVG — smooth play triangle, no sharp polygon */}
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a1a1a"/>
+            <stop offset="100%" stopColor="#0a0a0a"/>
+          </linearGradient>
+        </defs>
+
+        {/* Smooth play triangle using path with rounded feel */}
+        <path
+          d="M12,8 C10,8 8,10 8,12 L8,88 C8,92 12,95 16,93 L90,55 C94,53 94,47 90,45 L16,7 C15,7.5 13,8 12,8 Z"
+          fill="url(#triGrad)"
+        />
+
+        {/* White ك bracket cutout inside triangle */}
+        {/* Left vertical bar */}
+        <rect x="16" y="18" width="10" height="64" fill="#000000" rx="1"/>
+        {/* Top horizontal arm */}
+        <rect x="16" y="18" width="30" height="11" fill="#000000" rx="1"/>
+        {/* Bottom horizontal arm */}
+        <rect x="16" y="71" width="30" height="11" fill="#000000" rx="1"/>
+
+        {/* Teal accent circle */}
+        <circle cx="68" cy="50" r="7" fill="#2dd4bf"/>
+      </svg>
+
+      {/* Text beside logo */}
+      {showText && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          lineHeight: 1.15,
+        }}>
+          <span style={{
+            fontFamily: "'Tajawal', sans-serif",
+            fontSize: size * 0.5,
+            fontWeight: 700,
+            color: '#ffffff',
+            direction: 'rtl',
+            letterSpacing: '0.02em',
+          }}>
+            تكوين
+          </span>
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: size * 0.2,
+            fontWeight: 300,
+            color: '#2dd4bf',
+            letterSpacing: '0.3em',
+          }}>
+            TKWEEN
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+════════════════════════════════════════
+FIX 2 — COLORS (change everywhere)
+════════════════════════════════════════
+
+In src/index.css change:
+--accent: #2dd4bf
+--accent-dark: #1a9e8f
+--accent-darker: #0f6e60
+
+In src/App.tsx and ALL components:
+- Replace ALL #FF3B30 with #2dd4bf
+- Replace ALL #D62828 with #1a9e8f  
+- Replace ALL #8B0000 with #0f6e60
+- The word "red" in any color context → replace with teal
+
+In Navbar.tsx:
+- Quote button border and color: #2dd4bf
+- Active language button bg: #2dd4bf, color: #0a1e1a
+- Hover colors: #2dd4bf
+
+In Home.tsx:
+- Hero section labels: color #2dd4bf
+- "VIEW OUR WORK" button: border #2dd4bf, color #2dd4bf
+- Stats numbers color: #2dd4bf
+- Section link hover: #2dd4bf
+- Client cards hover border: #2dd4bf
+- All accent text: #2dd4bf
+
+In VideoCard.tsx:
+- Category text color: #2dd4bf
+- Play button circle bg: rgba(45,212,191,0.9)
+
+In AdminLayout sidebar:
+- Active link color: #2dd4bf
+- Active link border-left: #2dd4bf
+- Active link background: rgba(45,212,191,0.08)
+
+In AdminLogin.tsx:
+- Submit button bg: #2dd4bf
+- Submit button color: #0a1e1a
+
+════════════════════════════════════════
+FIX 3 — ADMIN PANEL DATA CONNECTION
+This is the most critical fix
+════════════════════════════════════════
+
+THE PROBLEM: The public site shows hardcoded placeholder data.
+The admin panel saves to localStorage.
+They never talk to each other.
+
+THE FIX: Make the public site READ from localStorage,
+with fallback to placeholder data only if localStorage is empty.
+
+STEP A — Create src/lib/storage.ts:
+
+export interface Project {
+  id: string
+  title_en: string
+  title_ar: string
+  category: string
+  thumbnail: string
+  video_url: string
+  visible: boolean
+  featured: boolean
+  display_order: number
+}
+
+export interface Video {
+  id: string
+  title_en: string
+  title_ar: string
+  section: 'conferences' | 'corporate_ads' | 'designs' | 'our_work'
+  vimeo_url: string
+  thumbnail_url: string
+  display_order: number
+  featured: boolean
+  visible: boolean
+  created_at: string
+}
+
+export interface Settings {
+  phone: string
+  email: string
+  whatsapp: string
+  address: string
+  instagram: string
+  twitter: string
+  snapchat: string
+  admin_password: string
+  visit_count: string
+  hero_images: string
+}
+
+export interface Request {
+  id: string
+  full_name: string
+  organization: string
+  service_type: string
+  event_date: string
+  location: string
+  details: string
+  phone: string
+  email: string
+  status: string
+  created_at: string
+}
+
+const DEFAULT_SETTINGS: Settings = {
+  phone: '0553120141',
+  email: 'sales@tkweensa.com',
+  whatsapp: '966553120141',
+  address: 'الرياض، المملكة العربية السعودية',
+  instagram: 'https://instagram.com/Tkweensa',
+  twitter: 'https://twitter.com/Tkweensa',
+  snapchat: 'https://snapchat.com/add/Tkweensa',
+  admin_password: 'tkween2025',
+  visit_count: '0',
+  hero_images: JSON.stringify([
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
+    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=85',
+  ]),
+}
+
+const DEFAULT_PROJECTS: Project[] = [
+  { id:'1', title_en:'Saudi Vision Forum 2024', title_ar:'منتدى رؤية السعودية 2024',
+    category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    video_url:'', visible:true, featured:true, display_order:1 },
+  { id:'2', title_en:'Aramco Annual Summit', title_ar:'قمة أرامكو السنوية',
+    category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+    video_url:'', visible:true, featured:false, display_order:2 },
+  { id:'3', title_en:'NEOM Brand Campaign', title_ar:'حملة علامة نيوم',
+    category:'CORPORATE', thumbnail:'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
+    video_url:'', visible:true, featured:false, display_order:3 },
+  { id:'4', title_en:'Red Sea Film Series', title_ar:'سلسلة أفلام البحر الأحمر',
+    category:'BRAND', thumbnail:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    video_url:'', visible:true, featured:true, display_order:4 },
+]
+
+/* ── SETTINGS ── */
+export function getSettings(): Settings {
+  try {
+    const raw = localStorage.getItem('tkween_settings')
+    if (!raw) {
+      localStorage.setItem('tkween_settings', JSON.stringify(DEFAULT_SETTINGS))
+      return DEFAULT_SETTINGS
+    }
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
+  } catch {
+    return DEFAULT_SETTINGS
+  }
+}
+
+export function saveSettings(s: Partial<Settings>) {
+  const current = getSettings()
+  const updated = { ...current, ...s }
+  localStorage.setItem('tkween_settings', JSON.stringify(updated))
+  return updated
+}
+
+export function updateSetting(key: keyof Settings, value: string) {
+  const s = getSettings()
+  s[key] = value
+  localStorage.setItem('tkween_settings', JSON.stringify(s))
+}
+
+/* ── PROJECTS ── */
+export function getProjects(): Project[] {
+  try {
+    const raw = localStorage.getItem('tkween_projects')
+    if (!raw) {
+      localStorage.setItem('tkween_projects', JSON.stringify(DEFAULT_PROJECTS))
+      return DEFAULT_PROJECTS
+    }
+    const parsed = JSON.parse(raw)
+    return parsed.length > 0 ? parsed : DEFAULT_PROJECTS
+  } catch {
+    return DEFAULT_PROJECTS
+  }
+}
+
+export function saveProjects(projects: Project[]) {
+  localStorage.setItem('tkween_projects', JSON.stringify(projects))
+}
+
+export function addProject(p: Omit<Project, 'id'>) {
+  const projects = getProjects()
+  const newP = { ...p, id: Date.now().toString() }
+  projects.push(newP)
+  saveProjects(projects)
+  return newP
+}
+
+export function updateProject(id: string, data: Partial<Project>) {
+  const projects = getProjects().map(p => p.id === id ? { ...p, ...data } : p)
+  saveProjects(projects)
+}
+
+export function deleteProject(id: string) {
+  saveProjects(getProjects().filter(p => p.id !== id))
+}
+
+/* ── VIDEOS ── */
+export function getVideos(): Video[] {
+  try {
+    const raw = localStorage.getItem('tkween_videos')
+    if (!raw) return []
+    return JSON.parse(raw)
+  } catch {
+    return []
+  }
+}
+
+export function saveVideos(videos: Video[]) {
+  localStorage.setItem('tkween_videos', JSON.stringify(videos))
+}
+
+export function addVideo(v: Omit<Video, 'id' | 'created_at'>) {
+  const videos = getVideos()
+  const newV = { ...v, id: Date.now().toString(), created_at: new Date().toISOString() }
+  videos.push(newV)
+  saveVideos(videos)
+  return newV
+}
+
+export function updateVideo(id: string, data: Partial<Video>) {
+  saveVideos(getVideos().map(v => v.id === id ? { ...v, ...data } : v))
+}
+
+export function deleteVideo(id: string) {
+  saveVideos(getVideos().filter(v => v.id !== id))
+}
+
+/* ── REQUESTS ── */
+export function getRequests(): Request[] {
+  try {
+    const raw = localStorage.getItem('tkween_requests')
+    return raw ? JSON.parse(raw) : []
+  } catch { return [] }
+}
+
+export function saveRequests(requests: Request[]) {
+  localStorage.setItem('tkween_requests', JSON.stringify(requests))
+}
+
+export function addRequest(r: Omit<Request, 'id' | 'created_at' | 'status'>) {
+  const requests = getRequests()
+  const newR = { ...r, id: Date.now().toString(), status: 'new', created_at: new Date().toISOString() }
+  requests.push(newR)
+  saveRequests(requests)
+  return newR
+}
+
+export function updateRequest(id: string, data: Partial<Request>) {
+  saveRequests(getRequests().map(r => r.id === id ? { ...r, ...data } : r))
+}
+
+export function deleteRequest(id: string) {
+  saveRequests(getRequests().filter(r => r.id !== id))
+}
+
+/* ── HERO IMAGES ── */
+export function getHeroImages(): string[] {
+  try {
+    const s = getSettings()
+    return JSON.parse(s.hero_images)
+  } catch {
+    return [
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
+      'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
+    ]
+  }
+}
+
+STEP B — Update ALL public pages to use storage.ts:
+
+In src/pages/Home.tsx:
+- REMOVE all hardcoded PLACEHOLDER_PROJECTS array
+- REMOVE all hardcoded HERO_IMAGES array
+- ADD imports:
+  import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
+- Change hero images:
+  const [heroImages, setHeroImages] = useState<string[]>([])
+  useEffect(() => { setHeroImages(getHeroImages()) }, [])
+  const [heroIdx, setHeroIdx] = useState(0)
+- Change projects:
+  const [projects, setProjects] = useState<any[]>([])
+  useEffect(() => {
+    setProjects(getProjects().filter(p => p.visible).sort((a,b) => a.display_order - b.display_order))
+  }, [])
+- Change contact info:
+  const [settings, setSettings] = useState(getSettings())
+  useEffect(() => { setSettings(getSettings()) }, [])
+  Then use settings.phone, settings.email, settings.whatsapp
+
+In src/pages/Conferences.tsx:
+- REMOVE hardcoded PLACEHOLDER
+- ADD: import { getVideos } from '@/lib/storage'
+- Change:
+  useEffect(() => {
+    const vids = getVideos()
+      .filter(v => v.section === 'conferences' && v.visible)
+      .sort((a,b) => a.display_order - b.display_order)
+    setVideos(vids)
+  }, [])
+- If videos.length === 0, show message:
+  <p style={{color:'#555', textAlign:'center', padding:'80px 32px', fontSize:14}}>
+    {isAr ? 'لا توجد فيديوهات بعد. أضفها من لوحة التحكم.' : 'No videos yet. Add them from the admin panel.'}
+  </p>
+
+Apply same pattern to CorporateAds.tsx, Designs.tsx, OurWork.tsx
+(change section filter accordingly)
+
+In src/pages/Contact.tsx:
+- import { getSettings } from '@/lib/storage'
+- const settings = getSettings()
+- Use settings.phone, settings.email, settings.whatsapp, settings.address
+- Social links from settings.instagram, settings.twitter, settings.snapchat
+
+STEP C — Update ALL admin pages to use storage.ts:
+
+In src/pages/admin/AdminProjects.tsx:
+- import { getProjects, addProject, updateProject, deleteProject } from '@/lib/storage'
+- Replace ALL supabase calls with storage functions
+- load = () => setProjects(getProjects())
+- save: if editId → updateProject(editId, form) else addProject(form)
+- del: deleteProject(id)
+- toggle: updateProject(id, { [field]: !project[field] })
+
+In src/pages/admin/AdminVideos.tsx:
+- import { getVideos, addVideo, updateVideo, deleteVideo } from '@/lib/storage'
+- Replace ALL storage calls with these functions
+
+In src/pages/admin/AdminRequests.tsx:
+- import { getRequests, updateRequest, deleteRequest } from '@/lib/storage'
+- load = () => setRequests(getRequests())
+
+In src/pages/admin/AdminSettings.tsx:
+- import { getSettings, updateSetting, getHeroImages } from '@/lib/storage'
+- Initialize form with getSettings()
+- On each field save: updateSetting(key, value)
+- Hero images: read from getHeroImages()
+- When adding/removing hero image:
+  const images = getHeroImages()
+  // add or remove
+  updateSetting('hero_images', JSON.stringify(images))
+  // then re-render preview immediately
+
+In src/pages/admin/AdminDashboard.tsx:
+- import { getProjects, getRequests, getSettings } from '@/lib/storage'
+- All counts from these functions directly
+- visit_count from getSettings().visit_count
+
+In src/pages/admin/AdminLogin.tsx:
+- import { getSettings } from '@/lib/storage'
+- Check: if (password === getSettings().admin_password) → allow
+
+In src/pages/Quote.tsx:
+- import { addRequest } from '@/lib/storage'
+- On submit: addRequest(formData)
+
+════════════════════════════════════════
+AFTER ALL FIXES VERIFY:
+════════════════════════════════════════
+
+1. Logo: smooth play triangle, text BESIDE (not below), teal accent
+2. All colors: #2dd4bf teal (no red, no orange)
+3. Go to /admin/login → password: tkween2025
+4. In Admin Settings → change a hero image URL → go to / → image must update
+5. In Admin Projects → add a project with thumbnail → go to / → project must appear
+6. In Admin Videos → add a Conferences video → go to /conferences → video must appear
+7. In Quote page → submit form → go to Admin Requests → request must appear
+
+EVERYTHING must work through localStorage via src/lib/storage.ts
+No hardcoded data on public pages (only fallback defaults if localStorage is completely empty)

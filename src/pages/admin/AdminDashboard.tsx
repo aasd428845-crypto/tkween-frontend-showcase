@@ -1,16 +1,7 @@
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
-import { GRAD, GRAD_START, BG_SOFT, BORDER } from '@/lib/brand'
-
-function getProjects() {
-  try { return JSON.parse(localStorage.getItem('tkween_projects') || '[]') } catch { return [] }
-}
-function getRequests() {
-  try { return JSON.parse(localStorage.getItem('tkween_requests') || '[]') } catch { return [] }
-}
-function getSettings() {
-  try { return JSON.parse(localStorage.getItem('tkween_settings') || '{}') } catch { return {} }
-}
+import { GRAD_START, BG_SOFT, BORDER } from '@/lib/brand'
+import { getProjects, getRequests, getSettings } from '@/lib/storage'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()

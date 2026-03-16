@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, BG, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+
+const ACCENT = '#2dd4bf'
+const ACCENT_DARK = '#0a1e1a'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -49,7 +52,7 @@ export default function Navbar() {
               cursor: 'pointer', fontWeight: 300, paddingBottom: 2,
               borderBottom: '1px solid transparent', transition: 'border-color 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = '#FF5F57'}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = ACCENT}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'}>
               {isAr ? 'أعمالنا ▾' : 'WORK ▾'}
             </span>
@@ -96,22 +99,21 @@ export default function Navbar() {
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
                 border: 'none', cursor: 'pointer',
-                background: lang === l ? GRAD : 'transparent',
-                color: lang === l ? '#fff' : '#666',
+                background: lang === l ? ACCENT : 'transparent',
+                color: lang === l ? ACCENT_DARK : '#666',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
             ))}
           </div>
 
           <Link to="/quote" style={{
-            border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
-            color: '#FF5F57',
+            border: `1px solid ${ACCENT}`,
+            color: ACCENT,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
-            transition: 'all 0.3s', display: 'inline-block',
+            transition: 'all 0.3s', display: 'inline-block', background: 'transparent',
           }}
-          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = GRAD; el.style.color = '#fff' }}
-          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`; el.style.color = '#FF5F57' }}>
+          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = ACCENT; el.style.color = ACCENT_DARK }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'transparent'; el.style.color = ACCENT }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
 

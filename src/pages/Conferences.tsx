@@ -5,6 +5,7 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { gradText, BG, BORDER } from '@/lib/brand'
+import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
   { id: 'c1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
@@ -22,12 +23,10 @@ export default function Conferences() {
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
   useEffect(() => {
-    try {
-      const all = JSON.parse(localStorage.getItem('tkween_videos') || '[]')
-      const filtered = all.filter((v: any) => v.section === 'conferences' && v.visible)
-        .sort((a: any, b: any) => a.display_order - b.display_order)
-      if (filtered.length > 0) setVideos(filtered)
-    } catch {}
+    const filtered = getVideos()
+      .filter(v => v.section === 'conferences' && v.visible)
+      .sort((a, b) => a.display_order - b.display_order)
+    if (filtered.length > 0) setVideos(filtered as any)
   }, [])
 
   return (

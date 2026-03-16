@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, BG, BORDER, gradText, gradBorder } from '@/lib/brand'
+import { addRequest } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
@@ -23,11 +24,7 @@ export default function Quote() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const reqs = JSON.parse(localStorage.getItem('tkween_requests') || '[]')
-      reqs.push({ ...formData, id: Date.now().toString(), status: 'new', created_at: new Date().toISOString() })
-      localStorage.setItem('tkween_requests', JSON.stringify(reqs))
-    } catch {}
+    try { addRequest(formData) } catch {}
     setSent(true)
     setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
     setTimeout(() => setSent(false), 5000)

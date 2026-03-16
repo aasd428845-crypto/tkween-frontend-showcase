@@ -2,17 +2,8 @@ import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Search, Trash2, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-
-interface TkweenRequest {
-  id: string; full_name: string; organization: string; service_type: string
-  event_date: string; location: string; details: string; phone: string; email: string
-  status: 'new' | 'reviewed' | 'contacted' | 'closed'; created_at: string
-}
-
-function loadRequests(): TkweenRequest[] {
-  try { return JSON.parse(localStorage.getItem('tkween_requests') || '[]') } catch { return [] }
-}
-function saveRequests(r: TkweenRequest[]) { localStorage.setItem('tkween_requests', JSON.stringify(r)) }
+import { getRequests, saveRequests } from '@/lib/storage'
+import type { Request as TkweenRequest } from '@/lib/storage'
 
 const statusColors: Record<string, string> = {
   new: '#f59e0b', reviewed: '#60a5fa', contacted: GRAD_START, closed: '#555',
@@ -20,7 +11,7 @@ const statusColors: Record<string, string> = {
 
 export default function AdminRequests() {
   const { t } = useLanguage()
-  const [requests, setRequests] = useState(loadRequests)
+  const [requests, setRequests] = useState(getRequests)
   const [filter, setFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<TkweenRequest | null>(null)

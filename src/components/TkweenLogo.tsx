@@ -6,135 +6,69 @@ interface TkweenLogoProps {
 }
 
 export default function TkweenLogo({
-  size = 44,
+  size = 40,
   showText = true,
-  showSubtitle = false,
-  layout = 'horizontal',
+  showSubtitle,
+  layout,
 }: TkweenLogoProps) {
-  const isVertical = layout === 'vertical'
-  const iconSize = size
-  const arabicSize = size * 0.56
-  const tkweenSize = size * 0.19
-  const subtitleSize = size * 0.12
-
   return (
     <div style={{
-      display: 'inline-flex',
-      flexDirection: isVertical ? 'column' : 'row',
+      display: 'flex',
+      flexDirection: 'row',
       alignItems: 'center',
-      gap: isVertical ? size * 0.14 : size * 0.2,
-      direction: 'ltr',
+      gap: 10,
     }}>
-      {/* ─── ICON ──────────────────────────────────── */}
       <svg
-        width={iconSize}
-        height={iconSize}
+        width={size}
+        height={size}
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ flexShrink: 0 }}
       >
         <defs>
-          {/* Play-button icon gradient: coral-red → hot-pink (top → bottom) */}
-          <linearGradient id="tkIconGrad" x1="0.3" y1="0" x2="0.7" y2="1">
-            <stop offset="0%"   stopColor="#FF5F57" />
-            <stop offset="100%" stopColor="#FF3F9D" />
+          <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a1a1a"/>
+            <stop offset="100%" stopColor="#0a0a0a"/>
           </linearGradient>
         </defs>
 
-        {/*
-          evenodd compound path:
-          Outer = right-pointing play button triangle (flat left side)
-          Inner = T letterform cutout (crossbar at top + vertical stem)
-          The T hole lets the background show through, making the T visible.
-        */}
         <path
-          fillRule="evenodd"
-          d="
-            M 12 5
-            L 88 50
-            L 12 95
-            Z
-
-            M 19 15
-            L 60 15
-            L 60 31
-            L 45 31
-            L 45 80
-            L 31 80
-            L 31 31
-            L 19 31
-            Z
-          "
-          fill="url(#tkIconGrad)"
+          d="M12,8 C10,8 8,10 8,12 L8,88 C8,92 12,95 16,93 L90,55 C94,53 94,47 90,45 L16,7 C15,7.5 13,8 12,8 Z"
+          fill="url(#triGrad)"
         />
+
+        <rect x="16" y="18" width="10" height="64" fill="#000000" rx="1"/>
+        <rect x="16" y="18" width="30" height="11" fill="#000000" rx="1"/>
+        <rect x="16" y="71" width="30" height="11" fill="#000000" rx="1"/>
+
+        <circle cx="68" cy="50" r="7" fill="#2dd4bf"/>
       </svg>
 
-      {/* ─── TEXT ──────────────────────────────────── */}
       {showText && (
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: isVertical ? 'center' : 'flex-start',
-          lineHeight: 1.05,
-          gap: 1,
+          lineHeight: 1.15,
         }}>
-          {/* Arabic "تكوين" — gradient from coral-red (right) to teal (left), RTL */}
           <span style={{
             fontFamily: "'Tajawal', sans-serif",
-            fontSize: arabicSize,
-            fontWeight: 900,
-            lineHeight: 1,
+            fontSize: size * 0.5,
+            fontWeight: 700,
+            color: '#ffffff',
             direction: 'rtl',
-            background: 'linear-gradient(to left, #FF5F57 0%, #FF3F9D 45%, #00B4D8 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            display: 'block',
+            letterSpacing: '0.02em',
           }}>
             تكوين
           </span>
-
-          {/* TKWEEN in teal */}
           <span style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: tkweenSize,
-            fontWeight: 400,
-            letterSpacing: '0.32em',
-            color: '#00B4D8',
-            display: 'block',
-            paddingLeft: 2,
+            fontSize: size * 0.2,
+            fontWeight: 300,
+            color: '#2dd4bf',
+            letterSpacing: '0.3em',
           }}>
             TKWEEN
           </span>
-
-          {/* Subtitle — only shown when requested (large renderings) */}
-          {showSubtitle && (
-            <>
-              <span style={{
-                fontFamily: "'Tajawal', sans-serif",
-                fontSize: subtitleSize,
-                fontWeight: 300,
-                color: '#777',
-                direction: 'rtl',
-                letterSpacing: '0.04em',
-                marginTop: size * 0.04,
-                display: 'block',
-              }}>
-                شركة تكوين للإنتاج الفني
-              </span>
-              <span style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: subtitleSize * 0.88,
-                fontWeight: 300,
-                color: '#777',
-                letterSpacing: '0.1em',
-                display: 'block',
-              }}>
-                For Media Production
-              </span>
-            </>
-          )}
         </div>
       )}
     </div>

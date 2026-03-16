@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react'
 
-export const GRAD = 'linear-gradient(135deg, #FF5F57 0%, #FF3F9D 50%, #00B4D8 100%)'
-export const GRAD_START = '#FF5F57'
-export const GRAD_MID = '#FF3F9D'
-export const GRAD_END = '#00B4D8'
+export const GRAD = 'linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%)'
+export const GRAD_START = '#2dd4bf'
+export const GRAD_MID = '#1a9e8f'
+export const GRAD_END = '#0f6e60'
 
 export const BG = '#040a06'
 export const BG_SOFT = '#0a130c'

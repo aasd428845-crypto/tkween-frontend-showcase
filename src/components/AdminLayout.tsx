@@ -1,10 +1,12 @@
 import { ReactNode, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import TkweenLogo from './TkweenLogo';
 import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut } from 'lucide-react';
 
-const AdminLayout = ({ children }: { children: ReactNode }) => {
+const ACCENT = '#2dd4bf'
+
+const AdminLayout = ({ children }: { children?: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, lang, setLang } = useLanguage();
@@ -32,7 +34,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="flex" style={{ minHeight: '100vh', background: '#000' }}>
-      {/* Sidebar */}
       <aside className="hidden lg:flex flex-col" style={{ width: 260, background: '#0a0a0a', borderRight: '1px solid #1a1a1a' }}>
         <div className="p-6">
           <TkweenLogo size={32} showText={true} />
@@ -42,7 +43,10 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
             const active = location.pathname === l.path;
             return (
               <Link key={l.path} to={l.path} className="flex items-center gap-3 px-4 py-3" style={{
-                borderRadius: 8, color: active ? '#FF4500' : '#94a3b8', background: active ? 'rgba(255,69,0,0.1)' : 'transparent',
+                borderRadius: 8,
+                color: active ? ACCENT : '#94a3b8',
+                background: active ? 'rgba(45,212,191,0.08)' : 'transparent',
+                borderLeft: active ? `3px solid ${ACCENT}` : '3px solid transparent',
                 textDecoration: 'none', fontSize: 14, fontWeight: active ? 500 : 300, transition: 'all 0.2s'
               }}>
                 <l.icon size={18} /> {t(l.key)}
@@ -62,7 +66,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         </div>
       </aside>
 
-      {/* Mobile header */}
       <div className="flex-1 flex flex-col">
         <header className="lg:hidden flex items-center justify-between p-4" style={{ borderBottom: '1px solid #1a1a1a' }}>
           <TkweenLogo size={28} showText={false} />
@@ -70,7 +73,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
             {links.map(l => {
               const active = location.pathname === l.path;
               return (
-                <Link key={l.path} to={l.path} style={{ padding: '8px', borderRadius: 6, background: active ? 'rgba(255,69,0,0.1)' : 'transparent', color: active ? '#FF4500' : '#94a3b8' }}>
+                <Link key={l.path} to={l.path} style={{ padding: '8px', borderRadius: 6, background: active ? 'rgba(45,212,191,0.08)' : 'transparent', color: active ? ACCENT : '#94a3b8' }}>
                   <l.icon size={18} />
                 </Link>
               );
@@ -81,7 +84,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           </div>
         </header>
         <main className="flex-1 p-4 lg:p-8 overflow-auto">
-          {children}
+          {children ?? <Outlet />}
         </main>
       </div>
     </div>

@@ -5,6 +5,7 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { gradText, BG, BORDER } from '@/lib/brand'
+import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
   { id: 'ca1', title_en: 'NEOM Brand Campaign', title_ar: 'حملة علامة نيوم',
@@ -23,8 +24,7 @@ export default function CorporateAds() {
 
   useEffect(() => {
     try {
-      const all = JSON.parse(localStorage.getItem('tkween_videos') || '[]')
-      const filtered = all.filter((v: any) => v.section === 'corporate_ads' && v.visible)
+      const filtered = getVideos().filter((v: any) => v.section === 'corporate_ads' && v.visible)
         .sort((a: any, b: any) => a.display_order - b.display_order)
       if (filtered.length > 0) setVideos(filtered)
     } catch {}

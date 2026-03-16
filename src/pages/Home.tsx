@@ -6,12 +6,9 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, BG, BG_SOFT, BORDER, gradText, gradBorder, applyGradText, removeGradText } from '@/lib/brand'
+import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
-  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
-  'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=85',
-]
+const ACCENT = '#2dd4bf'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -37,33 +34,34 @@ const CLIENTS = [
   'بنك الرياض', 'مجمع الملك سلمان للغة',
 ]
 
-const PLACEHOLDER_PROJECTS = [
-  { id: '1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
-    category: 'CONFERENCES', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', video_url: '' },
-  { id: '2', title_en: 'Aramco Annual Summit', title_ar: 'قمة أرامكو السنوية',
-    category: 'CONFERENCES', thumbnail: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', video_url: '' },
-  { id: '3', title_en: 'NEOM Brand Campaign', title_ar: 'حملة علامة نيوم',
-    category: 'CORPORATE', thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', video_url: '' },
-  { id: '4', title_en: 'Red Sea Film Series', title_ar: 'سلسلة أفلام البحر الأحمر',
-    category: 'BRAND', thumbnail: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', video_url: '' },
-]
-
 export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
   const [heroIdx, setHeroIdx] = useState(0)
+  const [heroImages, setHeroImages] = useState<string[]>([])
+  const [projects, setProjects] = useState<any[]>([])
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
   useEffect(() => {
-    const t = setInterval(() => setHeroIdx(p => (p + 1) % HERO_IMAGES.length), 6000)
-    return () => clearInterval(t)
+    setHeroImages(getHeroImages())
+    setProjects(
+      getProjects()
+        .filter(p => p.visible)
+        .sort((a, b) => a.display_order - b.display_order)
+    )
   }, [])
 
   useEffect(() => {
+    if (heroImages.length === 0) return
+    const t = setInterval(() => setHeroIdx(p => (p + 1) % heroImages.length), 6000)
+    return () => clearInterval(t)
+  }, [heroImages])
+
+  useEffect(() => {
     try {
-      const s = JSON.parse(localStorage.getItem('tkween_settings') || '{}')
-      s.visit_count = String((parseInt(s.visit_count || '0')) + 1)
-      localStorage.setItem('tkween_settings', JSON.stringify(s))
+      const s = getSettings()
+      const updated = { ...s, visit_count: String((parseInt(s.visit_count || '0')) + 1) }
+      localStorage.setItem('tkween_settings', JSON.stringify(updated))
     } catch {}
   }, [])
 
@@ -73,7 +71,7 @@ export default function Home() {
 
       {/* HERO */}
       <section style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
-        {HERO_IMAGES.map((src, i) => (
+        {heroImages.map((src, i) => (
           <div key={src} style={{
             position: 'absolute', inset: 0,
             backgroundImage: `url(${src})`,
@@ -93,7 +91,7 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+          <span style={{ color: ACCENT, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
             {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
           </span>
           <h1 style={{
@@ -110,30 +108,32 @@ export default function Home() {
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
           <Link to="/our-work" style={{
-            ...gradBorder(BG),
-            color: '#FF5F57',
+            border: `1px solid ${ACCENT}`,
+            color: ACCENT,
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
-            transition: 'all 0.3s', display: 'inline-block',
+            transition: 'all 0.3s', display: 'inline-block', background: 'transparent',
           }}
-          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = GRAD; el.style.color = '#fff' }}
-          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; Object.assign(el.style, gradBorder(BG)); el.style.color = '#FF5F57' }}>
+          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = ACCENT; el.style.color = '#0a1e1a' }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'transparent'; el.style.color = ACCENT }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
           </Link>
         </div>
-        <div style={{
-          position: 'absolute', bottom: 28, left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex', gap: 8, zIndex: 10,
-        }}>
-          {HERO_IMAGES.map((_, i) => (
-            <button key={i} onClick={() => setHeroIdx(i)} style={{
-              width: i === heroIdx ? 28 : 6, height: 2,
-              background: i === heroIdx ? GRAD : 'rgba(255,255,255,0.3)',
-              border: 'none', cursor: 'pointer', padding: 0,
-              transition: 'all 0.3s',
-            }}/>
-          ))}
-        </div>
+        {heroImages.length > 1 && (
+          <div style={{
+            position: 'absolute', bottom: 28, left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', gap: 8, zIndex: 10,
+          }}>
+            {heroImages.map((_, i) => (
+              <button key={i} onClick={() => setHeroIdx(i)} style={{
+                width: i === heroIdx ? 28 : 6, height: 2,
+                background: i === heroIdx ? ACCENT : 'rgba(255,255,255,0.3)',
+                border: 'none', cursor: 'pointer', padding: 0,
+                transition: 'all 0.3s',
+              }}/>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* FEATURED WORK */}
@@ -143,7 +143,7 @@ export default function Home() {
             {isAr ? '——— أبرز أعمالنا ———' : '——— FEATURED WORK ———'}
           </p>
         </div>
-        {PLACEHOLDER_PROJECTS.map(p => (
+        {projects.map(p => (
           <VideoCard
             key={p.id}
             title={isAr ? p.title_ar : p.title_en}
@@ -228,10 +228,7 @@ export default function Home() {
             { n: '16', ar: 'مؤسسة', en: 'Organizations' },
           ].map((s, i) => (
             <div key={i}>
-              <div style={{
-                fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200,
-                ...gradText,
-              }}>
+              <div style={{ fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200, color: ACCENT }}>
                 {s.n}
               </div>
               <p style={{ color: '#555', fontSize: 11, letterSpacing: '0.1em', marginTop: 8 }}>
@@ -257,7 +254,7 @@ export default function Home() {
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLElement
-                el.style.borderColor = '#FF5F57'
+                el.style.borderColor = ACCENT
                 el.style.color = '#fff'
               }}
               onMouseLeave={e => {

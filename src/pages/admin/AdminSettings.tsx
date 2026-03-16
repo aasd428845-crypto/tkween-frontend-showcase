@@ -2,27 +2,8 @@ import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Save, Trash2, Plus } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-
-interface TkweenSettings {
-  phone: string; email: string; whatsapp: string; address: string
-  instagram: string; twitter: string; snapchat: string
-  admin_password: string; visit_count: string; hero_images: string
-  vimeo_access_token?: string
-}
-
-const defaultSettings: TkweenSettings = {
-  phone: '0553120141', email: 'sales@tkweensa.com', whatsapp: '966553120141',
-  address: 'الرياض، المملكة العربية السعودية',
-  instagram: 'https://instagram.com/Tkweensa', twitter: 'https://twitter.com/Tkweensa',
-  snapchat: 'https://snapchat.com/add/Tkweensa',
-  admin_password: 'tkween2025', visit_count: '0', hero_images: '[]',
-}
-
-function loadSettings(): TkweenSettings {
-  try { const raw = localStorage.getItem('tkween_settings'); return raw ? { ...defaultSettings, ...JSON.parse(raw) } : defaultSettings }
-  catch { return defaultSettings }
-}
-function saveSettings(s: TkweenSettings) { localStorage.setItem('tkween_settings', JSON.stringify(s)) }
+import { getSettings, saveSettings as persistSettings, updateSetting, getHeroImages } from '@/lib/storage'
+import type { Settings as TkweenSettings } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', background: BG,
@@ -31,15 +12,15 @@ const inputStyle: React.CSSProperties = {
 
 export default function AdminSettings() {
   const { t } = useLanguage()
-  const [settings, setSettings] = useState(loadSettings)
+  const [settings, setSettings] = useState<TkweenSettings>(getSettings)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
 
   let heroImages: string[] = []
-  try { heroImages = JSON.parse(settings.hero_images) } catch {}
+  try { heroImages = JSON.parse(settings.hero_images || '[]') } catch {}
 
   const saveField = (key: string) => {
-    saveSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
+    persistSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
   }
 
   const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
@@ -48,13 +29,13 @@ export default function AdminSettings() {
     if (!newImageUrl.trim()) return
     const images = [...heroImages, newImageUrl.trim()]
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); saveSettings(updated); setNewImageUrl('')
+    setSettings(updated); persistSettings(updated); setNewImageUrl('')
   }
 
   const removeHeroImage = (idx: number) => {
     const images = heroImages.filter((_, i) => i !== idx)
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); saveSettings(updated)
+    setSettings(updated); persistSettings(updated)
   }
 
   const contactFields = [

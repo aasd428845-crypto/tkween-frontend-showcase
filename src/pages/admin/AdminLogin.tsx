@@ -2,14 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
-import { GRAD, BG, BG_SOFT, BORDER } from '@/lib/brand'
+import { BG, BG_SOFT, BORDER } from '@/lib/brand'
+import { getSettings } from '@/lib/storage'
 
-function getAdminPassword() {
-  try {
-    const s = JSON.parse(localStorage.getItem('tkween_settings') || '{}')
-    return s.admin_password || 'tkween2025'
-  } catch { return 'tkween2025' }
-}
+const ACCENT = '#2dd4bf'
+const ACCENT_DARK = '#0a1e1a'
 
 export default function AdminLogin() {
   const { t } = useLanguage()
@@ -19,7 +16,7 @@ export default function AdminLogin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === getAdminPassword()) {
+    if (password === getSettings().admin_password) {
       sessionStorage.setItem('tkween_admin', '1')
       navigate('/admin/dashboard')
     } else {
@@ -46,7 +43,7 @@ export default function AdminLogin() {
               border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff',
               fontSize: 14, outline: 'none', marginBottom: 16, transition: 'border-color 0.2s',
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#FF5F57')}
+            onFocus={e => (e.currentTarget.style.borderColor = ACCENT)}
             onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
           />
           {error && (
@@ -55,7 +52,7 @@ export default function AdminLogin() {
             </p>
           )}
           <button type="submit" style={{
-            width: '100%', padding: 12, background: GRAD, color: '#fff',
+            width: '100%', padding: 12, background: ACCENT, color: ACCENT_DARK,
             borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none',
             cursor: 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
           }}

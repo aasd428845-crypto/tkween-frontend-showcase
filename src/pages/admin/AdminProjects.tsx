@@ -2,22 +2,8 @@ import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-
-interface TkweenProject {
-  id: string; title_en: string; title_ar: string; category: string
-  thumbnail: string; video_url: string; visible: boolean; featured: boolean; display_order: number
-}
-
-const defaultProjects: TkweenProject[] = [
-  { id:'1', title_en:'Saudi Vision Forum 2024', title_ar:'منتدى رؤية السعودية 2024', category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', video_url:'', visible:true, featured:true, display_order:1 },
-  { id:'2', title_en:'Aramco Annual Summit', title_ar:'قمة أرامكو السنوية', category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', video_url:'', visible:true, featured:false, display_order:2 },
-]
-
-function loadProjects(): TkweenProject[] {
-  try { const raw = localStorage.getItem('tkween_projects'); return raw ? JSON.parse(raw) : defaultProjects }
-  catch { return defaultProjects }
-}
-function saveProjects(p: TkweenProject[]) { localStorage.setItem('tkween_projects', JSON.stringify(p)) }
+import { getProjects, saveProjects } from '@/lib/storage'
+import type { Project as TkweenProject } from '@/lib/storage'
 
 const emptyProject: TkweenProject = {
   id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
@@ -26,7 +12,7 @@ const emptyProject: TkweenProject = {
 
 export default function AdminProjects() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState(loadProjects)
+  const [projects, setProjects] = useState(getProjects)
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 

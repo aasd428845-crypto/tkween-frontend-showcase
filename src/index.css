@@ -13,10 +13,13 @@
   --border:   #1c231e;
   --text-primary:   #ffffff;
   --text-secondary: #888888;
-  --grad: linear-gradient(135deg, #FF5F57 0%, #FF3F9D 50%, #00B4D8 100%);
-  --grad-start: #FF5F57;
-  --grad-mid:   #FF3F9D;
-  --grad-end:   #00B4D8;
+  --accent:        #2dd4bf;
+  --accent-dark:   #1a9e8f;
+  --accent-darker: #0f6e60;
+  --grad: linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%);
+  --grad-start: #2dd4bf;
+  --grad-mid:   #1a9e8f;
+  --grad-end:   #0f6e60;
 }
 
 html { scroll-behavior: smooth; }
