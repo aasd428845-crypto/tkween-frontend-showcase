@@ -77,7 +77,7 @@ const translations: Record<string, Record<string, string>> = {
     footer_quick: 'روابط سريعة', footer_follow: 'تابعنا', footer_rights: '© 2025 تكوين للإنتاج الإعلامي. جميع الحقوق محفوظة.',
     admin_login: 'تسجيل دخول المدير', admin_password: 'كلمة المرور', admin_enter: 'دخول',
     admin_wrong: 'كلمة المرور غير صحيحة', admin_overview: 'نظرة عامة', admin_projects: 'المشاريع والفيديو',
-    admin_requests: 'طلبات العملاء', admin_settings: 'إعدادات الموقع', admin_logout: 'خروج',
+    admin_requests: 'طلبات العملاء', admin_settings: 'إعدادات الموقع', admin_videos: 'أقسام الفيديو', admin_logout: 'خروج',
     admin_total_projects: 'إجمالي المشاريع', admin_total_requests: 'إجمالي الطلبات',
     admin_new_requests: 'طلبات جديدة', admin_visits: 'عدد الزيارات',
     admin_recent: 'الطلبات الأخيرة', admin_add: 'إضافة مشروع', admin_edit: 'تعديل',
