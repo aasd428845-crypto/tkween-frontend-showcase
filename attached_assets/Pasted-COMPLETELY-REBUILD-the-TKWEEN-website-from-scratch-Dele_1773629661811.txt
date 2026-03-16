@@ -1,0 +1,1144 @@
+COMPLETELY REBUILD the TKWEEN website from scratch. 
+Delete all existing components and pages and start fresh.
+Do NOT keep any current design decisions.
+
+════════════════════════════════════════════
+SECTION 1 — EXACT COLORS (follow precisely)
+════════════════════════════════════════════
+
+CSS variables to use everywhere:
+
+:root {
+  --black: #000000;
+  --black-soft: #0a0a0a;
+  --card-bg: #111111;
+  --border: #1c1c1c;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+
+  /* LOGO GRADIENT — exact red used in TKWEEN logo */
+  --red-light: #FF3B30;
+  --red-mid: #D62828;
+  --red-dark: #8B0000;
+
+  /* Accent = red (NOT orange, NOT teal) */
+  --accent: #FF3B30;
+  --accent-dark: #D62828;
+}
+
+ALL buttons, borders, highlights, hover effects = --accent (#FF3B30)
+ALL backgrounds = --black (#000000)
+NO orange. NO teal. NO green.
+
+════════════════════════════════════════════
+SECTION 2 — LOGO (src/components/TkweenLogo.tsx)
+════════════════════════════════════════════
+
+REPLACE ENTIRELY with this exact component:
+
+import React from 'react'
+
+export default function TkweenLogo({ 
+  size = 44, 
+  showText = true,
+  layout = 'horizontal' // 'horizontal' | 'vertical'
+}: { 
+  size?: number
+  showText?: boolean
+  layout?: 'horizontal' | 'vertical'
+}) {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: layout === 'vertical' ? 'column' : 'row',
+      alignItems: 'center',
+      gap: layout === 'vertical' ? 8 : 10,
+    }}>
+      {/* SVG LOGO — Play triangle with ك bracket cutout */}
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="tkGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FF3B30"/>
+            <stop offset="50%" stopColor="#D62828"/>
+            <stop offset="100%" stopColor="#8B0000"/>
+          </linearGradient>
+        </defs>
+
+        {/* Main play-button triangle */}
+        <polygon
+          points="6,4 96,50 6,96"
+          fill="url(#tkGrad)"
+        />
+
+        {/* White cutout = ك bracket shape */}
+        {/* Left vertical bar */}
+        <rect x="8" y="10" width="11" height="80" fill="#000000"/>
+        {/* Top horizontal arm */}
+        <rect x="8" y="10" width="36" height="13" fill="#000000"/>
+        {/* Bottom horizontal arm */}
+        <rect x="8" y="77" width="36" height="13" fill="#000000"/>
+
+        {/* Small red dot accent (play indicator inside bracket) */}
+        <circle cx="66" cy="50" r="7" fill="#FF3B30" opacity="0.9"/>
+      </svg>
+
+      {showText && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          lineHeight: 1.1,
+          textAlign: layout === 'vertical' ? 'center' : 'right',
+        }}>
+          <span style={{
+            fontFamily: "'Tajawal', sans-serif",
+            fontSize: size * 0.48,
+            fontWeight: 700,
+            color: '#ffffff',
+            direction: 'rtl',
+            letterSpacing: '0.02em',
+          }}>
+            تكوين
+          </span>
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: size * 0.2,
+            fontWeight: 300,
+            color: '#FF3B30',
+            letterSpacing: '0.28em',
+          }}>
+            TKWEEN
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 3 — FILE STRUCTURE (create all these)
+════════════════════════════════════════════
+
+src/
+├── index.css                          ← REPLACE
+├── App.tsx                            ← REPLACE routing
+├── context/LanguageContext.tsx        ← KEEP but fix translations
+├── components/
+│   ├── TkweenLogo.tsx                 ← done above
+│   ├── Navbar.tsx                     ← CREATE
+│   ├── VideoCard.tsx                  ← CREATE
+│   ├── VideoModal.tsx                 ← CREATE
+│   ├── WhatsAppButton.tsx             ← CREATE
+│   └── admin/AdminLayout.tsx          ← KEEP
+├── pages/
+│   ├── Home.tsx                       ← CREATE (replaces PublicSite)
+│   ├── Conferences.tsx                ← CREATE
+│   ├── CorporateAds.tsx               ← CREATE
+│   ├── Designs.tsx                    ← CREATE
+│   ├── OurWork.tsx                    ← CREATE
+│   ├── Contact.tsx                    ← CREATE
+│   ├── Quote.tsx                      ← CREATE
+│   └── admin/
+│       ├── AdminLogin.tsx             ← KEEP
+│       ├── AdminDashboard.tsx         ← KEEP
+│       ├── AdminProjects.tsx          ← KEEP
+│       ├── AdminRequests.tsx          ← KEEP
+│       ├── AdminSettings.tsx          ← KEEP
+│       └── AdminVideos.tsx            ← CREATE NEW
+
+════════════════════════════════════════════
+SECTION 4 — src/index.css (REPLACE ALL)
+════════════════════════════════════════════
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Tajawal:wght@300;400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #000000;
+  --black-soft: #0a0a0a;
+  --card-bg: #111111;
+  --border: #1c1c1c;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --accent: #FF3B30;
+  --accent-dark: #D62828;
+  --accent-darker: #8B0000;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+body.lang-ar {
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--accent); }
+
+a { color: inherit; text-decoration: none; }
+
+════════════════════════════════════════════
+SECTION 5 — src/App.tsx (REPLACE)
+════════════════════════════════════════════
+
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { LanguageProvider } from '@/context/LanguageContext'
+import Home from '@/pages/Home'
+import Conferences from '@/pages/Conferences'
+import CorporateAds from '@/pages/CorporateAds'
+import Designs from '@/pages/Designs'
+import OurWork from '@/pages/OurWork'
+import Contact from '@/pages/Contact'
+import Quote from '@/pages/Quote'
+import AdminLogin from '@/pages/admin/AdminLogin'
+import AdminLayout from '@/components/admin/AdminLayout'
+import AdminDashboard from '@/pages/admin/AdminDashboard'
+import AdminProjects from '@/pages/admin/AdminProjects'
+import AdminRequests from '@/pages/admin/AdminRequests'
+import AdminSettings from '@/pages/admin/AdminSettings'
+import AdminVideos from '@/pages/admin/AdminVideos'
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<Home />} />
+          <Route path="/conferences" element={<Conferences />} />
+          <Route path="/corporate-ads" element={<CorporateAds />} />
+          <Route path="/designs" element={<Designs />} />
+          <Route path="/our-work" element={<OurWork />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/quote" element={<Quote />} />
+
+          {/* Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="requests" element={<AdminRequests />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="videos" element={<AdminVideos />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </LanguageProvider>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 6 — src/components/Navbar.tsx (CREATE)
+════════════════════════════════════════════
+
+'use client'
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import TkweenLogo from './TkweenLogo'
+import { useLanguage } from '@/context/LanguageContext'
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [workOpen, setWorkOpen] = useState(false)
+  const { lang, setLang, t } = useLanguage()
+  const location = useLocation()
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  useEffect(() => { setMenuOpen(false) }, [location])
+
+  const workLinks = [
+    { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
+    { href: '/corporate-ads', labelAr: 'إعلانات الشركات', labelEn: 'Corporate Ads' },
+    { href: '/designs', labelAr: 'تصاميمنا', labelEn: 'Designs' },
+    { href: '/our-work', labelAr: 'أعمالنا', labelEn: 'Our Work' },
+  ]
+
+  const navLinks = [
+    { href: '/', labelAr: 'الرئيسية', labelEn: 'Home' },
+    { href: '/contact', labelAr: 'خدماتنا', labelEn: 'Services' },
+    { href: '/contact', labelAr: 'من نحن', labelEn: 'About' },
+    { href: '/contact', labelAr: 'عملاؤنا', labelEn: 'Clients' },
+    { href: '/contact', labelAr: 'تواصل معنا', labelEn: 'Contact' },
+  ]
+
+  const isAr = lang === 'ar'
+
+  return (
+    <>
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        height: 64, display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', padding: '0 32px',
+        background: scrolled ? 'rgba(0,0,0,0.96)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        borderBottom: scrolled ? '1px solid #1c1c1c' : 'none',
+        transition: 'all 0.3s',
+      }}>
+        {/* Logo */}
+        <Link to="/">
+          <TkweenLogo size={34} />
+        </Link>
+
+        {/* Desktop Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}
+             className="desktop-nav">
+          {/* Work dropdown */}
+          <div style={{ position: 'relative' }}
+               onMouseEnter={() => setWorkOpen(true)}
+               onMouseLeave={() => setWorkOpen(false)}>
+            <span style={{
+              color: '#fff', fontSize: 11, letterSpacing: '0.15em',
+              cursor: 'pointer', fontWeight: 300,
+              borderBottom: '1px solid transparent',
+              transition: 'border-color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = '#FF3B30'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'}>
+              {isAr ? 'أعمالنا ▾' : 'WORK ▾'}
+            </span>
+            {workOpen && (
+              <div style={{
+                position: 'absolute', top: '100%',
+                [isAr ? 'right' : 'left']: 0,
+                background: '#0a0a0a', border: '1px solid #1c1c1c',
+                padding: '8px 0', minWidth: 180, marginTop: 8,
+              }}>
+                {workLinks.map(l => (
+                  <Link key={l.href} to={l.href} style={{
+                    display: 'block', padding: '10px 20px',
+                    color: '#888', fontSize: 12, letterSpacing: '0.1em',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#888'}>
+                    {isAr ? l.labelAr : l.labelEn.toUpperCase()}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {['Services','About','Clients','Contact'].map((label, i) => {
+            const arLabels = ['خدماتنا','من نحن','عملاؤنا','تواصل معنا']
+            const hrefs = ['/','/', '/', '/contact']
+            return (
+              <Link key={label} to={hrefs[i]} style={{
+                color: '#fff', fontSize: 11, letterSpacing: '0.15em',
+                fontWeight: 300, transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+                {isAr ? arLabels[i] : label.toUpperCase()}
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* EN/AR switcher */}
+          <div style={{ display: 'flex', border: '1px solid #333', overflow: 'hidden' }}>
+            {(['en','ar'] as const).map(l => (
+              <button key={l} onClick={() => setLang(l)} style={{
+                padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
+                border: 'none', cursor: 'pointer',
+                background: lang === l ? '#FF3B30' : 'transparent',
+                color: lang === l ? '#fff' : '#666',
+                transition: 'all 0.2s',
+              }}>{l.toUpperCase()}</button>
+            ))}
+          </div>
+
+          {/* Quote button */}
+          <Link to="/quote" style={{
+            border: '1px solid #FF3B30', color: '#FF3B30',
+            padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
+            transition: 'all 0.3s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = '#FF3B30'
+            ;(e.currentTarget as HTMLElement).style.color = '#fff'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent'
+            ;(e.currentTarget as HTMLElement).style.color = '#FF3B30'
+          }}>
+            {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
+          </Link>
+
+          {/* Hamburger */}
+          <button onClick={() => setMenuOpen(true)} className="hamburger"
+            style={{ background: 'none', border: 'none', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', gap: 5, padding: 4 }}>
+            {[0,1,2].map(i => (
+              <span key={i} style={{ width: 22, height: 1, background: '#fff', display: 'block' }}/>
+            ))}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, background: '#000', zIndex: 200,
+          display: 'flex', flexDirection: 'column',
+          alignItems: isAr ? 'flex-end' : 'flex-start',
+          justifyContent: 'center', padding: '0 48px',
+          gap: 0,
+        }}>
+          <button onClick={() => setMenuOpen(false)} style={{
+            position: 'absolute', top: 20, left: isAr ? 'auto' : 28,
+            right: isAr ? 28 : 'auto',
+            background: 'none', border: 'none', color: '#fff',
+            fontSize: 32, cursor: 'pointer',
+          }}>×</button>
+
+          <TkweenLogo size={36} />
+
+          <div style={{ height: 40 }}/>
+
+          {[...workLinks.map(l => ({ href: l.href, label: isAr ? l.labelAr : l.labelEn })),
+            { href: '/contact', label: isAr ? 'تواصل معنا' : 'Contact' },
+            { href: '/quote', label: isAr ? 'طلب عرض سعر' : 'Get a Quote' }
+          ].map((link, i) => (
+            <Link key={i} to={link.href} style={{
+              display: 'block', padding: '14px 0',
+              color: '#fff', fontSize: 24, fontWeight: 200,
+              borderBottom: '1px solid #111',
+              width: '100%', textAlign: isAr ? 'right' : 'left',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        @media (min-width: 768px) { .hamburger { display: none !important; } }
+        @media (max-width: 767px) { .desktop-nav { display: none !important; } }
+      `}</style>
+    </>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 7 — src/components/VideoCard.tsx (CREATE)
+════════════════════════════════════════════
+
+import { useState } from 'react'
+
+interface VideoCardProps {
+  title: string
+  category?: string
+  thumbnail: string
+  videoUrl?: string
+  height?: string
+  onClick?: () => void
+}
+
+export default function VideoCard({
+  title, category, thumbnail, videoUrl, height = '56vw', onClick
+}: VideoCardProps) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height,
+        overflow: 'hidden',
+        background: '#111',
+        cursor: onClick ? 'pointer' : 'default',
+        display: 'block',
+      }}
+    >
+      {/* Background Image */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `url(${thumbnail})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        transform: hovered ? 'scale(1.04)' : 'scale(1)',
+        transition: 'transform 0.8s ease',
+        filter: hovered ? 'brightness(0.7)' : 'brightness(0.85)',
+      }}/>
+
+      {/* Gradient overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)',
+      }}/>
+
+      {/* Play icon — center, only on hover if has video */}
+      {videoUrl && hovered && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 64, height: 64, borderRadius: '50%',
+          background: 'rgba(255,59,48,0.9)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.3s',
+        }}>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="white">
+            <polygon points="5,2 19,11 5,20"/>
+          </svg>
+        </div>
+      )}
+
+      {/* Bottom info */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '20px 24px 24px',
+      }}>
+        {category && (
+          <span style={{
+            display: 'block', color: '#FF3B30', fontSize: 10,
+            letterSpacing: '0.25em', marginBottom: 6,
+            fontWeight: 400,
+          }}>
+            {category.toUpperCase()}
+          </span>
+        )}
+        <h3 style={{
+          color: '#fff', fontSize: 'clamp(16px, 2.5vw, 22px)',
+          fontWeight: 300, lineHeight: 1.3,
+        }}>
+          {title}
+        </h3>
+      </div>
+    </div>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 8 — src/components/VideoModal.tsx (CREATE)
+════════════════════════════════════════════
+
+import { useEffect } from 'react'
+
+interface VideoModalProps {
+  url: string
+  title: string
+  onClose: () => void
+}
+
+export default function VideoModal({ url, title, onClose }: VideoModalProps) {
+  useEffect(() => {
+    const fn = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', fn)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', fn)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  const getEmbedUrl = (rawUrl: string) => {
+    if (rawUrl.includes('vimeo.com')) {
+      const id = rawUrl.split('/').filter(Boolean).pop()?.split('?')[0]
+      return `https://player.vimeo.com/video/${id}?autoplay=1&color=FF3B30`
+    }
+    if (rawUrl.includes('youtube.com') || rawUrl.includes('youtu.be')) {
+      const id = rawUrl.includes('v=')
+        ? rawUrl.split('v=')[1]?.split('&')[0]
+        : rawUrl.split('/').pop()?.split('?')[0]
+      return `https://www.youtube.com/embed/${id}?autoplay=1`
+    }
+    return null
+  }
+
+  const embedUrl = getEmbedUrl(url)
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 2000,
+        background: 'rgba(0,0,0,0.96)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute', top: 20, right: 24,
+          background: 'none', border: 'none', color: '#fff',
+          fontSize: 36, cursor: 'pointer', lineHeight: 1,
+        }}
+      >×</button>
+
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ width: '92vw', maxWidth: 1000 }}
+      >
+        <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%', border: 'none',
+              }}
+              allowFullScreen
+              allow="autoplay; fullscreen"
+            />
+          ) : (
+            <video
+              src={url} controls autoPlay
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+              }}
+            />
+          )}
+        </div>
+        <p style={{ color: '#888', fontSize: 13, marginTop: 12, textAlign: 'center' }}>
+          {title}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 9 — src/components/WhatsAppButton.tsx (CREATE)
+════════════════════════════════════════════
+
+import { useLanguage } from '@/context/LanguageContext'
+
+export default function WhatsAppButton() {
+  const number = '966553120141'
+  return (
+    
+      href={`https://wa.me/${number}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      title="تواصل معنا على واتساب"
+      style={{
+        position: 'fixed', bottom: 24, right: 24, zIndex: 500,
+        width: 54, height: 54, borderRadius: '50%',
+        background: '#25d366',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 4px 20px rgba(37,211,102,0.35)',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)'
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+      }}
+    >
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </a>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 10 — src/pages/Home.tsx (CREATE)
+════════════════════════════════════════════
+
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import Navbar from '@/components/Navbar'
+import VideoCard from '@/components/VideoCard'
+import VideoModal from '@/components/VideoModal'
+import WhatsAppButton from '@/components/WhatsAppButton'
+import { useLanguage } from '@/context/LanguageContext'
+
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
+  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
+  'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=85',
+]
+
+const SERVICES = [
+  { num:'01', ar:'التصوير الفوتوغرافي', en:'Photography', 
+    descAr:'تصوير احترافي للفعاليات والمؤتمرات بجودة سينمائية.',
+    descEn:'Professional photography for events and conferences.' },
+  { num:'02', ar:'فيديو مُثبَّت', en:'Stabilized Video', 
+    descAr:'فيديو سينمائي سلس باستخدام أحدث معدات التثبيت.',
+    descEn:'Smooth cinematic video using advanced stabilization.' },
+  { num:'03', ar:'تصوير جوي', en:'Aerial Drone', 
+    descAr:'لقطات جوية مذهلة بطائرات درون احترافية.',
+    descEn:'Stunning aerial shots with professional drones.' },
+  { num:'04', ar:'تغطية مباشرة', en:'Live Coverage', 
+    descAr:'تغطية فعاليات حية بكاميرات متعددة وبث فوري.',
+    descEn:'Live event coverage with multi-camera broadcast.' },
+]
+
+const CLIENTS = [
+  'وزارة الدفاع','وزارة التعليم','مؤسسة الأميرة العنود',
+  'وزارة الصحة','التنفيذي','مركز المصالحة',
+  'الموارد البشرية','IDWS','هيئة الحكومة الرقمية',
+  'أصول','جمعية سُقيا','المعهد الملكي للفنون',
+  'وزارة الصناعة','الصندوق الصناعي',
+  'بنك الرياض','مجمع الملك سلمان للغة',
+]
+
+const PLACEHOLDER_PROJECTS = [
+  { id:'1', title_en:'Saudi Vision Forum 2024', title_ar:'منتدى رؤية السعودية 2024',
+    category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', video_url:'' },
+  { id:'2', title_en:'Aramco Annual Summit', title_ar:'قمة أرامكو السنوية',
+    category:'CONFERENCES', thumbnail:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', video_url:'' },
+  { id:'3', title_en:'NEOM Brand Campaign', title_ar:'حملة علامة نيوم',
+    category:'CORPORATE', thumbnail:'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', video_url:'' },
+  { id:'4', title_en:'Red Sea Film Series', title_ar:'سلسلة أفلام البحر الأحمر',
+    category:'BRAND', thumbnail:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', video_url:'' },
+]
+
+export default function Home() {
+  const { lang } = useLanguage()
+  const isAr = lang === 'ar'
+  const [heroIdx, setHeroIdx] = useState(0)
+  const [modal, setModal] = useState<{url:string; title:string} | null>(null)
+
+  useEffect(() => {
+    const t = setInterval(() => setHeroIdx(p => (p+1) % HERO_IMAGES.length), 6000)
+    return () => clearInterval(t)
+  }, [])
+
+  /* increment visit count */
+  useEffect(() => {
+    try {
+      const s = JSON.parse(localStorage.getItem('tkween_settings') || '{}')
+      s.visit_count = String((parseInt(s.visit_count || '0')) + 1)
+      localStorage.setItem('tkween_settings', JSON.stringify(s))
+    } catch {}
+  }, [])
+
+  return (
+    <div style={{ background: '#000', minHeight: '100vh' }}>
+      <Navbar />
+
+      {/* ── HERO ── */}
+      <section style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+        {HERO_IMAGES.map((src, i) => (
+          <div key={src} style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url(${src})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            opacity: i === heroIdx ? 1 : 0,
+            transform: i === heroIdx ? 'scale(1)' : 'scale(1.05)',
+            transition: 'opacity 1.4s ease, transform 1.4s ease',
+          }}/>
+        ))}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)',
+        }}/>
+        <div style={{
+          position: 'relative', zIndex: 10,
+          height: '100%', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          textAlign: 'center', padding: '0 24px',
+        }}>
+          <span style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+            {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
+          </span>
+          <h1 style={{
+            fontSize: 'clamp(2.8rem, 7vw, 6rem)',
+            fontWeight: 200, lineHeight: 1.1, color: '#fff', marginBottom: 8,
+          }}>
+            {isAr ? 'نُكوّن اللقطة' : 'We Frame the Shot'}
+          </h1>
+          <h2 style={{
+            fontSize: 'clamp(2.8rem, 7vw, 6rem)',
+            fontWeight: 200, lineHeight: 1.1,
+            color: 'rgba(255,255,255,0.6)', marginBottom: 36,
+          }}>
+            {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
+          </h2>
+          <Link to="/our-work" style={{
+            border: '1px solid #FF3B30', color: '#FF3B30',
+            padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
+            transition: 'all 0.3s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = '#FF3B30'
+            ;(e.currentTarget as HTMLElement).style.color = '#fff'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent'
+            ;(e.currentTarget as HTMLElement).style.color = '#FF3B30'
+          }}>
+            {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
+          </Link>
+        </div>
+        {/* Dots */}
+        <div style={{
+          position: 'absolute', bottom: 28, left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex', gap: 8, zIndex: 10,
+        }}>
+          {HERO_IMAGES.map((_,i) => (
+            <button key={i} onClick={() => setHeroIdx(i)} style={{
+              width: i === heroIdx ? 28 : 6, height: 2,
+              background: i === heroIdx ? '#FF3B30' : 'rgba(255,255,255,0.3)',
+              border: 'none', cursor: 'pointer', padding: 0,
+              transition: 'all 0.3s',
+            }}/>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FEATURED WORK ── */}
+      <section style={{ background: '#000', paddingTop: 2 }}>
+        <div style={{ padding: '60px 32px 20px' }}>
+          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 8 }}>
+            {isAr ? '——— أبرز أعمالنا ———' : '——— FEATURED WORK ———'}
+          </p>
+        </div>
+        {PLACEHOLDER_PROJECTS.map(p => (
+          <VideoCard
+            key={p.id}
+            title={isAr ? p.title_ar : p.title_en}
+            category={p.category}
+            thumbnail={p.thumbnail}
+            videoUrl={p.video_url}
+            height="60vw"
+            onClick={p.video_url ? () => setModal({ url: p.video_url, title: isAr ? p.title_ar : p.title_en }) : undefined}
+          />
+        ))}
+      </section>
+
+      {/* ── SECTION LINKS (like The Mill categories) ── */}
+      <section style={{ padding: '80px 32px', background: '#000', borderTop: '1px solid #1c1c1c' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 48 }}>
+            {isAr ? 'تصفح حسب القسم' : 'BROWSE BY SECTION'}
+          </p>
+          {[
+            { href:'/conferences', ar:'مؤتمراتنا', en:'Conference Coverage' },
+            { href:'/corporate-ads', ar:'إعلانات الشركات', en:'Corporate Ads' },
+            { href:'/designs', ar:'تصاميمنا', en:'Our Designs' },
+            { href:'/our-work', ar:'أعمالنا', en:'Our Work' },
+          ].map((item, i) => (
+            <Link key={item.href} to={item.href} style={{
+              display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '22px 0',
+              borderBottom: '1px solid #1c1c1c',
+              color: '#fff', fontSize: 'clamp(1.2rem, 3vw, 2rem)',
+              fontWeight: 200, letterSpacing: '0.04em',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#fff'}>
+              <span>{isAr ? item.ar : item.en}</span>
+              <span style={{ fontSize: 20, opacity: 0.4 }}>→</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── SERVICES ── */}
+      <section id="services" style={{ padding: '80px 32px', background: '#0a0a0a' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em', marginBottom: 52 }}>
+            {isAr ? 'خدماتنا' : 'OUR SERVICES'}
+          </p>
+          {SERVICES.map((s, i) => (
+            <div key={s.num} style={{
+              display: 'flex', gap: 36, alignItems: 'flex-start',
+              padding: '32px 0',
+              borderBottom: i < SERVICES.length - 1 ? '1px solid #1c1c1c' : 'none',
+            }}>
+              <span style={{
+                fontSize: 80, fontWeight: 200, lineHeight: 1,
+                color: 'rgba(255,59,48,0.06)', minWidth: 80, flexShrink: 0,
+              }}>{s.num}</span>
+              <div>
+                <h3 style={{ fontSize: 20, fontWeight: 300, color: '#fff', marginBottom: 10 }}>
+                  {isAr ? s.ar : s.en}
+                </h3>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                  {isAr ? s.descAr : s.descEn}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── STATS ── */}
+      <section style={{ padding: '60px 32px', borderTop: '1px solid #1c1c1c', borderBottom: '1px solid #1c1c1c' }}>
+        <div style={{
+          maxWidth: 900, margin: '0 auto',
+          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+          gap: 20, textAlign: 'center',
+        }}>
+          {[
+            { n:'+150', ar:'مشروع منجز', en:'Projects' },
+            { n:'+8', ar:'سنوات خبرة', en:'Years' },
+            { n:'+50', ar:'عميل راضٍ', en:'Clients' },
+            { n:'16', ar:'مؤسسة', en:'Organizations' },
+          ].map((s,i) => (
+            <div key={i}>
+              <div style={{ fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200, color: '#FF3B30' }}>
+                {s.n}
+              </div>
+              <p style={{ color: '#555', fontSize: 11, letterSpacing: '0.1em', marginTop: 8 }}>
+                {isAr ? s.ar : s.en.toUpperCase()}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CLIENTS ── */}
+      <section style={{ padding: '80px 32px', background: '#000' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em',
+            textAlign: 'center', marginBottom: 48 }}>
+            {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2 }}>
+            {CLIENTS.map((c,i) => (
+              <div key={i} style={{
+                border: '1px solid #1c1c1c', padding: '20px 12px',
+                textAlign: 'center', fontSize: 12, color: '#555',
+                transition: 'all 0.3s',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = '#FF3B30'
+                ;(e.currentTarget as HTMLElement).style.color = '#fff'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = '#1c1c1c'
+                ;(e.currentTarget as HTMLElement).style.color = '#555'
+              }}>
+                {c}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{
+        padding: '40px 32px 28px',
+        borderTop: '1px solid #1c1c1c',
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'center', flexWrap: 'wrap', gap: 20,
+      }}>
+        <p style={{ color: '#333', fontSize: 11 }}>
+          © 2025 تكوين للإنتاج الإعلامي. جميع الحقوق محفوظة.
+        </p>
+        <div style={{ display: 'flex', gap: 20 }}>
+          {[
+            { label: isAr ? 'تواصل معنا' : 'Contact', href: '/contact' },
+            { label: isAr ? 'طلب عرض سعر' : 'Get a Quote', href: '/quote' },
+          ].map(l => (
+            <Link key={l.href} to={l.href} style={{
+              color: '#444', fontSize: 11, letterSpacing: '0.12em',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF3B30'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#444'}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      </footer>
+
+      {modal && <VideoModal url={modal.url} title={modal.title} onClose={() => setModal(null)}/>}
+      <WhatsAppButton />
+    </div>
+  )
+}
+
+════════════════════════════════════════════
+SECTION 11 — VIDEO SECTION PAGE TEMPLATE
+(Use for Conferences, CorporateAds, Designs, OurWork)
+════════════════════════════════════════════
+
+Create src/pages/Conferences.tsx:
+
+import { useState, useEffect } from 'react'
+import Navbar from '@/components/Navbar'
+import VideoCard from '@/components/VideoCard'
+import VideoModal from '@/components/VideoModal'
+import WhatsAppButton from '@/components/WhatsAppButton'
+import { useLanguage } from '@/context/LanguageContext'
+
+const PLACEHOLDER = [
+  { id:'c1', title_en:'Saudi Vision Forum 2024', title_ar:'منتدى رؤية السعودية 2024',
+    thumbnail:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', vimeo_url:'' },
+  { id:'c2', title_en:'Future Investment Forum', title_ar:'منتدى مستقبل الاستثمار',
+    thumbnail:'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', vimeo_url:'' },
+  { id:'c3', title_en:'Aramco Annual Summit', title_ar:'قمة أرامكو السنوية',
+    thumbnail:'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', vimeo_url:'' },
+]
+
+export default function Conferences() {
+  const { lang } = useLanguage()
+  const isAr = lang === 'ar'
+  const [videos, setVideos] = useState(PLACEHOLDER)
+  const [modal, setModal] = useState<{url:string;title:string}|null>(null)
+
+  useEffect(() => {
+    try {
+      const all = JSON.parse(localStorage.getItem('tkween_videos') || '[]')
+      const filtered = all.filter((v:any) => v.section === 'conferences' && v.visible)
+        .sort((a:any,b:any) => a.display_order - b.display_order)
+      if (filtered.length > 0) setVideos(filtered)
+    } catch {}
+  }, [])
+
+  return (
+    <div style={{ background: '#000', minHeight: '100vh' }}>
+      <Navbar />
+      <div style={{ paddingTop: 64 }}>
+        <div style={{ padding: '48px 32px 24px', borderBottom: '1px solid #1c1c1c' }}>
+          <span style={{ color: '#FF3B30', fontSize: 10, letterSpacing: '0.35em' }}>
+            {isAr ? 'تكوين' : 'TKWEEN'}
+          </span>
+          <h1 style={{ fontSize: 'clamp(2rem,5vw,4rem)', fontWeight: 200, color: '#fff', marginTop: 8 }}>
+            {isAr ? 'تغطية المؤتمرات' : 'Conference Coverage'}
+          </h1>
+        </div>
+        {videos.map(v => (
+          <VideoCard
+            key={v.id}
+            title={isAr ? (v as any).title_ar || v.title_en : v.title_en}
+            thumbnail={v.thumbnail}
+            videoUrl={(v as any).vimeo_url || ''}
+            height="65vw"
+            onClick={(v as any).vimeo_url
+              ? () => setModal({ url:(v as any).vimeo_url, title:v.title_en })
+              : undefined}
+          />
+        ))}
+      </div>
+      {modal && <VideoModal url={modal.url} title={modal.title} onClose={() => setModal(null)}/>}
+      <WhatsAppButton />
+    </div>
+  )
+}
+
+Create src/pages/CorporateAds.tsx — SAME as Conferences but:
+- section filter = 'corporate_ads'  
+- Title AR = 'إعلانات الشركات' / EN = 'Corporate Ads'
+- Use different placeholder images
+
+Create src/pages/Designs.tsx — SAME but:
+- section filter = 'designs'
+- Title AR = 'تصاميمنا' / EN = 'Our Designs'
+
+Create src/pages/OurWork.tsx — SAME but:
+- section filter = 'our_work'
+- Title AR = 'أعمالنا' / EN = 'Our Work'
+
+════════════════════════════════════════════
+SECTION 12 — AdminVideos Page
+Create: src/pages/admin/AdminVideos.tsx
+════════════════════════════════════════════
+
+This page manages the 4 video sections from localStorage.
+
+Features:
+- Tab bar: CONFERENCES | CORPORATE ADS | DESIGNS | OUR WORK
+- Table: thumbnail preview, title EN, title AR, order, featured, visible, edit/delete
+- Add/Edit modal:
+  * title_en, title_ar (text inputs)
+  * section (select dropdown)
+  * vimeo_url: text input + "FETCH" button that calls
+    https://vimeo.com/api/oembed.json?url={encodeURIComponent(vimeo_url)}
+    On success: auto-fills thumbnail_url from response.thumbnail_url
+    Show thumbnail preview immediately after fetch
+  * thumbnail_url: text input (can override)
+  * display_order: number input
+  * featured: checkbox
+  * visible: checkbox
+- Save to localStorage 'tkween_videos'
+- Generate id with Date.now().toString()
+- Delete with confirm()
+
+Styling: same dark admin style as other admin pages
+(black background, red accent #FF3B30, border #1c1c1c)
+
+════════════════════════════════════════════
+SECTION 13 — Update AdminLayout sidebar
+src/components/admin/AdminLayout.tsx
+════════════════════════════════════════════
+
+Add to NAV array (after AdminProjects):
+{ label: 'Video Sections', href: '/admin/videos' }
+
+Change accent color in sidebar from current color to #FF3B30
+
+════════════════════════════════════════════
+SECTION 14 — Contact and Quote pages
+════════════════════════════════════════════
+
+Create src/pages/Contact.tsx:
+- Navbar + WhatsAppButton
+- Large heading: "تواصل معنا" / "Contact Us"
+- Email: sales@tkweensa.com
+- Phone: 0553120141  
+- WhatsApp: 0553120141
+- Instagram, Twitter, Snapchat links: @Tkweensa
+- Address: الرياض، المملكة العربية السعودية
+- All in clean minimal layout, black background
+
+Create src/pages/Quote.tsx:
+- Navbar + WhatsAppButton
+- The existing contact form (full_name, organization, phone, email,
+  event_date, location, service_type, details)
+- On submit: save to localStorage 'tkween_requests' with status='new'
+  and id=Date.now().toString() and created_at=new Date().toISOString()
+- Success message in Arabic and English
+
+════════════════════════════════════════════
+FINAL CHECKLIST
+════════════════════════════════════════════
+
+After building everything, verify:
+✓ Site is pure black (#000000) background
+✓ All accents are RED (#FF3B30) — NO orange, NO teal
+✓ Logo shows gradient red triangle with ك cutout + teal dot
+✓ / → Home page works with hero slideshow
+✓ /conferences → shows conference video cards
+✓ /corporate-ads → shows corporate ad cards
+✓ /designs → shows design cards
+✓ /our-work → shows work cards
+✓ /contact → contact info page
+✓ /quote → quote request form
+✓ /admin/login → password tkween2025 → /admin/dashboard
+✓ /admin/videos → new video management page with Vimeo fetch
+✓ WhatsApp button visible on all public pages
+✓ EN/AR language toggle works
+✓ No TypeScript errors
+✓ Mobile responsive
