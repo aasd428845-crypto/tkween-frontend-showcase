@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
-import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut, ExternalLink } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
 
 const links = [
@@ -56,6 +56,14 @@ export default function AdminLayout() {
           })}
         </nav>
         <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <a href="/" target="_blank" rel="noopener noreferrer" style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: 8, padding: '10px', border: `1px solid ${GRAD_START}`,
+            borderRadius: 8, background: `${GRAD_START}15`, color: GRAD_START,
+            fontSize: 13, cursor: 'pointer', textDecoration: 'none', fontWeight: 500,
+          }}>
+            <ExternalLink size={16} /> {lang === 'ar' ? 'عرض الموقع' : 'View Site'}
+          </a>
           <button onClick={() => setLang(lang === 'en' ? 'ar' : 'en')} style={{
             width: '100%', padding: '8px', border: `1px solid ${BORDER}`,
             borderRadius: 8, background: 'transparent', color: '#94a3b8',
@@ -93,6 +101,12 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+            <a href="/" target="_blank" rel="noopener noreferrer" style={{
+              padding: 8, borderRadius: 6, background: `${GRAD_START}15`,
+              color: GRAD_START, display: 'flex', alignItems: 'center',
+            }}>
+              <ExternalLink size={18} />
+            </a>
             <button onClick={handleLogout} style={{
               padding: 8, background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
             }}>
