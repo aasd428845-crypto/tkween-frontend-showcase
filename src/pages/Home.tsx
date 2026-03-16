@@ -5,7 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, BG, BG_SOFT, BORDER, gradText, gradBorder, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const ACCENT = '#2dd4bf'
@@ -37,25 +37,20 @@ const CLIENTS = [
 export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
-  const [heroIdx, setHeroIdx] = useState(0)
-  const [heroImages, setHeroImages] = useState<string[]>([])
-  const [projects, setProjects] = useState<any[]>([])
-  const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
-  useEffect(() => {
-    setHeroImages(getHeroImages())
-    setProjects(
-      getProjects()
-        .filter(p => p.visible)
-        .sort((a, b) => a.display_order - b.display_order)
-    )
-  }, [])
+  const heroImages = getHeroImages()
+  const projects = getProjects()
+    .filter(p => p.visible)
+    .sort((a, b) => a.display_order - b.display_order)
+
+  const [heroIdx, setHeroIdx] = useState(0)
+  const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
   useEffect(() => {
     if (heroImages.length === 0) return
     const t = setInterval(() => setHeroIdx(p => (p + 1) % heroImages.length), 6000)
     return () => clearInterval(t)
-  }, [heroImages])
+  }, [heroImages.length])
 
   useEffect(() => {
     try {
@@ -72,7 +67,7 @@ export default function Home() {
       {/* HERO */}
       <section style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
         {heroImages.map((src, i) => (
-          <div key={src} style={{
+          <div key={src + i} style={{
             position: 'absolute', inset: 0,
             backgroundImage: `url(${src})`,
             backgroundSize: 'cover', backgroundPosition: 'center',

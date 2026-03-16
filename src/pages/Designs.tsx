@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
@@ -19,17 +19,14 @@ const PLACEHOLDER = [
 export default function Designs() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
-  const [videos, setVideos] = useState(PLACEHOLDER)
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
-  useEffect(() => {
-    try {
-      const filtered = getVideos().filter((v: any) => v.section === 'designs' && v.visible)
-        .sort((a: any, b: any) => a.display_order - b.display_order)
-        .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
-      if (filtered.length > 0) setVideos(filtered)
-    } catch {}
-  }, [])
+  const saved = getVideos()
+    .filter((v: any) => v.section === 'designs' && v.visible)
+    .sort((a: any, b: any) => a.display_order - b.display_order)
+    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
+
+  const videos = saved.length > 0 ? saved : PLACEHOLDER
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
@@ -43,13 +40,13 @@ export default function Designs() {
             {isAr ? 'تصاميمنا' : 'Our Designs'}
           </h1>
         </div>
-        {videos.map(v => (
+        {videos.map((v: any) => (
           <VideoCard key={v.id}
-            title={isAr ? (v as any).title_ar || v.title_en : v.title_en}
+            title={isAr ? v.title_ar || v.title_en : v.title_en}
             thumbnail={v.thumbnail}
-            videoUrl={(v as any).vimeo_url || ''}
+            videoUrl={v.vimeo_url || ''}
             height="65vw"
-            onClick={(v as any).vimeo_url ? () => setModal({ url: (v as any).vimeo_url, title: v.title_en }) : undefined}
+            onClick={v.vimeo_url ? () => setModal({ url: v.vimeo_url, title: isAr ? v.title_ar || v.title_en : v.title_en }) : undefined}
           />
         ))}
       </div>
