@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import VideoModal from './VideoModal';
 
@@ -13,6 +12,8 @@ interface Video {
   vimeo_url: string | null;
   thumbnail_url: string | null;
   featured: boolean | null;
+  visible: boolean;
+  display_order: number;
 }
 
 const sectionTitles: Record<string, { en: string; ar: string }> = {
@@ -22,19 +23,21 @@ const sectionTitles: Record<string, { en: string; ar: string }> = {
   our_work: { en: 'Our Work', ar: 'أعمالنا' },
 };
 
+function loadVideos(): Video[] {
+  try {
+    return JSON.parse(localStorage.getItem('tkween_videos') || '[]');
+  } catch {
+    return [];
+  }
+}
+
 const VideoSections = () => {
   const { lang } = useLanguage();
-  const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-  useEffect(() => {
-    supabase
-      .from('videos')
-      .select('*')
-      .eq('visible', true)
-      .order('display_order')
-      .then(({ data }) => setVideos((data as Video[]) || []));
-  }, []);
+  const videos = loadVideos()
+    .filter(v => v.visible)
+    .sort((a, b) => a.display_order - b.display_order);
 
   const grouped = videos.reduce((acc, video) => {
     if (!acc[video.section]) acc[video.section] = [];

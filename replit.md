@@ -4,12 +4,20 @@ A bilingual (Arabic/English) media production company website for TKWEEN, built 
 
 ## Architecture
 
-- **Frontend**: React + Vite + TypeScript
+- **Frontend**: React + Vite + TypeScript (pure frontend, no backend server)
 - **Styling**: Tailwind CSS + inline styles with CSS custom properties
 - **Routing**: React Router v6 (wouter not used — react-router-dom)
 - **State**: localStorage for all data (videos, projects, requests, settings)
 - **Fonts**: Inter (EN) + Tajawal (AR) from Google Fonts
 - **Port**: 5000
+- **Data**: All data stored in browser localStorage — no external database
+
+## Replit Setup
+
+- Run command: `npm run dev`
+- Dev server starts on port 5000 (mapped to external port 80)
+- No environment variables required — fully self-contained frontend app
+- Supabase has been removed; all data uses localStorage
 
 ## Design System
 
