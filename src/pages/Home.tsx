@@ -255,23 +255,17 @@ export default function Home() {
           <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 2 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
             {CLIENTS.map((c, i) => (
               <div key={i} style={{
-                border: `1px solid ${BORDER}`, padding: '20px 12px',
-                textAlign: 'center', fontSize: 12, color: '#555',
-                transition: 'all 0.3s',
+                padding: '22px 16px',
+                textAlign: 'center', fontSize: 13, color: '#444',
+                letterSpacing: '0.03em',
+                transition: 'color 0.3s',
+                cursor: 'default',
               }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.borderColor = TEAL
-                el.style.color = '#fff'
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement
-                el.style.borderColor = BORDER
-                el.style.color = '#555'
-              }}>
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#444' }}>
                 {c}
               </div>
             ))}
