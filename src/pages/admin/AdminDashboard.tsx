@@ -1,6 +1,6 @@
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
-import { GRAD_START, BG_SOFT, BORDER } from '@/lib/brand'
+import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
 import { getProjects, getRequests, getSettings } from '@/lib/storage'
 
 export default function AdminDashboard() {
@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   const newReqs = requests.filter((r: any) => r.status === 'new')
 
   const cards = [
-    { icon: Film, label: t('admin_total_projects'), value: projects.length, color: GRAD_START },
+    { icon: Film, label: t('admin_total_projects'), value: projects.length, color: CORAL },
     { icon: MessageSquare, label: t('admin_total_requests'), value: requests.length, color: '#60a5fa' },
     { icon: Bell, label: t('admin_new_requests'), value: newReqs.length, color: '#f59e0b' },
     { icon: Eye, label: t('admin_visits'), value: settings.visit_count || 0, color: '#a78bfa' },
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     .slice(0, 8)
 
   const statusColors: Record<string, string> = {
-    new: '#f59e0b', reviewed: '#60a5fa', contacted: GRAD_START, closed: '#666',
+    new: '#f59e0b', reviewed: '#60a5fa', contacted: CORAL, closed: '#666',
   }
 
   return (

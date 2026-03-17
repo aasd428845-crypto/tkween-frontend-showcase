@@ -1,17 +1,38 @@
 import type { CSSProperties } from 'react'
 
-export const GRAD = 'linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%)'
-export const GRAD_START = '#2dd4bf'
-export const GRAD_MID = '#1a9e8f'
-export const GRAD_END = '#0f6e60'
+/* ── الألوان المستخرجة من شعار تكوين ─────────────────────────
+   #f87060  → أحمر-مرجاني (قمة المثلث)
+   #e03d75  → وردي-ماجنتا (أسفل المثلث / أيقونة التشغيل)
+   #2dd4bf  → فيروزي (نص TKWEEN ويمين نص تكوين)
+   #1d4ed8  → أزرق داكن (يسار النص العربي)
+   ───────────────────────────────────────────────────────── */
 
-export const BG = '#040a06'
-export const BG_SOFT = '#0a130c'
-export const CARD_BG = '#111814'
-export const BORDER = '#1c231e'
+export const CORAL     = '#f87060'
+export const PINK      = '#e03d75'
+export const TEAL      = '#2dd4bf'
+export const BLUE_DEEP = '#1d4ed8'
+
+export const GRAD_START = CORAL
+export const GRAD_MID   = PINK
+export const GRAD_END   = TEAL
+
+export const GRAD      = 'linear-gradient(135deg, #f87060 0%, #e03d75 45%, #2dd4bf 100%)'
+export const GRAD_TEXT = 'linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 50%, #2dd4bf 100%)'
+
+export const BG      = '#060606'
+export const BG_SOFT = '#0e0e0e'
+export const CARD_BG = '#131313'
+export const BORDER  = '#1e1e1e'
 
 export const gradText: CSSProperties = {
   background: GRAD,
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+}
+
+export const gradTextBlue: CSSProperties = {
+  background: GRAD_TEXT,
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -45,7 +66,7 @@ export function applyGradBg(el: HTMLElement) {
   el.style.color = '#fff'
 }
 
-export function removeGradBg(el: HTMLElement, resetBg = 'transparent', resetColor = GRAD_START) {
+export function removeGradBg(el: HTMLElement, resetBg = 'transparent', resetColor = TEAL) {
   el.style.background = resetBg
   el.style.color = resetColor
 }

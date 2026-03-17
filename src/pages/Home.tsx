@@ -5,10 +5,8 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, CORAL, PINK, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
-
-const ACCENT = '#2dd4bf'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -78,7 +76,7 @@ export default function Home() {
         ))}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to bottom, rgba(4,10,6,0.2) 0%, rgba(4,10,6,0.88) 100%)',
+          background: 'linear-gradient(to bottom, rgba(6,6,6,0.15) 0%, rgba(6,6,6,0.88) 100%)',
         }}/>
         <div style={{
           position: 'relative', zIndex: 10,
@@ -86,7 +84,7 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ color: ACCENT, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
             {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
           </span>
           <h1 style={{
@@ -98,18 +96,27 @@ export default function Home() {
           <h2 style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1,
-            color: 'rgba(255,255,255,0.6)', marginBottom: 36,
+            color: 'rgba(255,255,255,0.55)', marginBottom: 36,
           }}>
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
           <Link to="/our-work" style={{
-            border: `1px solid ${ACCENT}`,
-            color: ACCENT,
+            border: '1px solid transparent',
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
+            color: TEAL,
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
-            transition: 'all 0.3s', display: 'inline-block', background: 'transparent',
+            transition: 'all 0.3s', display: 'inline-block',
           }}
-          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = ACCENT; el.style.color = '#0a1e1a' }}
-          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'transparent'; el.style.color = ACCENT }}>
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = GRAD
+            el.style.color = '#fff'
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
+            el.style.color = TEAL
+          }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
           </Link>
         </div>
@@ -122,7 +129,7 @@ export default function Home() {
             {heroImages.map((_, i) => (
               <button key={i} onClick={() => setHeroIdx(i)} style={{
                 width: i === heroIdx ? 28 : 6, height: 2,
-                background: i === heroIdx ? ACCENT : 'rgba(255,255,255,0.3)',
+                background: i === heroIdx ? GRAD : 'rgba(255,255,255,0.25)',
                 border: 'none', cursor: 'pointer', padding: 0,
                 transition: 'all 0.3s',
               }}/>
@@ -194,13 +201,13 @@ export default function Home() {
                 fontSize: 80, fontWeight: 200, lineHeight: 1,
                 background: GRAD, WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                opacity: 0.12, minWidth: 80, flexShrink: 0,
+                opacity: 0.15, minWidth: 80, flexShrink: 0,
               }}>{s.num}</span>
               <div>
                 <h3 style={{ fontSize: 20, fontWeight: 300, color: '#fff', marginBottom: 10 }}>
                   {isAr ? s.ar : s.en}
                 </h3>
-                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.7 }}>
+                <p style={{ color: '#555', fontSize: 14, lineHeight: 1.7 }}>
                   {isAr ? s.descAr : s.descEn}
                 </p>
               </div>
@@ -223,7 +230,11 @@ export default function Home() {
             { n: '16', ar: 'مؤسسة', en: 'Organizations' },
           ].map((s, i) => (
             <div key={i}>
-              <div style={{ fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200, color: ACCENT }}>
+              <div style={{
+                fontSize: 'clamp(2rem,6vw,4rem)', fontWeight: 200,
+                background: GRAD, WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              }}>
                 {s.n}
               </div>
               <p style={{ color: '#555', fontSize: 11, letterSpacing: '0.1em', marginTop: 8 }}>
@@ -249,7 +260,7 @@ export default function Home() {
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLElement
-                el.style.borderColor = ACCENT
+                el.style.borderColor = CORAL
                 el.style.color = '#fff'
               }}
               onMouseLeave={e => {

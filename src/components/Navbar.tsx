@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
-
-const ACCENT = '#2dd4bf'
-const ACCENT_DARK = '#0a1e1a'
+import { GRAD, TEAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -35,13 +32,13 @@ export default function Navbar() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', padding: '10px 32px',
-        background: scrolled ? 'rgba(4,10,6,0.96)' : 'transparent',
+        justifyContent: 'space-between', padding: '6px 32px',
+        background: scrolled ? 'rgba(6,6,6,0.96)' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
         borderBottom: scrolled ? `1px solid ${BORDER}` : 'none',
         transition: 'all 0.3s',
       }}>
-        <Link to="/"><TkweenLogo size={48} showSubtitle={true} /></Link>
+        <Link to="/"><TkweenLogo size={42} showText={false} /></Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="desktop-nav">
           <div style={{ position: 'relative' }}
@@ -52,8 +49,12 @@ export default function Navbar() {
               cursor: 'pointer', fontWeight: 300, paddingBottom: 2,
               borderBottom: '1px solid transparent', transition: 'border-color 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = ACCENT}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'}>
+            onMouseEnter={e => {
+              applyGradText(e.currentTarget as HTMLElement)
+            }}
+            onMouseLeave={e => {
+              removeGradText(e.currentTarget as HTMLElement, '#fff')
+            }}>
               {isAr ? 'أعمالنا ▾' : 'WORK ▾'}
             </span>
             {workOpen && (
@@ -99,21 +100,30 @@ export default function Navbar() {
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
                 border: 'none', cursor: 'pointer',
-                background: lang === l ? ACCENT : 'transparent',
-                color: lang === l ? ACCENT_DARK : '#666',
+                background: lang === l ? GRAD : 'transparent',
+                color: lang === l ? '#fff' : '#666',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
             ))}
           </div>
 
           <Link to="/quote" style={{
-            border: `1px solid ${ACCENT}`,
-            color: ACCENT,
+            border: '1px solid transparent',
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
+            color: TEAL,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
-            transition: 'all 0.3s', display: 'inline-block', background: 'transparent',
+            transition: 'all 0.3s', display: 'inline-block',
           }}
-          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = ACCENT; el.style.color = ACCENT_DARK }}
-          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'transparent'; el.style.color = ACCENT }}>
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = GRAD
+            el.style.color = '#fff'
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
+            el.style.color = TEAL
+          }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
 
@@ -140,8 +150,8 @@ export default function Navbar() {
             background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
           }}>×</button>
 
-          <TkweenLogo size={48} showSubtitle={true} />
-          <div style={{ height: 40 }}/>
+          <TkweenLogo size={52} showText={false} />
+          <div style={{ height: 36 }}/>
 
           {[
             ...workLinks.map(l => ({ href: l.href, label: isAr ? l.labelAr : l.labelEn })),

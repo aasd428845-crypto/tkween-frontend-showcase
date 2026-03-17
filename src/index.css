@@ -7,19 +7,20 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg:       #040a06;
-  --bg-soft:  #0a130c;
-  --card-bg:  #111814;
-  --border:   #1c231e;
+  --bg:       #060606;
+  --bg-soft:  #0e0e0e;
+  --card-bg:  #131313;
+  --border:   #1e1e1e;
   --text-primary:   #ffffff;
   --text-secondary: #888888;
-  --accent:        #2dd4bf;
-  --accent-dark:   #1a9e8f;
-  --accent-darker: #0f6e60;
-  --grad: linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%);
-  --grad-start: #2dd4bf;
-  --grad-mid:   #1a9e8f;
-  --grad-end:   #0f6e60;
+  --coral:    #f87060;
+  --pink:     #e03d75;
+  --teal:     #2dd4bf;
+  --blue:     #1d4ed8;
+  --grad: linear-gradient(135deg, #f87060 0%, #e03d75 45%, #2dd4bf 100%);
+  --grad-start: #f87060;
+  --grad-mid:   #e03d75;
+  --grad-end:   #2dd4bf;
 }
 
 html { scroll-behavior: smooth; }
@@ -51,19 +52,13 @@ a { color: inherit; text-decoration: none; }
   background-clip: text;
 }
 
-.grad-bg { background: var(--grad) !important; }
-
-.grad-border {
-  border: 1px solid transparent !important;
-  background:
-    linear-gradient(var(--bg), var(--bg)) padding-box,
-    var(--grad) border-box !important;
+.grad-bg {
+  background: var(--grad);
 }
 
-.hover-grad-text:hover {
-  background: var(--grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent !important;
+.grad-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    var(--grad) border-box;
 }

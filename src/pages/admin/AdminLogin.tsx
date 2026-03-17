@@ -2,11 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
-import { BG, BG_SOFT, BORDER } from '@/lib/brand'
+import { GRAD, CORAL, BG, BG_SOFT, BORDER } from '@/lib/brand'
 import { getSettings } from '@/lib/storage'
-
-const ACCENT = '#2dd4bf'
-const ACCENT_DARK = '#0a1e1a'
 
 export default function AdminLogin() {
   const { t } = useLanguage()
@@ -29,7 +26,7 @@ export default function AdminLogin() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: BG }}>
       <div style={{ width: '100%', maxWidth: 360, padding: 32, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-          <TkweenLogo size={52} showSubtitle={true} />
+          <TkweenLogo size={52} showText={true} showSubtitle={false} />
         </div>
         <h2 style={{ textAlign: 'center', marginBottom: 24, fontSize: 18, fontWeight: 300, color: '#fff' }}>{t('admin_login')}</h2>
         <form onSubmit={handleSubmit}>
@@ -43,7 +40,7 @@ export default function AdminLogin() {
               border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff',
               fontSize: 14, outline: 'none', marginBottom: 16, transition: 'border-color 0.2s',
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = ACCENT)}
+            onFocus={e => (e.currentTarget.style.borderColor = CORAL)}
             onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
           />
           {error && (
@@ -52,7 +49,7 @@ export default function AdminLogin() {
             </p>
           )}
           <button type="submit" style={{
-            width: '100%', padding: 12, background: ACCENT, color: ACCENT_DARK,
+            width: '100%', padding: 12, background: GRAD, color: '#fff',
             borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none',
             cursor: 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
           }}

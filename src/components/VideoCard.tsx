@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { gradText } from '@/lib/brand'
+import { gradText, GRAD, TEAL } from '@/lib/brand'
 
 interface VideoCardProps {
   title: string
@@ -22,7 +22,7 @@ export default function VideoCard({
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative', width: '100%', height,
-        overflow: 'hidden', background: '#111814',
+        overflow: 'hidden', background: '#111',
         cursor: onClick ? 'pointer' : 'default', display: 'block',
       }}
     >
@@ -32,21 +32,22 @@ export default function VideoCard({
         backgroundSize: 'cover', backgroundPosition: 'center',
         transform: hovered ? 'scale(1.04)' : 'scale(1)',
         transition: 'transform 0.8s ease',
-        filter: hovered ? 'brightness(0.7)' : 'brightness(0.85)',
+        filter: hovered ? 'brightness(0.65)' : 'brightness(0.82)',
       }}/>
 
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(4,10,6,0.75) 0%, transparent 60%)',
+        background: 'linear-gradient(to top, rgba(6,6,6,0.82) 0%, transparent 55%)',
       }}/>
 
       {videoUrl && hovered && (
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 64, height: 64, borderRadius: '50%',
-          background: 'rgba(45,212,191,0.9)',
+          width: 66, height: 66, borderRadius: '50%',
+          background: GRAD,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 32px rgba(248,112,96,0.5)',
           transition: 'all 0.3s',
         }}>
           <svg width="22" height="22" viewBox="0 0 22 22" fill="white">
@@ -62,7 +63,7 @@ export default function VideoCard({
         {category && (
           <span style={{
             display: 'block', fontSize: 10, letterSpacing: '0.25em',
-            marginBottom: 6, fontWeight: 400, color: '#2dd4bf',
+            marginBottom: 6, fontWeight: 400, ...gradText,
           }}>
             {category.toUpperCase()}
           </span>

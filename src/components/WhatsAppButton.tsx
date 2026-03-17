@@ -1,4 +1,5 @@
 import { getSettings } from '@/lib/storage'
+import { GRAD } from '@/lib/brand'
 
 export default function WhatsAppButton() {
   const settings = getSettings()
@@ -12,16 +13,20 @@ export default function WhatsAppButton() {
       style={{
         position: 'fixed', bottom: 24, right: 24, zIndex: 500,
         width: 54, height: 54, borderRadius: '50%',
-        background: '#25d366',
+        background: GRAD,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 4px 20px rgba(37,211,102,0.35)',
+        boxShadow: '0 4px 24px rgba(248,112,96,0.4)',
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)'
+        const el = e.currentTarget as HTMLElement
+        el.style.transform = 'scale(1.12)'
+        el.style.boxShadow = '0 6px 32px rgba(248,112,96,0.6)'
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+        const el = e.currentTarget as HTMLElement
+        el.style.transform = 'scale(1)'
+        el.style.boxShadow = '0 4px 24px rgba(248,112,96,0.4)'
       }}
     >
       <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
