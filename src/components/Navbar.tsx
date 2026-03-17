@@ -5,7 +5,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
 
 const ACCENT = '#2dd4bf'
-const ACCENT_DARK = '#0a1e1a'
+const ACCENT_DARK = '#000'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
