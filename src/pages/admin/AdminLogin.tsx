@@ -6,7 +6,7 @@ import { BG, BG_SOFT, BORDER } from '@/lib/brand'
 import { getSettings } from '@/lib/storage'
 
 const ACCENT = '#2dd4bf'
-const ACCENT_DARK = '#0a1e1a'
+const ACCENT_DARK = '#000'
 
 export default function AdminLogin() {
   const { t } = useLanguage()

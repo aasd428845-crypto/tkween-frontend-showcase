@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import VideoModal from './VideoModal';
+import { GRAD, GRAD_MID } from '@/lib/brand';
 
 interface Video {
   id: string;
@@ -59,7 +60,7 @@ const VideoSections = () => {
         return (
           <div key={section}>
             <div style={{ padding: '60px 0 20px', textAlign: 'center' }}>
-              <span style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.2em', fontWeight: 400 }}>
+              <span className="grad-text" style={{ fontSize: 11, letterSpacing: '0.2em', fontWeight: 400 }}>
                 {titles.en.toUpperCase()}
               </span>
               <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 200, color: '#fff', marginTop: 8 }}>
@@ -91,7 +92,7 @@ const VideoSections = () => {
                   display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
                   padding: 'clamp(24px, 4vw, 60px)',
                 }}>
-                  <span style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.15em' }}>
+                  <span className="grad-text" style={{ fontSize: 11, letterSpacing: '0.15em' }}>
                     {titles.en.toUpperCase()}
                   </span>
                   <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 300, color: '#fff', marginTop: 8 }}>
@@ -108,7 +109,7 @@ const VideoSections = () => {
                     position: 'absolute', top: '50%', left: '50%',
                     transform: 'translate(-50%,-50%)',
                     width: 72, height: 72, borderRadius: '50%',
-                    background: 'rgba(255,69,0,0.9)',
+                    background: GRAD,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     opacity: 0, transition: 'opacity 0.3s',
                     fontSize: 28, color: '#fff',
