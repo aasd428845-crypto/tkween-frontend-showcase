@@ -5,7 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, TEAL, CORAL, PINK, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
@@ -89,14 +89,18 @@ export default function Home() {
           </span>
           <h1 style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
-            fontWeight: 200, lineHeight: 1.1, color: '#fff', marginBottom: 8,
+            fontWeight: 200, lineHeight: 1.1, marginBottom: 8,
+            background: GRAD,
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>
             {isAr ? 'نُكوّن اللقطة' : 'We Frame the Shot'}
           </h1>
           <h2 style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
-            fontWeight: 200, lineHeight: 1.1,
-            color: 'rgba(255,255,255,0.55)', marginBottom: 36,
+            fontWeight: 200, lineHeight: 1.1, marginBottom: 36,
+            background: GRAD,
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            opacity: 0.65,
           }}>
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
@@ -260,7 +264,7 @@ export default function Home() {
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLElement
-                el.style.borderColor = CORAL
+                el.style.borderColor = TEAL
                 el.style.color = '#fff'
               }}
               onMouseLeave={e => {

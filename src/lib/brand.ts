@@ -1,38 +1,36 @@
 import type { CSSProperties } from 'react'
 
-/* ── الألوان المستخرجة من شعار تكوين ─────────────────────────
-   #f87060  → أحمر-مرجاني (قمة المثلث)
-   #e03d75  → وردي-ماجنتا (أسفل المثلث / أيقونة التشغيل)
-   #2dd4bf  → فيروزي (نص TKWEEN ويمين نص تكوين)
-   #1d4ed8  → أزرق داكن (يسار النص العربي)
-   ───────────────────────────────────────────────────────── */
+/* ── نظام الألوان المستخرج من شعار تكوين ──────────────────
+   التدرج الرئيسي السينمائي: أزرق عميق → سماوي → فيروزي
+   (مستخرج من النص العربي "تكوين" في الشعار)
+   #1e40af → #0ea5e9 → #2dd4bf
 
-export const CORAL     = '#f87060'
-export const PINK      = '#e03d75'
+   لكنة بسيطة فقط: مرجاني وردي (مثلث التشغيل الصغير)
+   #f87060 / #e03d75
+   ────────────────────────────────────────────────────── */
+
 export const TEAL      = '#2dd4bf'
-export const BLUE_DEEP = '#1d4ed8'
+export const BLUE_DEEP = '#1e40af'
+export const BLUE_MID  = '#0ea5e9'
+export const CORAL     = '#f87060'   // لكنة صغيرة فقط
+export const PINK      = '#e03d75'   // لكنة صغيرة فقط
 
-export const GRAD_START = CORAL
-export const GRAD_MID   = PINK
+/* التدرج الرئيسي: أزرق → سماوي → فيروزي */
+export const GRAD       = 'linear-gradient(135deg, #1e40af 0%, #0ea5e9 50%, #2dd4bf 100%)'
+export const GRAD_START = BLUE_DEEP
+export const GRAD_MID   = BLUE_MID
 export const GRAD_END   = TEAL
 
-export const GRAD      = 'linear-gradient(135deg, #f87060 0%, #e03d75 45%, #2dd4bf 100%)'
-export const GRAD_TEXT = 'linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 50%, #2dd4bf 100%)'
-
+/* ألوان الخلفيات (أسود سينمائي نقي) */
 export const BG      = '#060606'
 export const BG_SOFT = '#0e0e0e'
 export const CARD_BG = '#131313'
-export const BORDER  = '#1e1e1e'
+export const BORDER  = '#1a2a3a'   /* حافة زرقاء خفيفة جداً */
+
+/* ── أنماط CSS جاهزة ──────────────────────────────────── */
 
 export const gradText: CSSProperties = {
   background: GRAD,
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  backgroundClip: 'text',
-}
-
-export const gradTextBlue: CSSProperties = {
-  background: GRAD_TEXT,
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',

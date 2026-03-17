@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, TEAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, CORAL, PINK, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -100,7 +100,7 @@ export default function Navbar() {
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
                 border: 'none', cursor: 'pointer',
-                background: lang === l ? GRAD : 'transparent',
+                background: lang === l ? `linear-gradient(135deg, ${CORAL} 0%, ${PINK} 100%)` : 'transparent',
                 color: lang === l ? '#fff' : '#666',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>

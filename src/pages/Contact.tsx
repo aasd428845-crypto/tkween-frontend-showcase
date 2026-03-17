@@ -2,7 +2,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { Mail, Phone, MapPin, Instagram, Twitter } from 'lucide-react'
-import { gradText, GRAD, CORAL, TEAL, BG, BORDER } from '@/lib/brand'
+import { gradText, GRAD, TEAL, BG, BORDER } from '@/lib/brand'
 import { getSettings } from '@/lib/storage'
 
 export default function Contact() {
@@ -40,7 +40,7 @@ export default function Contact() {
                 display: 'flex', alignItems: 'center', gap: 20,
                 padding: '24px 0', borderBottom: `1px solid ${BORDER}`,
               }}>
-                <item.icon size={20} style={{ color: CORAL, flexShrink: 0 }} />
+                <item.icon size={20} style={{ color: TEAL, flexShrink: 0 }} />
                 <div>
                   <p style={{ color: '#555', fontSize: 10, letterSpacing: '0.2em', marginBottom: 4 }}>
                     {item.label.toUpperCase()}
