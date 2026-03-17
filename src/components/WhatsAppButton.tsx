@@ -1,4 +1,5 @@
 import { getSettings } from '@/lib/storage'
+import { GRAD } from '@/lib/brand'
 
 export default function WhatsAppButton() {
   const settings = getSettings()
@@ -12,9 +13,9 @@ export default function WhatsAppButton() {
       style={{
         position: 'fixed', bottom: 24, right: 24, zIndex: 500,
         width: 54, height: 54, borderRadius: '50%',
-        background: '#25d366',
+        background: GRAD,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 4px 20px rgba(37,211,102,0.35)',
+        boxShadow: '0 4px 20px rgba(232,99,122,0.35)',
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       onMouseEnter={e => {
