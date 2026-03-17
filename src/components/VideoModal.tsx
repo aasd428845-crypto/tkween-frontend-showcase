@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
-import { BG } from '@/lib/brand'
 
 interface VideoModalProps {
   url: string
-  title: string
+  title?: string
   onClose: () => void
 }
 
@@ -37,7 +36,7 @@ export default function VideoModal({ url, title, onClose }: VideoModalProps) {
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 2000,
-      background: `rgba(4,10,6,0.96)`,
+      background: `rgba(0,0,0,0.96)`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <button onClick={onClose} style={{
@@ -56,7 +55,7 @@ export default function VideoModal({ url, title, onClose }: VideoModalProps) {
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}/>
           )}
         </div>
-        <p style={{ color: '#888', fontSize: 13, marginTop: 12, textAlign: 'center' }}>{title}</p>
+        {title && <p style={{ color: '#888', fontSize: 13, marginTop: 12, textAlign: 'center' }}>{title}</p>}
       </div>
     </div>
   )

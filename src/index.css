@@ -7,19 +7,19 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg:       #040a06;
-  --bg-soft:  #0a130c;
-  --card-bg:  #111814;
-  --border:   #1c231e;
+  --bg:       #000000;
+  --bg-soft:  #0a0a0a;
+  --card-bg:  #111111;
+  --border:   #1a1a1a;
   --text-primary:   #ffffff;
   --text-secondary: #888888;
   --accent:        #2dd4bf;
-  --accent-dark:   #1a9e8f;
-  --accent-darker: #0f6e60;
-  --grad: linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%);
-  --grad-start: #2dd4bf;
-  --grad-mid:   #1a9e8f;
-  --grad-end:   #0f6e60;
+  --accent-pink:   #E8637A;
+  --accent-blue:   #1e3a8a;
+  --grad: linear-gradient(135deg, #E8637A 0%, #2dd4bf 50%, #1e3a8a 100%);
+  --grad-start: #E8637A;
+  --grad-mid:   #2dd4bf;
+  --grad-end:   #1e3a8a;
 }
 
 html { scroll-behavior: smooth; }
@@ -66,4 +66,8 @@ a { color: inherit; text-decoration: none; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent !important;
+}
+
+.work-card:hover .play-icon {
+  opacity: 1 !important;
 }
