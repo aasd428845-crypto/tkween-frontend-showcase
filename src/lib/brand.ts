@@ -15,11 +15,11 @@ export const BLUE_MID  = '#0ea5e9'
 export const CORAL     = '#f87060'   // لكنة صغيرة فقط
 export const PINK      = '#e03d75'   // لكنة صغيرة فقط
 
-/* التدرج الرئيسي: أزرق → سماوي → فيروزي */
-export const GRAD       = 'linear-gradient(135deg, #1e40af 0%, #0ea5e9 50%, #2dd4bf 100%)'
-export const GRAD_START = BLUE_DEEP
+/* التدرج الرئيسي السينمائي: فيروزي → سماوي → أزرق عميق */
+export const GRAD       = 'linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 50%, #1e40af 100%)'
+export const GRAD_START = TEAL
 export const GRAD_MID   = BLUE_MID
-export const GRAD_END   = TEAL
+export const GRAD_END   = BLUE_DEEP
 
 /* ألوان الخلفيات (أسود سينمائي نقي) */
 export const BG      = '#060606'

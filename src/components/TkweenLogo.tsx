@@ -7,19 +7,18 @@ export default function TkweenLogo({
   showText?: boolean
   showSubtitle?: boolean
 }) {
-  const imgStyle: React.CSSProperties = {
-    objectFit: 'contain',
-    /* mix-blend-mode: screen يجعل الأسود شفافاً تماماً
-       ويدمج الشعار مع أي خلفية داكنة بشكل نظيف */
-    mixBlendMode: 'screen',
-  }
-
+  /* نستخدم الـ PNG الشفاف مباشرةً — لا حاجة لأي blend mode */
   if (!showText) {
     return (
       <img
-        src="/tkween-logo.jpeg"
+        src="/tkween-logo-transparent.png"
         alt="TKWEEN"
-        style={{ ...imgStyle, width: size * 1.3, height: size * 1.3 }}
+        style={{
+          width: size * 1.4,
+          height: size * 1.4,
+          objectFit: 'contain',
+          display: 'block',
+        }}
       />
     )
   }
@@ -27,12 +26,17 @@ export default function TkweenLogo({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <img
-        src="/tkween-logo.jpeg"
+        src="/tkween-logo-transparent.png"
         alt="TKWEEN Logo"
-        style={{ ...imgStyle, width: size * 2.6, height: size * 2.6 }}
+        style={{
+          width: size * 2.8,
+          height: size * 2.8,
+          objectFit: 'contain',
+          display: 'block',
+        }}
       />
       {showSubtitle && (
-        <div style={{ textAlign: 'center', marginTop: -size * 0.25 }}>
+        <div style={{ textAlign: 'center', marginTop: -size * 0.2 }}>
           <p style={{
             fontSize: size * 0.13,
             color: '#94a3b8',

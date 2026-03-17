@@ -1,5 +1,5 @@
 import { getSettings } from '@/lib/storage'
-import { GRAD } from '@/lib/brand'
+import { GRAD, TEAL } from '@/lib/brand'
 
 export default function WhatsAppButton() {
   const settings = getSettings()
@@ -15,18 +15,18 @@ export default function WhatsAppButton() {
         width: 54, height: 54, borderRadius: '50%',
         background: GRAD,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 4px 24px rgba(248,112,96,0.4)',
+        boxShadow: `0 4px 24px rgba(45,212,191,0.35)`,
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
         el.style.transform = 'scale(1.12)'
-        el.style.boxShadow = '0 6px 32px rgba(248,112,96,0.6)'
+        el.style.boxShadow = `0 6px 32px rgba(45,212,191,0.55)`
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
         el.style.transform = 'scale(1)'
-        el.style.boxShadow = '0 4px 24px rgba(248,112,96,0.4)'
+        el.style.boxShadow = `0 4px 24px rgba(45,212,191,0.35)`
       }}
     >
       <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
