@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import TkweenLogo from '@/components/TkweenLogo';
 import { getSettings } from '@/data/defaults';
 import { useLanguage } from '@/context/LanguageContext';
-import { GRAD_MID } from '@/lib/brand';
 
 const ContactFull = () => {
   const settings = getSettings();
@@ -18,18 +17,18 @@ const ContactFull = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12" style={{ textAlign: 'left' }}>
           <div>
-            <h3 className="grad-text" style={{ fontSize: 11, letterSpacing: '0.2em', marginBottom: 16 }}>GENERAL INQUIRIES</h3>
+            <h3 style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.2em', marginBottom: 16 }}>GENERAL INQUIRIES</h3>
             <p style={{ color: '#999', fontSize: 15, lineHeight: 2 }}>{settings.email}</p>
             <p style={{ color: '#999', fontSize: 15, lineHeight: 2 }}>{settings.phone}</p>
             <p style={{ color: '#999', fontSize: 15, lineHeight: 2 }}>{settings.address}</p>
           </div>
           <div>
-            <h3 className="grad-text" style={{ fontSize: 11, letterSpacing: '0.2em', marginBottom: 16 }}>FOLLOW US</h3>
+            <h3 style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.2em', marginBottom: 16 }}>FOLLOW US</h3>
             <div className="flex flex-col gap-2">
               <a href={settings.instagram} target="_blank" rel="noopener" style={{ color: '#999', fontSize: 15, textDecoration: 'none' }}>Instagram</a>
               <a href={settings.twitter} target="_blank" rel="noopener" style={{ color: '#999', fontSize: 15, textDecoration: 'none' }}>Twitter / X</a>
               <a href={settings.snapchat} target="_blank" rel="noopener" style={{ color: '#999', fontSize: 15, textDecoration: 'none' }}>Snapchat</a>
-              <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener" style={{ color: GRAD_MID, fontSize: 15, textDecoration: 'none' }}>📱 WhatsApp</a>
+              <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener" style={{ color: '#25d366', fontSize: 15, textDecoration: 'none' }}>📱 WhatsApp</a>
             </div>
           </div>
         </div>

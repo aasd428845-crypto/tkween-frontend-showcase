@@ -1,14 +1,14 @@
 import type { CSSProperties } from 'react'
 
-export const GRAD = 'linear-gradient(135deg, #E8637A 0%, #2dd4bf 50%, #1e3a8a 100%)'
-export const GRAD_START = '#E8637A'
-export const GRAD_MID = '#2dd4bf'
-export const GRAD_END = '#1e3a8a'
+export const GRAD = 'linear-gradient(135deg, #2dd4bf 0%, #1a9e8f 50%, #0f6e60 100%)'
+export const GRAD_START = '#2dd4bf'
+export const GRAD_MID = '#1a9e8f'
+export const GRAD_END = '#0f6e60'
 
-export const BG = '#000000'
-export const BG_SOFT = '#0a0a0a'
-export const CARD_BG = '#111111'
-export const BORDER = '#1a1a1a'
+export const BG = '#040a06'
+export const BG_SOFT = '#0a130c'
+export const CARD_BG = '#111814'
+export const BORDER = '#1c231e'
 
 export const gradText: CSSProperties = {
   background: GRAD,
