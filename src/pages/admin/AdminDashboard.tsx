@@ -1,13 +1,22 @@
+import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
 import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
 import { getProjects, getRequests, getSettings } from '@/lib/storage'
+import { apiGetProjects, apiGetRequests, apiGetSettings } from '@/lib/api'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()
-  const projects = getProjects()
-  const requests = getRequests()
-  const settings = getSettings()
+  const [projects, setProjects] = useState<any[]>([])
+  const [requests, setRequests] = useState<any[]>([])
+  const [settings, setSettings] = useState<any>(getSettings())
+
+  useEffect(() => {
+    apiGetProjects().then(setProjects).catch(() => setProjects(getProjects()))
+    apiGetRequests().then(setRequests).catch(() => setRequests(getRequests()))
+    apiGetSettings().then(setSettings).catch(() => setSettings(getSettings()))
+  }, [])
+
   const newReqs = requests.filter((r: any) => r.status === 'new')
 
   const cards = [

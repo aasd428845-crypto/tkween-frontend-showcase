@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Save, Trash2, Plus } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getSettings, saveSettings as persistSettings, updateSetting, getHeroImages } from '@/lib/storage'
+import { getSettings } from '@/lib/storage'
+import { apiGetSettings, apiSaveSettings, notifyUpdate } from '@/lib/api'
 import type { Settings as TkweenSettings } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
@@ -12,30 +13,47 @@ const inputStyle: React.CSSProperties = {
 
 export default function AdminSettings() {
   const { t } = useLanguage()
-  const [settings, setSettings] = useState<TkweenSettings>(getSettings)
+  const [settings, setSettings] = useState<TkweenSettings>(getSettings())
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
+  const [saving, setSaving] = useState<string | null>(null)
+
+  useEffect(() => {
+    apiGetSettings().then(data => setSettings(data as TkweenSettings)).catch(() => {})
+  }, [])
 
   let heroImages: string[] = []
   try { heroImages = JSON.parse(settings.hero_images || '[]') } catch {}
 
-  const saveField = (key: string) => {
-    persistSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
+  const persist = async (s: TkweenSettings, key: string) => {
+    setSaving(key)
+    try {
+      const updated = await apiSaveSettings(s)
+      setSettings(updated as TkweenSettings)
+      notifyUpdate()
+    } catch {
+      setSettings(s)
+    } finally {
+      setSaving(null)
+      setSaved(key)
+      setTimeout(() => setSaved(null), 2000)
+    }
   }
 
-  const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
+  const update = (key: string, value: string) => setSettings(s => ({ ...s, [key]: value }))
 
-  const addHeroImage = () => {
+  const addHeroImage = async () => {
     if (!newImageUrl.trim()) return
     const images = [...heroImages, newImageUrl.trim()]
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); persistSettings(updated); setNewImageUrl('')
+    setNewImageUrl('')
+    await persist(updated, 'hero_images')
   }
 
-  const removeHeroImage = (idx: number) => {
+  const removeHeroImage = async (idx: number) => {
     const images = heroImages.filter((_, i) => i !== idx)
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); persistSettings(updated)
+    await persist(updated, 'hero_images')
   }
 
   const contactFields = [
@@ -45,11 +63,11 @@ export default function AdminSettings() {
   ]
 
   const SaveBtn = ({ k }: { k: string }) => (
-    <button onClick={() => saveField(k)} style={{
+    <button onClick={() => persist(settings, k)} disabled={saving === k} style={{
       padding: '10px 14px',
       background: saved === k ? GRAD : `${GRAD_START}12`,
-      border: 'none', borderRadius: 4, cursor: 'pointer',
-      color: saved === k ? '#fff' : GRAD_START, transition: 'all 0.3s',
+      border: 'none', borderRadius: 4, cursor: saving === k ? 'not-allowed' : 'pointer',
+      color: saved === k ? '#fff' : GRAD_START, transition: 'all 0.3s', opacity: saving === k ? 0.6 : 1,
     }}><Save size={16}/></button>
   )
 
