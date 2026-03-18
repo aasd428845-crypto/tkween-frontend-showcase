@@ -76,3 +76,13 @@ export async function apiUploadFile(file: File): Promise<string> {
   const { url } = await res.json()
   return url
 }
+
+// ── Auth ──────────────────────────────────────────────────────────────
+
+export const apiLogin = (password: string) =>
+  call<{ ok: boolean }>(`${BASE}/auth/login`, { method: 'POST', body: JSON.stringify({ password }) })
+
+// ── Visits ───────────────────────────────────────────────────────────
+
+export const apiIncrementVisits = () =>
+  call<{ count: number }>(`${BASE}/visits/increment`, { method: 'POST' })

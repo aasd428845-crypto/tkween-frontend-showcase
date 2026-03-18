@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Save, Trash2, Plus } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getSettings } from '@/lib/storage'
-import { apiGetSettings, apiSaveSettings, notifyUpdate } from '@/lib/api'
+import { apiGetSettings, apiSaveSettings, apiUploadFile, notifyUpdate } from '@/lib/api'
 import type { Settings as TkweenSettings } from '@/lib/storage'
+
+const DEFAULT_SETTINGS: TkweenSettings = {
+  phone: '0553120141', email: 'sales@tkweensa.com', whatsapp: '966553120141',
+  address: 'الرياض، المملكة العربية السعودية', instagram: 'https://instagram.com/Tkweensa',
+  twitter: 'https://twitter.com/Tkweensa', snapchat: 'https://snapchat.com/add/Tkweensa',
+  admin_password: 'tkween2025', visit_count: '0', hero_images: '[]',
+}
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', background: BG,
@@ -13,10 +19,12 @@ const inputStyle: React.CSSProperties = {
 
 export default function AdminSettings() {
   const { t } = useLanguage()
-  const [settings, setSettings] = useState<TkweenSettings>(getSettings())
+  const [settings, setSettings] = useState<TkweenSettings>(DEFAULT_SETTINGS)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
   const [saving, setSaving] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const heroUploadRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     apiGetSettings().then(data => setSettings(data as TkweenSettings)).catch(() => {})
@@ -54,6 +62,21 @@ export default function AdminSettings() {
     const images = heroImages.filter((_, i) => i !== idx)
     const updated = { ...settings, hero_images: JSON.stringify(images) }
     await persist(updated, 'hero_images')
+  }
+
+  const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await apiUploadFile(file)
+      const images = [...heroImages, url]
+      const updated = { ...settings, hero_images: JSON.stringify(images) }
+      await persist(updated, 'hero_images')
+    } catch { alert('Upload failed') } finally {
+      setUploading(false)
+      if (heroUploadRef.current) heroUploadRef.current.value = ''
+    }
   }
 
   const contactFields = [
@@ -119,10 +142,21 @@ export default function AdminSettings() {
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
+        <div style={{ display: 'flex', gap: 8, maxWidth: 500, marginBottom: 12 }}>
           <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image')} style={{ ...inputStyle, flex: 1 }}/>
           <button onClick={addHeroImage} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: GRAD, color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}>
-            <Plus size={16}/> Add
+            <Plus size={16}/> Add URL
+          </button>
+        </div>
+        <div>
+          <input ref={heroUploadRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleHeroUpload}/>
+          <button onClick={() => heroUploadRef.current?.click()} disabled={uploading} style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+            background: 'transparent', border: `1px solid ${BORDER}`, color: '#888',
+            borderRadius: 4, cursor: uploading ? 'not-allowed' : 'pointer',
+            opacity: uploading ? 0.6 : 1, fontSize: 13,
+          }}>
+            {uploading ? 'Uploading...' : '↑ Upload Image File'}
           </button>
         </div>
       </div>

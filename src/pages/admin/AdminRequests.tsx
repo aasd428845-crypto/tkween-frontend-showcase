@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Search, Trash2, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getRequests, saveRequests } from '@/lib/storage'
 import { apiGetRequests, apiUpdateRequest, apiDeleteRequest, notifyUpdate } from '@/lib/api'
 import type { Request as TkweenRequest } from '@/lib/storage'
 
@@ -24,7 +23,7 @@ export default function AdminRequests() {
       const data = await apiGetRequests()
       setRequests(data as TkweenRequest[])
     } catch {
-      setRequests(getRequests())
+      setRequests([])
     } finally {
       setLoading(false)
     }
@@ -48,8 +47,7 @@ export default function AdminRequests() {
       await apiUpdateRequest(id, { status })
       notifyUpdate()
     } catch {
-      const updated = requests.map(r => r.id === id ? { ...r, status } : r)
-      saveRequests(updated)
+      reload()
     }
   }
 
@@ -61,8 +59,7 @@ export default function AdminRequests() {
       await apiDeleteRequest(id)
       notifyUpdate()
     } catch {
-      const updated = requests.filter(r => r.id !== id)
-      saveRequests(updated)
+      reload()
     }
   }
 

@@ -2,19 +2,18 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
 import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
-import { getProjects, getRequests, getSettings } from '@/lib/storage'
 import { apiGetProjects, apiGetRequests, apiGetSettings } from '@/lib/api'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()
   const [projects, setProjects] = useState<any[]>([])
   const [requests, setRequests] = useState<any[]>([])
-  const [settings, setSettings] = useState<any>(getSettings())
+  const [settings, setSettings] = useState<any>({})
 
   useEffect(() => {
-    apiGetProjects().then(setProjects).catch(() => setProjects(getProjects()))
-    apiGetRequests().then(setRequests).catch(() => setRequests(getRequests()))
-    apiGetSettings().then(setSettings).catch(() => setSettings(getSettings()))
+    apiGetProjects().then(setProjects).catch(() => {})
+    apiGetRequests().then(setRequests).catch(() => {})
+    apiGetSettings().then(setSettings).catch(() => {})
   }, [])
 
   const newReqs = requests.filter((r: any) => r.status === 'new')

@@ -3,12 +3,12 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { Mail, Phone, MapPin, Instagram, Twitter } from 'lucide-react'
 import { warmGradText, WARM_GRAD, gradText, GRAD, TEAL, BG, BORDER } from '@/lib/brand'
-import { getSettings } from '@/lib/storage'
+import { useSettings } from '@/hooks/useStorageData'
 
 export default function Contact() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
-  const settings = getSettings()
+  const settings = useSettings()
 
   const items = [
     { icon: Phone, label: isAr ? 'الهاتف' : 'Phone', value: settings.phone || '0553120141', href: `tel:${settings.phone || '0553120141'}` },

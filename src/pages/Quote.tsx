@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, WARM_GRAD, BG, BORDER, warmGradText, gradBorder } from '@/lib/brand'
-import { addRequest } from '@/lib/storage'
+import { apiAddRequest } from '@/lib/api'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
@@ -17,17 +17,22 @@ export default function Quote() {
   const { lang, t } = useLanguage()
   const isAr = lang === 'ar'
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     full_name: '', organization: '', phone: '', email: '',
     event_date: '', location: '', service_type: '', details: '',
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try { addRequest(formData) } catch {}
+    setSubmitting(true)
+    try {
+      await apiAddRequest(formData)
+    } catch {}
     setSent(true)
     setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
     setTimeout(() => setSent(false), 5000)
+    setSubmitting(false)
   }
 
   const fields = [
@@ -109,14 +114,15 @@ export default function Quote() {
               />
             </div>
 
-            <button type="submit" style={{
+            <button type="submit" disabled={submitting} style={{
               width: '100%', padding: '16px', background: GRAD,
               border: 'none', color: '#fff', fontSize: 11,
-              letterSpacing: '0.2em', cursor: 'pointer', transition: 'opacity 0.3s',
+              letterSpacing: '0.2em', cursor: submitting ? 'not-allowed' : 'pointer',
+              transition: 'opacity 0.3s', opacity: submitting ? 0.7 : 1,
             }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              {isAr ? 'إرسال الطلب' : 'SEND REQUEST'}
+            onMouseEnter={e => { if (!submitting) (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+            onMouseLeave={e => { if (!submitting) (e.currentTarget as HTMLElement).style.opacity = '1' }}>
+              {submitting ? '...' : (isAr ? 'إرسال الطلب' : 'SEND REQUEST')}
             </button>
           </form>
         </div>

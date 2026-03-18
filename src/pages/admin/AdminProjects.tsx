@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getProjects, saveProjects } from '@/lib/storage'
-import { apiGetProjects, apiAddProject, apiUpdateProject, apiDeleteProject, notifyUpdate } from '@/lib/api'
+import { apiGetProjects, apiAddProject, apiUpdateProject, apiDeleteProject, apiUploadFile, notifyUpdate } from '@/lib/api'
 import type { Project as TkweenProject } from '@/lib/storage'
 
 const emptyProject: TkweenProject = {
@@ -18,13 +17,15 @@ export default function AdminProjects() {
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const thumbInputRef = useRef<HTMLInputElement>(null)
 
   const reload = async () => {
     try {
       const data = await apiGetProjects()
       setProjects(data as TkweenProject[])
     } catch {
-      setProjects(getProjects())
+      setProjects([])
     } finally {
       setLoading(false)
     }
@@ -35,6 +36,16 @@ export default function AdminProjects() {
     window.addEventListener('tkween:update', reload)
     return () => window.removeEventListener('tkween:update', reload)
   }, [])
+
+  const handleThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !modal) return
+    setUploading(true)
+    try {
+      const url = await apiUploadFile(file)
+      setModal(m => m ? { ...m, thumbnail: url } : m)
+    } catch { alert('Upload failed') } finally { setUploading(false) }
+  }
 
   const handleSave = async () => {
     if (!modal) return
@@ -51,13 +62,8 @@ export default function AdminProjects() {
       }
       notifyUpdate()
       setModal(null)
-    } catch {
-      const updated: TkweenProject[] = modal.id
-        ? projects.map(p => p.id === modal.id ? modal : p)
-        : [...projects, { ...modal, id: Date.now().toString() }]
-      setProjects(updated)
-      saveProjects(updated)
-      setModal(null)
+    } catch (err: any) {
+      alert(`Save failed: ${err.message}`)
     } finally {
       setSaving(false)
     }
@@ -70,8 +76,7 @@ export default function AdminProjects() {
       await apiDeleteProject(id)
       notifyUpdate()
     } catch {
-      const updated = projects.filter(p => p.id !== id)
-      saveProjects(updated)
+      reload()
     }
   }
 
@@ -84,8 +89,7 @@ export default function AdminProjects() {
       await apiUpdateProject(id, { [field]: newVal })
       notifyUpdate()
     } catch {
-      const updated = projects.map(p => p.id === id ? { ...p, [field]: newVal } : p)
-      saveProjects(updated)
+      reload()
     }
   }
 
@@ -161,19 +165,32 @@ export default function AdminProjects() {
       {modal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(4,10,6,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           onClick={() => setModal(null)}>
-          <div style={{ width: '100%', maxWidth: 500, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 8 }} onClick={e => e.stopPropagation()}>
+          <div style={{ width: '100%', maxWidth: 500, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 8, maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <h3 style={{ fontSize: 18, fontWeight: 300, color: '#fff' }}>{modal.id ? t('admin_edit') : t('admin_add')}</h3>
               <button onClick={() => setModal(null)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}><X size={20}/></button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[{ key: 'title_en', label: t('admin_title_en') }, { key: 'title_ar', label: t('admin_title_ar') },
-                { key: 'thumbnail', label: t('admin_thumbnail') }, { key: 'video_url', label: t('admin_video') }].map(f => (
+                { key: 'video_url', label: t('admin_video') }].map(f => (
                 <div key={f.key}>
                   <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{f.label}</label>
                   <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })} style={inputStyle}/>
                 </div>
               ))}
+              <div>
+                <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_thumbnail')}</label>
+                <input value={modal.thumbnail} onChange={e => setModal({ ...modal, thumbnail: e.target.value })} placeholder="Paste URL or upload file" style={inputStyle}/>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                  <input ref={thumbInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleThumbUpload}/>
+                  <button onClick={() => thumbInputRef.current?.click()} disabled={uploading} style={{
+                    background: 'transparent', border: `1px solid ${BORDER}`, color: '#888',
+                    padding: '6px 12px', fontSize: 11, cursor: uploading ? 'not-allowed' : 'pointer',
+                    borderRadius: 3, opacity: uploading ? 0.6 : 1,
+                  }}>{uploading ? 'UPLOADING...' : '↑ UPLOAD IMAGE'}</button>
+                  {modal.thumbnail && <img src={modal.thumbnail} alt="preview" style={{ width: 64, height: 40, objectFit: 'cover', borderRadius: 3 }}/>}
+                </div>
+              </div>
               <div>
                 <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_category')}</label>
                 <select value={modal.category} onChange={e => setModal({ ...modal, category: e.target.value })} style={inputStyle}>

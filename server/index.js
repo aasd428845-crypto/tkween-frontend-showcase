@@ -275,6 +275,36 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   res.json({ url: `/uploads/${req.file.filename}` })
 })
 
+// ── AUTH ──────────────────────────────────────────────────────────────
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { password } = req.body
+    const { rows } = await pool.query("SELECT value FROM tkween_settings WHERE key='admin_password'")
+    const stored = rows[0]?.value || 'tkween2025'
+    if (password === stored) {
+      res.json({ ok: true })
+    } else {
+      res.status(401).json({ ok: false, error: 'Invalid password' })
+    }
+  } catch (e) { res.status(500).json({ error: e.message }) }
+})
+
+// ── VISITS ────────────────────────────────────────────────────────────
+
+app.post('/api/visits/increment', async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT value FROM tkween_settings WHERE key='visit_count'")
+    const current = parseInt(rows[0]?.value || '0')
+    const next = current + 1
+    await pool.query(
+      "INSERT INTO tkween_settings (key, value) VALUES ('visit_count', $1) ON CONFLICT (key) DO UPDATE SET value=$1",
+      [String(next)]
+    )
+    res.json({ count: next })
+  } catch (e) { res.status(500).json({ error: e.message }) }
+})
+
 // ── HEALTH ────────────────────────────────────────────────────────────
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }))

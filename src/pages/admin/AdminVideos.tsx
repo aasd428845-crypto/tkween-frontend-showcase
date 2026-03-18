@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getVideos, saveVideos } from '@/lib/storage'
-import { apiGetVideos, apiAddVideo, apiUpdateVideo, apiDeleteVideo, notifyUpdate } from '@/lib/api'
+import { apiGetVideos, apiAddVideo, apiUpdateVideo, apiDeleteVideo, apiUploadFile, notifyUpdate } from '@/lib/api'
 
 interface Video {
   id: string
@@ -40,13 +39,15 @@ export default function AdminVideos() {
   const [editId, setEditId] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const thumbInputRef = useRef<HTMLInputElement>(null)
 
   const reload = async () => {
     try {
       const data = await apiGetVideos()
       setVideos(data as Video[])
     } catch {
-      setVideos(getVideos() as Video[])
+      setVideos([])
     } finally {
       setLoading(false)
     }
@@ -73,6 +74,16 @@ export default function AdminVideos() {
     } catch { alert('Failed to fetch Vimeo data.') } finally { setFetching(false) }
   }
 
+  const handleThumbUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await apiUploadFile(file)
+      setForm(prev => ({ ...prev, thumbnail_url: url }))
+    } catch { alert('Upload failed') } finally { setUploading(false) }
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -85,14 +96,8 @@ export default function AdminVideos() {
       }
       notifyUpdate()
       setModal(false)
-    } catch {
-      const now = new Date().toISOString()
-      const updated: Video[] = editId
-        ? videos.map(v => v.id === editId ? { ...form, id: editId, created_at: v.created_at || now } : v)
-        : [...videos, { ...form, id: Date.now().toString(), created_at: now }]
-      setVideos(updated)
-      saveVideos(updated as any)
-      setModal(false)
+    } catch (err: any) {
+      alert(`Save failed: ${err.message}`)
     } finally {
       setSaving(false)
     }
@@ -104,9 +109,9 @@ export default function AdminVideos() {
     try {
       await apiDeleteVideo(id)
       notifyUpdate()
-    } catch {
-      const updated = videos.filter(v => v.id !== id)
-      saveVideos(updated as any)
+    } catch (err: any) {
+      alert(`Delete failed: ${err.message}`)
+      reload()
     }
   }
 
@@ -119,8 +124,7 @@ export default function AdminVideos() {
       await apiUpdateVideo(id, { [field]: newVal })
       notifyUpdate()
     } catch {
-      const updated = videos.map(v => v.id === id ? { ...v, [field]: newVal } : v)
-      saveVideos(updated as any)
+      reload()
     }
   }
 
@@ -255,9 +259,17 @@ export default function AdminVideos() {
                 <p style={{ color: '#333', fontSize: 10, marginTop: 4 }}>Auto-fills thumbnail from Vimeo oEmbed</p>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>THUMBNAIL URL</label>
-                <input style={inputStyle} value={form.thumbnail_url} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })}/>
-                {form.thumbnail_url && <img src={form.thumbnail_url} alt="preview" style={{ width: 120, height: 68, objectFit: 'cover', marginTop: 8, borderRadius: 3 }}/>}
+                <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>THUMBNAIL</label>
+                <input style={inputStyle} value={form.thumbnail_url} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })} placeholder="Paste URL or upload file below"/>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                  <input ref={thumbInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleThumbUpload}/>
+                  <button onClick={() => thumbInputRef.current?.click()} disabled={uploading} style={{
+                    background: 'transparent', border: `1px solid ${BORDER}`, color: '#888',
+                    padding: '6px 12px', fontSize: 10, cursor: uploading ? 'not-allowed' : 'pointer',
+                    borderRadius: 3, opacity: uploading ? 0.6 : 1,
+                  }}>{uploading ? 'UPLOADING...' : '↑ UPLOAD IMAGE'}</button>
+                  {form.thumbnail_url && <img src={form.thumbnail_url} alt="preview" style={{ width: 80, height: 45, objectFit: 'cover', borderRadius: 3 }}/>}
+                </div>
               </div>
               <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 24 }}>
                 {[{ k: 'featured', l: 'Featured' }, { k: 'visible', l: 'Visible' }].map(f => (
