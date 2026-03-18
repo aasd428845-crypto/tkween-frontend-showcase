@@ -82,7 +82,7 @@ const VideoSections = () => {
                   backgroundPosition: 'center',
                   position: 'relative',
                   cursor: video.vimeo_url ? 'pointer' : 'default',
-                  borderBottom: '1px solid #1a1a1a',
+                  borderBottom: `1px solid ${BORDER}`,
                   overflow: 'hidden',
                 }}
               >
