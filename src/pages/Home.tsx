@@ -110,6 +110,7 @@ export default function Home() {
             color: TEAL,
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
             transition: 'all 0.3s', display: 'inline-block',
+            boxShadow: '0 0 10px 1px rgba(248,112,96,0.18)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement

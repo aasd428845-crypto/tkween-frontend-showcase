@@ -95,12 +95,13 @@ export default function Navbar() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', border: `1px solid ${BORDER}`, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', overflow: 'hidden' }}>
             {(['en', 'ar'] as const).map(l => (
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
-                border: 'none', cursor: 'pointer',
-                background: lang === l ? `linear-gradient(135deg, ${CORAL} 0%, ${PINK} 100%)` : 'transparent',
+                border: lang === l ? `1px solid ${CORAL}` : `1px solid ${BORDER}`,
+                cursor: 'pointer',
+                background: lang === l ? GRAD : 'transparent',
                 color: lang === l ? '#fff' : '#666',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
@@ -113,6 +114,7 @@ export default function Navbar() {
             color: TEAL,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
+            boxShadow: '0 0 10px 1px rgba(248,112,96,0.18)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
