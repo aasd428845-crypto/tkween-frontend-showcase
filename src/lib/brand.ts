@@ -12,11 +12,15 @@ import type { CSSProperties } from 'react'
 export const TEAL      = '#2dd4bf'
 export const BLUE_DEEP = '#1e40af'
 export const BLUE_MID  = '#0ea5e9'
-export const CORAL     = '#f87060'   // لكنة صغيرة فقط
-export const PINK      = '#e03d75'   // لكنة صغيرة فقط
+export const CORAL     = '#f87060'
+export const PINK      = '#e03d75'
+export const ORANGE    = '#f97316'
 
 /* التدرج الرئيسي السينمائي: فيروزي → سماوي → أزرق عميق */
 export const GRAD       = 'linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 50%, #1e40af 100%)'
+
+/* تدرج الهوية الدافئة: أحمر → برتقالي (مستخرج من مثلث الشعار) */
+export const WARM_GRAD  = 'linear-gradient(135deg, #f87060 0%, #f97316 100%)'
 export const GRAD_START = TEAL
 export const GRAD_MID   = BLUE_MID
 export const GRAD_END   = BLUE_DEEP
@@ -31,6 +35,13 @@ export const BORDER  = '#1a2a3a'   /* حافة زرقاء خفيفة جداً */
 
 export const gradText: CSSProperties = {
   background: GRAD,
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+}
+
+export const warmGradText: CSSProperties = {
+  background: WARM_GRAD,
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',

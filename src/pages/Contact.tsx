@@ -2,7 +2,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { Mail, Phone, MapPin, Instagram, Twitter } from 'lucide-react'
-import { gradText, GRAD, TEAL, BG, BORDER } from '@/lib/brand'
+import { warmGradText, WARM_GRAD, gradText, GRAD, TEAL, BG, BORDER } from '@/lib/brand'
 import { getSettings } from '@/lib/storage'
 
 export default function Contact() {
@@ -27,7 +27,7 @@ export default function Contact() {
       <Navbar />
       <div style={{ paddingTop: 64 }}>
         <div style={{ padding: '80px 32px 60px', maxWidth: 800, margin: '0 auto' }}>
-          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em' }}>
+          <span style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em' }}>
             {isAr ? 'تكوين' : 'TKWEEN'}
           </span>
           <h1 style={{ fontSize: 'clamp(2.5rem,6vw,5rem)', fontWeight: 200, color: '#fff', marginTop: 12, marginBottom: 60 }}>
@@ -69,7 +69,8 @@ export default function Contact() {
           </div>
 
           <div style={{ marginTop: 60 }}>
-            <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 32 }}>
+            <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4, marginBottom: 32 }} />
+            <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 32 }}>
               {isAr ? 'تابعنا' : 'FOLLOW US'}
             </p>
             <div style={{ display: 'flex', gap: 16 }}>
