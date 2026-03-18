@@ -109,10 +109,11 @@ const VideoSections = () => {
                     position: 'absolute', top: '50%', left: '50%',
                     transform: 'translate(-50%,-50%)',
                     width: 72, height: 72, borderRadius: '50%',
-                    background: 'rgba(255,69,0,0.9)',
+                    background: GRAD,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     opacity: 0, transition: 'opacity 0.3s',
                     fontSize: 28, color: '#fff',
+                    boxShadow: WARM_GLOW,
                   }}>▶</div>
                 )}
               </div>
