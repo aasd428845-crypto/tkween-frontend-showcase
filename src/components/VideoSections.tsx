@@ -92,7 +92,7 @@ const VideoSections = () => {
                   display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
                   padding: 'clamp(24px, 4vw, 60px)',
                 }}>
-                  <span style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.15em' }}>
+                  <span style={{ ...gradTextStyle, fontSize: 11, letterSpacing: '0.15em' }}>
                     {titles.en.toUpperCase()}
                   </span>
                   <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 300, color: '#fff', marginTop: 8 }}>
