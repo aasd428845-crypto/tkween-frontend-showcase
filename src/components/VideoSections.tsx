@@ -60,7 +60,7 @@ const VideoSections = () => {
         return (
           <div key={section}>
             <div style={{ padding: '60px 0 20px', textAlign: 'center' }}>
-              <span style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.2em', fontWeight: 400 }}>
+              <span style={{ ...gradTextStyle, fontSize: 11, letterSpacing: '0.2em', fontWeight: 400 }}>
                 {titles.en.toUpperCase()}
               </span>
               <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 200, color: '#fff', marginTop: 8 }}>
