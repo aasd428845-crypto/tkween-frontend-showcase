@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import VideoModal from './VideoModal';
+import { TEAL, GRAD, BORDER, WARM_GLOW, gradText as gradTextStyle } from '@/lib/brand';
 
 interface Video {
   id: string;
