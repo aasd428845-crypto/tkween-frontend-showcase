@@ -43,6 +43,10 @@ export const gradBorder = (bgColor = BG): CSSProperties => ({
   background: `linear-gradient(${bgColor}, ${bgColor}) padding-box, ${GRAD} border-box`,
 })
 
+/* توهج وردي-برتقالي خفيف خلف الحدود */
+export const WARM_GLOW = `0 0 12px rgba(248,112,96,0.25), 0 0 24px rgba(224,61,117,0.12)`
+export const WARM_GLOW_HOVER = `0 0 18px rgba(248,112,96,0.4), 0 0 32px rgba(224,61,117,0.2)`
+
 export function applyGradText(el: HTMLElement) {
   el.style.background = GRAD
   el.style.setProperty('-webkit-background-clip', 'text')

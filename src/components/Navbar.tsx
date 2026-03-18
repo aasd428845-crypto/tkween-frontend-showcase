@@ -102,6 +102,9 @@ export default function Navbar() {
                 border: 'none', cursor: 'pointer',
                 background: lang === l ? `linear-gradient(135deg, ${CORAL} 0%, ${PINK} 100%)` : 'transparent',
                 color: lang === l ? '#fff' : '#666',
+                boxShadow: lang === l ? `0 0 8px rgba(248,112,96,0.3)` : 'none',
+                outline: lang === l ? `1px solid rgba(248,112,96,0.35)` : 'none',
+                outlineOffset: '1px',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
             ))}
@@ -113,16 +116,19 @@ export default function Navbar() {
             color: TEAL,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
+            boxShadow: WARM_GLOW,
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
             el.style.background = GRAD
             el.style.color = '#fff'
+            el.style.boxShadow = WARM_GLOW_HOVER
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
             el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
             el.style.color = TEAL
+            el.style.boxShadow = WARM_GLOW
           }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
