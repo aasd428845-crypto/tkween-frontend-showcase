@@ -5,7 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
@@ -89,13 +89,13 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+          <span style={{ ...cinematicText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
             {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
           </span>
           <h1 style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1, marginBottom: 8,
-            background: GRAD,
+            background: GRAD_CINEMATIC,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>
             {isAr ? 'نُكوّن اللقطة' : 'We Frame the Shot'}
@@ -105,26 +105,26 @@ export default function Home() {
             fontWeight: 200, lineHeight: 1.1, marginBottom: 36,
             background: GRAD,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            opacity: 0.65,
+            opacity: 0.7,
           }}>
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
           <Link to="/our-work" style={{
             border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
             color: TEAL,
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 10px 1px rgba(248,112,96,0.18)',
+            boxShadow: '0 0 12px 1px rgba(248,112,96,0.2)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = GRAD
+            el.style.background = MIXED_GRAD
             el.style.color = '#fff'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
             el.style.color = TEAL
           }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}

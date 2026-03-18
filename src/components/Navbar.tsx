@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, TEAL, CORAL, PINK, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, MIXED_GRAD, TEAL, CORAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -110,20 +110,20 @@ export default function Navbar() {
 
           <Link to="/quote" style={{
             border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
             color: TEAL,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 10px 1px rgba(248,112,96,0.18)',
+            boxShadow: '0 0 12px 1px rgba(248,112,96,0.22)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = GRAD
+            el.style.background = MIXED_GRAD
             el.style.color = '#fff'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
             el.style.color = TEAL
           }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
@@ -133,7 +133,7 @@ export default function Navbar() {
             style={{ background: 'none', border: 'none', cursor: 'pointer',
               display: 'flex', flexDirection: 'column', gap: 5, padding: 4 }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ width: 22, height: 1, background: '#fff', display: 'block' }}/>
+              <span key={i} style={{ width: 22, height: 1.5, background: MIXED_GRAD, display: 'block', borderRadius: 1 }}/>
             ))}
           </button>
         </div>
