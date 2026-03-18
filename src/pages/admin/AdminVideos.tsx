@@ -36,6 +36,7 @@ export default function AdminVideos() {
   const [form, setForm] = useState<Omit<Video, 'id'>>(blank)
   const [editId, setEditId] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const filtered = videos.filter(v => v.section === tab).sort((a, b) => a.display_order - b.display_order)
 
@@ -52,12 +53,14 @@ export default function AdminVideos() {
     } catch { alert('Failed to fetch Vimeo data.') } finally { setFetching(false) }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setSaving(true)
+    await new Promise(r => setTimeout(r, 300))
     const now = new Date().toISOString()
     const updated = editId
       ? videos.map(v => v.id === editId ? { ...form, id: editId, created_at: (v as any).created_at || now } : v)
       : [...videos, { ...form, id: Date.now().toString(), created_at: now }]
-    setVideos(updated); saveVideos(updated as any); setModal(false)
+    setVideos(updated); saveVideos(updated as any); setSaving(false); setModal(false)
   }
 
   const handleDelete = (id: string) => {
@@ -212,7 +215,11 @@ export default function AdminVideos() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button onClick={handleSave} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: 'pointer', borderRadius: 4 }}>SAVE VIDEO</button>
+              <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: saving ? 'not-allowed' : 'pointer', borderRadius: 4, opacity: saving ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                {saving ? (
+                  <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><circle cx="12" cy="12" r="10" stroke="white" strokeWidth="3" strokeDasharray="30 70"/></svg>SAVING...</>
+                ) : 'SAVE VIDEO'}
+              </button>
               <button onClick={() => setModal(false)} style={{ background: 'transparent', border: `1px solid ${BORDER}`, color: '#888', padding: '13px 20px', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>CANCEL</button>
             </div>
           </div>

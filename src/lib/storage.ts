@@ -101,6 +101,7 @@ export function saveSettings(s: Partial<Settings>) {
   const current = getSettings()
   const updated = { ...current, ...s }
   localStorage.setItem('tkween_settings', JSON.stringify(updated))
+  notify()
   return updated
 }
 
@@ -125,8 +126,14 @@ export function getProjects(): Project[] {
   }
 }
 
+/* ── NOTIFY: dispatched whenever any data changes ── */
+function notify() {
+  try { window.dispatchEvent(new CustomEvent('tkween:update')) } catch {}
+}
+
 export function saveProjects(projects: Project[]) {
   localStorage.setItem('tkween_projects', JSON.stringify(projects))
+  notify()
 }
 
 export function addProject(p: Omit<Project, 'id'>) {
@@ -159,6 +166,7 @@ export function getVideos(): Video[] {
 
 export function saveVideos(videos: Video[]) {
   localStorage.setItem('tkween_videos', JSON.stringify(videos))
+  notify()
 }
 
 export function addVideo(v: Omit<Video, 'id' | 'created_at'>) {
@@ -187,6 +195,7 @@ export function getRequests(): Request[] {
 
 export function saveRequests(requests: Request[]) {
   localStorage.setItem('tkween_requests', JSON.stringify(requests))
+  notify()
 }
 
 export function addRequest(r: Omit<Request, 'id' | 'created_at' | 'status'>) {

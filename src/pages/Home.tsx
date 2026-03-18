@@ -6,7 +6,8 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
-import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
+import { getSettings } from '@/lib/storage'
+import { useProjects, useHeroImages } from '@/hooks/useStorageData'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -36,8 +37,8 @@ export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
 
-  const heroImages = getHeroImages()
-  const projects = getProjects()
+  const heroImages = useHeroImages()
+  const projects = useProjects()
     .filter(p => p.visible)
     .sort((a, b) => a.display_order - b.display_order)
 
