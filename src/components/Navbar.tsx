@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, TEAL, CORAL, PINK, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, CORAL, PINK, BG, BORDER, WARM_GLOW, WARM_GLOW_HOVER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
