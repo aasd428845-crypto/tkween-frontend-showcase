@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, MIXED_GRAD, TEAL, CORAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, CORAL, PINK, BG, BORDER, WARM_GLOW, WARM_GLOW_HOVER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -95,14 +95,16 @@ export default function Navbar() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', border: `1px solid ${BORDER}`, overflow: 'hidden' }}>
             {(['en', 'ar'] as const).map(l => (
               <button key={l} onClick={() => setLang(l)} style={{
                 padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
-                border: lang === l ? `1px solid ${CORAL}` : `1px solid ${BORDER}`,
-                cursor: 'pointer',
-                background: lang === l ? GRAD : 'transparent',
+                border: 'none', cursor: 'pointer',
+                background: lang === l ? `linear-gradient(135deg, ${CORAL} 0%, ${PINK} 100%)` : 'transparent',
                 color: lang === l ? '#fff' : '#666',
+                boxShadow: lang === l ? `0 0 8px rgba(248,112,96,0.3)` : 'none',
+                outline: lang === l ? `1px solid rgba(248,112,96,0.35)` : 'none',
+                outlineOffset: '1px',
                 transition: 'all 0.2s',
               }}>{l.toUpperCase()}</button>
             ))}
@@ -110,21 +112,23 @@ export default function Navbar() {
 
           <Link to="/quote" style={{
             border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
             color: TEAL,
             padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 12px 1px rgba(248,112,96,0.22)',
+            boxShadow: WARM_GLOW,
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = MIXED_GRAD
+            el.style.background = GRAD
             el.style.color = '#fff'
+            el.style.boxShadow = WARM_GLOW_HOVER
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
             el.style.color = TEAL
+            el.style.boxShadow = WARM_GLOW
           }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
@@ -133,7 +137,7 @@ export default function Navbar() {
             style={{ background: 'none', border: 'none', cursor: 'pointer',
               display: 'flex', flexDirection: 'column', gap: 5, padding: 4 }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ width: 22, height: 1.5, background: MIXED_GRAD, display: 'block', borderRadius: 1 }}/>
+              <span key={i} style={{ width: 22, height: 1, background: '#fff', display: 'block' }}/>
             ))}
           </button>
         </div>

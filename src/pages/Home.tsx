@@ -5,7 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, TEAL, BG, BG_SOFT, BORDER, gradText, applyGradText, removeGradText } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
@@ -79,23 +79,18 @@ export default function Home() {
           background: 'linear-gradient(to bottom, rgba(6,6,6,0.15) 0%, rgba(6,6,6,0.88) 100%)',
         }}/>
         <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at 85% 100%, rgba(248,112,96,0.13) 0%, transparent 55%), radial-gradient(ellipse at 15% 100%, rgba(249,115,22,0.09) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        }}/>
-        <div style={{
           position: 'relative', zIndex: 10,
           height: '100%', display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ ...cinematicText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
             {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
           </span>
           <h1 style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1, marginBottom: 8,
-            background: GRAD_CINEMATIC,
+            background: GRAD,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>
             {isAr ? 'نُكوّن اللقطة' : 'We Frame the Shot'}
@@ -105,26 +100,25 @@ export default function Home() {
             fontWeight: 200, lineHeight: 1.1, marginBottom: 36,
             background: GRAD,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            opacity: 0.7,
+            opacity: 0.65,
           }}>
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
           <Link to="/our-work" style={{
             border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
+            background: `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`,
             color: TEAL,
             padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 12px 1px rgba(248,112,96,0.2)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = MIXED_GRAD
+            el.style.background = GRAD
             el.style.color = '#fff'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
+            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${GRAD} border-box`
             el.style.color = TEAL
           }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
@@ -149,10 +143,9 @@ export default function Home() {
       </section>
 
       {/* FEATURED WORK */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
       <section style={{ background: BG, paddingTop: 2 }}>
         <div style={{ padding: '60px 32px 20px' }}>
-          <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 8 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 8 }}>
             {isAr ? '——— أبرز أعمالنا ———' : '——— FEATURED WORK ———'}
           </p>
         </div>
@@ -170,10 +163,9 @@ export default function Home() {
       </section>
 
       {/* BROWSE BY SECTION */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
-      <section style={{ padding: '80px 32px', background: BG }}>
+      <section style={{ padding: '80px 32px', background: BG, borderTop: `1px solid ${BORDER}` }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 48 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 48 }}>
             {isAr ? 'تصفح حسب القسم' : 'BROWSE BY SECTION'}
           </p>
           {[
@@ -198,10 +190,9 @@ export default function Home() {
       </section>
 
       {/* SERVICES */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
       <section id="services" style={{ padding: '80px 32px', background: BG_SOFT }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 52 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', marginBottom: 52 }}>
             {isAr ? 'خدماتنا' : 'OUR SERVICES'}
           </p>
           {SERVICES.map((s, i) => (
@@ -230,8 +221,7 @@ export default function Home() {
       </section>
 
       {/* STATS */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
-      <section style={{ padding: '60px 32px' }}>
+      <section style={{ padding: '60px 32px', borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
         <div style={{
           maxWidth: 900, margin: '0 auto',
           display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
@@ -260,10 +250,9 @@ export default function Home() {
       </section>
 
       {/* CLIENTS */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
       <section id="clients" style={{ padding: '80px 32px', background: BG }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
+          <p style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
@@ -285,9 +274,8 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
       <footer style={{
-        padding: '40px 32px 28px',
+        padding: '40px 32px 28px', borderTop: `1px solid ${BORDER}`,
         display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', flexWrap: 'wrap', gap: 20,
       }}>

@@ -18,7 +18,6 @@ export default function TkweenLogo({
           height: size * 1.4,
           objectFit: 'contain',
           display: 'block',
-          mixBlendMode: 'screen',
         }}
       />
     )
@@ -34,7 +33,6 @@ export default function TkweenLogo({
           height: size * 2.8,
           objectFit: 'contain',
           display: 'block',
-          mixBlendMode: 'screen',
         }}
       />
       {showSubtitle && (

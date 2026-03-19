@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { gradText, GRAD } from '@/lib/brand'
+import { gradText, GRAD, TEAL } from '@/lib/brand'
 
 interface VideoCardProps {
   title: string
@@ -10,18 +10,10 @@ interface VideoCardProps {
   onClick?: () => void
 }
 
-function getVimeoEmbedUrl(url?: string): string | null {
-  if (!url || !url.includes('vimeo.com')) return null
-  const id = url.split('/').filter(Boolean).pop()?.split('?')[0]
-  if (!id) return null
-  return `https://player.vimeo.com/video/${id}?background=1&autoplay=1&muted=1&loop=1&controls=0`
-}
-
 export default function VideoCard({
   title, category, thumbnail, videoUrl, height = '56vw', onClick,
 }: VideoCardProps) {
   const [hovered, setHovered] = useState(false)
-  const embedUrl = getVimeoEmbedUrl(videoUrl)
 
   return (
     <div
@@ -34,41 +26,21 @@ export default function VideoCard({
         cursor: onClick ? 'pointer' : 'default', display: 'block',
       }}
     >
-      {embedUrl ? (
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-          <iframe
-            src={embedUrl}
-            allow="autoplay; fullscreen"
-            title={title}
-            style={{
-              position: 'absolute',
-              top: '50%', left: '50%',
-              transform: 'translate(-50%, -50%)',
-              minWidth: '177.78%',
-              minHeight: '100%',
-              width: '177.78%',
-              border: 'none',
-              pointerEvents: 'none',
-            }}
-          />
-        </div>
-      ) : (
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `url(${thumbnail})`,
-          backgroundSize: 'cover', backgroundPosition: 'center',
-          transform: hovered ? 'scale(1.04)' : 'scale(1)',
-          transition: 'transform 0.8s ease',
-          filter: hovered ? 'brightness(0.65)' : 'brightness(0.82)',
-        }}/>
-      )}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `url(${thumbnail})`,
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        transform: hovered ? 'scale(1.04)' : 'scale(1)',
+        transition: 'transform 0.8s ease',
+        filter: hovered ? 'brightness(0.65)' : 'brightness(0.82)',
+      }}/>
 
       <div style={{
         position: 'absolute', inset: 0,
         background: 'linear-gradient(to top, rgba(6,6,6,0.82) 0%, transparent 55%)',
       }}/>
 
-      {onClick && (
+      {videoUrl && hovered && (
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -76,8 +48,7 @@ export default function VideoCard({
           background: GRAD,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 0 32px rgba(248,112,96,0.5)',
-          opacity: hovered ? 1 : 0,
-          transition: 'opacity 0.3s',
+          transition: 'all 0.3s',
         }}>
           <svg width="22" height="22" viewBox="0 0 22 22" fill="white">
             <polygon points="5,2 19,11 5,20"/>

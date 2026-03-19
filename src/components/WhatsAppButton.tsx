@@ -1,5 +1,5 @@
 import { getSettings } from '@/lib/storage'
-import { GRAD, TEAL } from '@/lib/brand'
+import { TEAL, CORAL } from '@/lib/brand'
 
 export default function WhatsAppButton() {
   const settings = getSettings()
@@ -13,20 +13,20 @@ export default function WhatsAppButton() {
       style={{
         position: 'fixed', bottom: 24, right: 24, zIndex: 500,
         width: 54, height: 54, borderRadius: '50%',
-        background: `linear-gradient(135deg, #f87060 0%, #e03d75 22%, #0ea5e9 60%, #1e40af 100%)`,
+        background: `linear-gradient(160deg, ${CORAL} 0%, #e03d75 25%, ${TEAL} 60%, #1e40af 100%)`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 4px 24px rgba(248,112,96,0.4), 0 2px 12px rgba(45,212,191,0.2)`,
+        boxShadow: `0 4px 24px rgba(248,112,96,0.35), 0 2px 12px rgba(45,212,191,0.2)`,
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
         el.style.transform = 'scale(1.12)'
-        el.style.boxShadow = `0 6px 32px rgba(248,112,96,0.55), 0 4px 16px rgba(45,212,191,0.3)`
+        el.style.boxShadow = `0 6px 32px rgba(248,112,96,0.5), 0 4px 20px rgba(45,212,191,0.3)`
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
         el.style.transform = 'scale(1)'
-        el.style.boxShadow = `0 4px 24px rgba(248,112,96,0.4), 0 2px 12px rgba(45,212,191,0.2)`
+        el.style.boxShadow = `0 4px 24px rgba(248,112,96,0.35), 0 2px 12px rgba(45,212,191,0.2)`
       }}
     >
       <svg width="26" height="26" viewBox="0 0 24 24" fill="white">

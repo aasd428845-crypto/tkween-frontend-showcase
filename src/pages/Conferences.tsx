@@ -4,7 +4,7 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
+import { gradText, BG, BORDER } from '@/lib/brand'
 import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
@@ -32,15 +32,14 @@ export default function Conferences() {
     <div style={{ background: BG, minHeight: '100vh' }}>
       <Navbar />
       <div style={{ paddingTop: 64 }}>
-        <div style={{ padding: '48px 32px 24px' }}>
-          <span style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em' }}>
+        <div style={{ padding: '48px 32px 24px', borderBottom: `1px solid ${BORDER}` }}>
+          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em' }}>
             {isAr ? 'تكوين' : 'TKWEEN'}
           </span>
           <h1 style={{ fontSize: 'clamp(2rem,5vw,4rem)', fontWeight: 200, color: '#fff', marginTop: 8 }}>
             {isAr ? 'تغطية المؤتمرات' : 'Conference Coverage'}
           </h1>
         </div>
-        <div style={{ height: 1, background: WARM_GRAD, opacity: 0.4 }} />
         {videos.map((v: any) => (
           <VideoCard key={v.id}
             title={isAr ? v.title_ar || v.title_en : v.title_en}

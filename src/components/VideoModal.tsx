@@ -3,7 +3,7 @@ import { BG } from '@/lib/brand'
 
 interface VideoModalProps {
   url: string
-  title: string
+  title?: string
   onClose: () => void
 }
 
@@ -21,13 +21,13 @@ export default function VideoModal({ url, title, onClose }: VideoModalProps) {
   const getEmbedUrl = (rawUrl: string) => {
     if (rawUrl.includes('vimeo.com')) {
       const id = rawUrl.split('/').filter(Boolean).pop()?.split('?')[0]
-      return `https://player.vimeo.com/video/${id}?autoplay=1&color=FF5F57`
+      return `https://player.vimeo.com/video/${id}?background=1&autoplay=1&muted=1&loop=1&controls=0`
     }
     if (rawUrl.includes('youtube.com') || rawUrl.includes('youtu.be')) {
       const id = rawUrl.includes('v=')
         ? rawUrl.split('v=')[1]?.split('&')[0]
         : rawUrl.split('/').pop()?.split('?')[0]
-      return `https://www.youtube.com/embed/${id}?autoplay=1`
+      return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&controls=0`
     }
     return null
   }
