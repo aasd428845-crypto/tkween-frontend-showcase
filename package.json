@@ -7,6 +7,7 @@
     "dev": "concurrently \"vite\" \"tsx server/index.ts\"",
     "server": "tsx server/index.ts",
     "build": "vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",

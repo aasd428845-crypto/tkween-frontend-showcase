@@ -1,6 +1,11 @@
 import express from 'express'
 import cors from 'cors'
 import pg from 'pg'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 const { Pool } = pg
 
@@ -280,9 +285,17 @@ app.patch('/api/settings/visit', async (req, res) => {
   }
 })
 
+if (IS_PROD) {
+  const distPath = path.resolve(__dirname, '../dist')
+  app.use(express.static(distPath))
+  app.get(/.*/, (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
+}
+
 initDB().then(() => {
-  const PORT = 3001
-  app.listen(PORT, () => console.log(`API server running on port ${PORT}`))
+  const PORT = IS_PROD ? (parseInt(process.env.PORT || '5000')) : 3001
+  app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT} [${IS_PROD ? 'production' : 'development'}]`))
 }).catch(err => {
   console.error('Failed to initialize DB:', err)
   process.exit(1)
