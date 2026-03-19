@@ -12,8 +12,17 @@ export const CORAL     = '#f87060'
 export const PINK      = '#e03d75'
 export const ORANGE    = '#f97316'
 
-/* التدرج الرئيسي – أفقي من الأزرق العميق إلى الفيروزي (مطابق لنص الشعار) */
+/* التدرج الرئيسي – للغة الإنجليزية: أزرق عميق → فيروزي */
 export const GRAD = 'linear-gradient(90deg, #1e40af 0%, #0ea5e9 50%, #2dd4bf 100%)'
+
+/* تدرج اللغة العربية – برتقالي → مرجاني (مستوحى من مثلث الشعار) */
+export const GRAD_AR = 'linear-gradient(135deg, #f97316 0%, #f87060 60%, #e03d75 100%)'
+
+/* تدرج الـ Hover – أزرق ناعم */
+export const GRAD_HOVER = 'linear-gradient(90deg, #1e40af 0%, #0ea5e9 100%)'
+
+/* اختيار التدرج حسب اللغة */
+export const getActiveGrad = (lang: string) => lang === 'ar' ? GRAD_AR : GRAD
 
 /* تدرج سينمائي دافئ – يبدأ بلمسة برتقالية ثم ينتقل للتيل والأزرق */
 export const GRAD_CINEMATIC = 'linear-gradient(90deg, #f97316 0%, #f87060 8%, #2dd4bf 45%, #0ea5e9 72%, #1e40af 100%)'

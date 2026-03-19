@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import TkweenLogo from './TkweenLogo'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, MIXED_GRAD, TEAL, CORAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
+import { getActiveGrad, GRAD_HOVER, TEAL, BG, BORDER, applyGradText, removeGradText } from '@/lib/brand'
 
 const workLinks = [
   { href: '/conferences', labelAr: 'مؤتمراتنا', labelEn: 'Conferences' },
@@ -18,6 +18,7 @@ export default function Navbar() {
   const { lang, setLang } = useLanguage()
   const location = useLocation()
   const isAr = lang === 'ar'
+  const activeGrad = getActiveGrad(lang)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40)
@@ -47,22 +48,21 @@ export default function Navbar() {
             <span style={{
               color: '#fff', fontSize: 11, letterSpacing: '0.15em',
               cursor: 'pointer', fontWeight: 300, paddingBottom: 2,
-              borderBottom: '1px solid transparent', transition: 'border-color 0.2s',
+              transition: 'all 0.2s',
             }}
-            onMouseEnter={e => {
-              applyGradText(e.currentTarget as HTMLElement)
-            }}
-            onMouseLeave={e => {
-              removeGradText(e.currentTarget as HTMLElement, '#fff')
-            }}>
+            onMouseEnter={e => applyGradText(e.currentTarget as HTMLElement)}
+            onMouseLeave={e => removeGradText(e.currentTarget as HTMLElement, '#fff')}>
               {isAr ? 'أعمالنا ▾' : 'WORK ▾'}
             </span>
             {workOpen && (
               <div style={{
                 position: 'absolute', top: '100%',
                 ...(isAr ? { right: 0 } : { left: 0 }),
-                background: BG, border: `1px solid ${BORDER}`,
+                background: BG,
+                borderRadius: 12,
                 padding: '8px 0', minWidth: 180, marginTop: 8,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+                overflow: 'hidden',
               }}>
                 {workLinks.map(l => (
                   <Link key={l.href} to={l.href} style={{
@@ -95,45 +95,56 @@ export default function Navbar() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', overflow: 'hidden' }}>
+          {/* Language Switcher - بدون حدود */}
+          <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: '3px 4px' }}>
             {(['en', 'ar'] as const).map(l => (
               <button key={l} onClick={() => setLang(l)} style={{
-                padding: '5px 10px', fontSize: 9, letterSpacing: '0.1em',
-                border: lang === l ? `1px solid ${CORAL}` : `1px solid ${BORDER}`,
+                padding: '4px 12px', fontSize: 9, letterSpacing: '0.12em',
+                borderRadius: 16,
                 cursor: 'pointer',
-                background: lang === l ? GRAD : 'transparent',
+                background: lang === l ? activeGrad : 'transparent',
                 color: lang === l ? '#fff' : '#666',
-                transition: 'all 0.2s',
-              }}>{l.toUpperCase()}</button>
+                transition: 'all 0.3s',
+                fontWeight: lang === l ? 500 : 300,
+              }}
+              onMouseEnter={e => {
+                if (lang !== l) (e.currentTarget as HTMLElement).style.color = '#aaa'
+              }}
+              onMouseLeave={e => {
+                if (lang !== l) (e.currentTarget as HTMLElement).style.color = '#666'
+              }}>
+                {l.toUpperCase()}
+              </button>
             ))}
           </div>
 
+          {/* GET A QUOTE - بدون حدود، زوايا منحنية */}
           <Link to="/quote" style={{
-            border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
-            color: TEAL,
-            padding: '7px 16px', fontSize: 10, letterSpacing: '0.15em',
+            background: activeGrad,
+            color: '#fff',
+            padding: '8px 18px', fontSize: 10, letterSpacing: '0.15em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 12px 1px rgba(248,112,96,0.22)',
+            borderRadius: 20,
+            boxShadow: '0 0 16px rgba(30,64,175,0.3)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = MIXED_GRAD
-            el.style.color = '#fff'
+            el.style.background = GRAD_HOVER
+            el.style.boxShadow = '0 0 24px rgba(14,165,233,0.45)'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
-            el.style.color = TEAL
+            el.style.background = activeGrad
+            el.style.boxShadow = '0 0 16px rgba(30,64,175,0.3)'
           }}>
             {isAr ? 'طلب عرض سعر' : 'GET A QUOTE'}
           </Link>
 
           <button onClick={() => setMenuOpen(true)} className="hamburger"
-            style={{ background: 'none', border: 'none', cursor: 'pointer',
+            style={{ background: 'none', cursor: 'pointer',
               display: 'flex', flexDirection: 'column', gap: 5, padding: 4 }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ width: 22, height: 1.5, background: MIXED_GRAD, display: 'block', borderRadius: 1 }}/>
+              <span key={i} style={{ width: 22, height: 1.5, background: activeGrad, display: 'block', borderRadius: 2 }}/>
             ))}
           </button>
         </div>
@@ -149,7 +160,7 @@ export default function Navbar() {
           <button onClick={() => setMenuOpen(false)} style={{
             position: 'absolute', top: 20,
             left: isAr ? 'auto' : 28, right: isAr ? 28 : 'auto',
-            background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
+            background: 'none', color: '#fff', fontSize: 32, cursor: 'pointer',
           }}>×</button>
 
           <TkweenLogo size={52} showText={false} />
@@ -161,7 +172,8 @@ export default function Navbar() {
             { href: '/quote', label: isAr ? 'طلب عرض سعر' : 'Get a Quote' },
           ].map((link, i) => (
             <Link key={i} to={link.href} style={{
-              display: 'block', padding: '14px 0',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '14px 0',
               color: '#fff', fontSize: 24, fontWeight: 200,
               borderBottom: `1px solid ${BORDER}`,
               width: '100%', textAlign: isAr ? 'right' : 'left', transition: 'all 0.3s',

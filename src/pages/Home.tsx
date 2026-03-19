@@ -5,7 +5,8 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
+import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, GRAD_HOVER, gradText, cinematicText, warmGradText, applyGradText, removeGradText, getActiveGrad } from '@/lib/brand'
+import TkweenLogo from '@/components/TkweenLogo'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
@@ -35,6 +36,7 @@ const CLIENTS = [
 export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
+  const activeGrad = getActiveGrad(lang)
 
   const heroImages = getHeroImages()
   const projects = getProjects()
@@ -89,10 +91,12 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          <span style={{ ...cinematicText, fontSize: 10, letterSpacing: '0.4em', marginBottom: 24 }}>
-            {isAr ? 'مؤسسة تكوين للإنتاج الإعلامي' : 'TKWEEN FOR MEDIA PRODUCTION'}
-          </span>
-          <h1 style={{
+          {/* شعار متحرك */}
+          <div style={{ marginBottom: 16 }}>
+            <TkweenLogo size={52} showText={false} animate={true} />
+          </div>
+
+          <h1 className="hero-h1-anim" style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1, marginBottom: 8,
             background: GRAD_CINEMATIC,
@@ -100,7 +104,7 @@ export default function Home() {
           }}>
             {isAr ? 'نُكوّن اللقطة' : 'We Frame the Shot'}
           </h1>
-          <h2 style={{
+          <h2 className="hero-h2-anim" style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1, marginBottom: 36,
             background: GRAD,
@@ -109,23 +113,23 @@ export default function Home() {
           }}>
             {isAr ? 'لتتحدث الصورة' : 'So the Image Speaks'}
           </h2>
-          <Link to="/our-work" style={{
-            border: '1px solid transparent',
-            background: `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`,
-            color: TEAL,
-            padding: '12px 36px', fontSize: 11, letterSpacing: '0.2em',
+          <Link to="/our-work" className="hero-btn-anim" style={{
+            background: activeGrad,
+            color: '#fff',
+            padding: '13px 38px', fontSize: 11, letterSpacing: '0.2em',
             transition: 'all 0.3s', display: 'inline-block',
-            boxShadow: '0 0 12px 1px rgba(248,112,96,0.2)',
+            borderRadius: 28,
+            boxShadow: '0 0 24px rgba(30,64,175,0.35)',
           }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = MIXED_GRAD
-            el.style.color = '#fff'
+            el.style.background = GRAD_HOVER
+            el.style.boxShadow = '0 0 36px rgba(14,165,233,0.5)'
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.background = `linear-gradient(${BG}, ${BG}) padding-box, ${MIXED_GRAD} border-box`
-            el.style.color = TEAL
+            el.style.background = activeGrad
+            el.style.boxShadow = '0 0 24px rgba(30,64,175,0.35)'
           }}>
             {isAr ? 'شاهد أعمالنا' : 'VIEW OUR WORK'}
           </Link>
