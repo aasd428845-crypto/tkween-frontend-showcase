@@ -62,8 +62,3 @@ a { color: inherit; text-decoration: none; }
     linear-gradient(var(--bg), var(--bg)) padding-box,
     var(--grad) border-box;
 }
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}

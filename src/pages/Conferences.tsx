@@ -5,7 +5,7 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { useSectionVideos } from '@/hooks/useStorageData'
+import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
   { id: 'c1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
@@ -20,7 +20,13 @@ export default function Conferences() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
-  const videos = useSectionVideos('conferences', PLACEHOLDER)
+
+  const saved = getVideos()
+    .filter((v: any) => v.section === 'conferences' && v.visible)
+    .sort((a: any, b: any) => a.display_order - b.display_order)
+    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
+
+  const videos = saved.length > 0 ? saved : PLACEHOLDER
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>

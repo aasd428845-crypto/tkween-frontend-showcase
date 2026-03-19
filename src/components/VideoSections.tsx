@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import VideoModal from './VideoModal';
 import { GRAD, WARM_GRAD } from '@/lib/brand';
-import { apiGetVideos } from '@/lib/api';
 
 interface Video {
   id: string;
@@ -25,6 +24,14 @@ const sectionTitles: Record<string, { en: string; ar: string }> = {
   our_work: { en: 'Our Work', ar: 'أعمالنا' },
 };
 
+function loadVideos(): Video[] {
+  try {
+    return JSON.parse(localStorage.getItem('tkween_videos') || '[]');
+  } catch {
+    return [];
+  }
+}
+
 function getVimeoEmbedUrl(url: string | null): string | null {
   if (!url || !url.includes('vimeo.com')) return null;
   const id = url.split('/').filter(Boolean).pop()?.split('?')[0];
@@ -34,25 +41,12 @@ function getVimeoEmbedUrl(url: string | null): string | null {
 
 const VideoSections = () => {
   const { lang } = useLanguage();
-  const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
 
-  useEffect(() => {
-    apiGetVideos()
-      .then(data => setVideos((data as Video[]).filter(v => v.visible).sort((a, b) => a.display_order - b.display_order)))
-      .catch(() => setVideos([]))
-  }, []);
-
-  useEffect(() => {
-    const reload = () => {
-      apiGetVideos()
-        .then(data => setVideos((data as Video[]).filter(v => v.visible).sort((a, b) => a.display_order - b.display_order)))
-        .catch(() => {});
-    };
-    window.addEventListener('tkween:update', reload);
-    return () => window.removeEventListener('tkween:update', reload);
-  }, []);
+  const videos = loadVideos()
+    .filter(v => v.visible)
+    .sort((a, b) => a.display_order - b.display_order);
 
   const grouped = videos.reduce((acc, video) => {
     if (!acc[video.section]) acc[video.section] = [];

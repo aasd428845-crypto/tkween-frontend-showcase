@@ -1,7 +1,8 @@
-import { useSettings } from '@/hooks/useStorageData'
+import { getSettings } from '@/lib/storage'
+import { GRAD, TEAL } from '@/lib/brand'
 
 export default function WhatsAppButton() {
-  const settings = useSettings()
+  const settings = getSettings()
   const number = settings.whatsapp || '966553120141'
   return (
     <a

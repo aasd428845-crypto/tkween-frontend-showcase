@@ -6,8 +6,7 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
-import { apiIncrementVisits } from '@/lib/api'
-import { useProjects, useHeroImages } from '@/hooks/useStorageData'
+import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -37,8 +36,8 @@ export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
 
-  const heroImages = useHeroImages()
-  const projects = useProjects()
+  const heroImages = getHeroImages()
+  const projects = getProjects()
     .filter(p => p.visible)
     .sort((a, b) => a.display_order - b.display_order)
 
@@ -52,7 +51,11 @@ export default function Home() {
   }, [heroImages.length])
 
   useEffect(() => {
-    apiIncrementVisits().catch(() => {})
+    try {
+      const s = getSettings()
+      const updated = { ...s, visit_count: String((parseInt(s.visit_count || '0')) + 1) }
+      localStorage.setItem('tkween_settings', JSON.stringify(updated))
+    } catch {}
   }, [])
 
   return (

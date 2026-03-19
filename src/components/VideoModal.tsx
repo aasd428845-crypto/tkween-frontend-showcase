@@ -3,7 +3,7 @@ import { BG } from '@/lib/brand'
 
 interface VideoModalProps {
   url: string
-  title: string
+  title?: string
   onClose: () => void
 }
 

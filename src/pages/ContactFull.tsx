@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import TkweenLogo from '@/components/TkweenLogo';
-import { useSettings } from '@/hooks/useStorageData';
+import { getSettings } from '@/data/defaults';
 import { useLanguage } from '@/context/LanguageContext';
 
 const ContactFull = () => {
-  const settings = useSettings();
+  const settings = getSettings();
   const { t } = useLanguage();
 
   return (

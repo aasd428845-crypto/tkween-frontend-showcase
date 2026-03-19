@@ -4,8 +4,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import TkweenLogo from '@/components/TkweenLogo';
 import VideoModal from '@/components/VideoModal';
 import VideoSections from '@/components/VideoSections';
-import { useSettings, useProjects, useHeroImages } from '@/hooks/useStorageData';
-import { apiAddRequest, apiIncrementVisits } from '@/lib/api';
+import { getSettings, getProjects, getRequests, saveRequests, incrementVisitCount } from '@/data/defaults';
+import type { TkweenRequest } from '@/data/defaults';
 import { Menu, X, Play, Camera, Video, Plane, Radio, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const clients = [
@@ -17,10 +17,9 @@ const clients = [
 
 const PublicSite = () => {
   const { lang, setLang, t } = useLanguage();
-  const settings = useSettings();
-  const allProjects = useProjects();
-  const projects = allProjects.filter(p => p.visible).sort((a, b) => a.display_order - b.display_order);
-  const heroImages = useHeroImages();
+  const settings = getSettings();
+  const projects = getProjects().filter(p => p.visible).sort((a, b) => a.display_order - b.display_order);
+  const heroImages: string[] = JSON.parse(settings.hero_images);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -32,7 +31,7 @@ const PublicSite = () => {
   const statsRef = useRef<HTMLDivElement>(null);
   const [statsVisible, setStatsVisible] = useState(false);
 
-  useEffect(() => { apiIncrementVisits().catch(() => {}); }, []);
+  useEffect(() => { incrementVisitCount(); }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
@@ -62,7 +61,10 @@ const PublicSite = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    apiAddRequest(formData).catch(() => {});
+    const req: TkweenRequest = { ...formData, id: Date.now().toString(), status: 'new', created_at: new Date().toISOString() };
+    const reqs = getRequests();
+    reqs.push(req);
+    saveRequests(reqs);
     setFormSent(true);
     setFormData({ full_name: '', organization: '', service_type: '', event_date: '', location: '', details: '', phone: '', email: '' });
     setTimeout(() => setFormSent(false), 4000);
