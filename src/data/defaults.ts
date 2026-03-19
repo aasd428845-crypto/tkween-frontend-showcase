@@ -6,7 +6,6 @@ export interface TkweenSettings {
   instagram: string;
   twitter: string;
   snapchat: string;
-  admin_password: string;
   visit_count: string;
   hero_images: string;
 }
