@@ -4,12 +4,14 @@ import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { GRAD, CORAL, BG, BG_SOFT, BORDER } from '@/lib/brand'
 import { fetchSettings } from '@/lib/supabase-data'
+import { supabase } from '@/integrations/supabase/client'
 
 export default function AdminLogin() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,6 +19,15 @@ export default function AdminLogin() {
     setLoading(true)
     const settings = await fetchSettings()
     if (password === settings.admin_password) {
+      const { data: session } = await supabase.auth.getSession()
+      if (!session.session) {
+        const { error: signInError } = await supabase.auth.signInAnonymously()
+        if (signInError) {
+          setAuthError('تعذّر الاتصال بقاعدة البيانات. يرجى تفعيل Anonymous Sign-in في إعدادات Supabase.')
+          setLoading(false)
+          return
+        }
+      }
       sessionStorage.setItem('tkween_admin', '1')
       navigate('/admin/dashboard')
     } else {
@@ -50,6 +61,11 @@ export default function AdminLogin() {
           {error && (
             <p style={{ color: '#ef4444', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
               {t('admin_wrong')}
+            </p>
+          )}
+          {authError && (
+            <p style={{ color: '#f59e0b', fontSize: 12, textAlign: 'center', marginBottom: 12 }}>
+              {authError}
             </p>
           )}
           <button type="submit" disabled={loading} style={{

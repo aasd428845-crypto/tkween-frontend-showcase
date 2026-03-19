@@ -41,12 +41,14 @@ export async function fetchSettings(): Promise<TkweenSettings> {
 }
 
 export async function saveSetting(key: string, value: string) {
-  await supabase.from('settings').upsert({ key, value }, { onConflict: 'key' })
+  const { error } = await supabase.from('settings').upsert({ key, value }, { onConflict: 'key' })
+  if (error) throw new Error(error.message)
 }
 
 export async function saveSettingsBatch(settings: Partial<TkweenSettings>) {
   const rows = Object.entries(settings).map(([key, value]) => ({ key, value: String(value) }))
-  await supabase.from('settings').upsert(rows, { onConflict: 'key' })
+  const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'key' })
+  if (error) throw new Error(error.message)
 }
 
 export async function incrementVisitCount() {

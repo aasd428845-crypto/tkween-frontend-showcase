@@ -15,6 +15,7 @@ export default function AdminSettings() {
   const [settings, setSettings] = useState<TkweenSettings | null>(null)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,9 +28,15 @@ export default function AdminSettings() {
   try { heroImages = JSON.parse(settings.hero_images || '[]') } catch {}
 
   const saveField = async (key: string) => {
-    await saveSetting(key, (settings as any)[key])
-    setSaved(key)
-    setTimeout(() => setSaved(null), 2000)
+    try {
+      await saveSetting(key, (settings as any)[key])
+      setSaved(key)
+      setSaveError(null)
+      setTimeout(() => setSaved(null), 2000)
+    } catch (e: any) {
+      setSaveError(e.message || 'Failed to save')
+      setTimeout(() => setSaveError(null), 4000)
+    }
   }
 
   const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
@@ -68,6 +75,11 @@ export default function AdminSettings() {
   return (
     <div>
       <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff', marginBottom: 24 }}>{t('admin_settings')}</h1>
+      {saveError && (
+        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 6, color: '#ef4444', fontSize: 13 }}>
+          ⚠️ فشل الحفظ: {saveError}. تأكد من تسجيل الدخول مجدداً.
+        </div>
+      )}
 
       <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
         <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_contact_social')}</h2>

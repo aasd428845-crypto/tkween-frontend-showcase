@@ -4,6 +4,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut, ExternalLink } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
+import { supabase } from '@/integrations/supabase/client'
 
 const links = [
   { path: '/admin/dashboard', icon: LayoutDashboard, key: 'admin_overview' },
@@ -22,7 +23,8 @@ export default function AdminLayout() {
     if (sessionStorage.getItem('tkween_admin') !== '1') navigate('/admin/login')
   }, [navigate])
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     sessionStorage.removeItem('tkween_admin')
     navigate('/admin/login')
   }
