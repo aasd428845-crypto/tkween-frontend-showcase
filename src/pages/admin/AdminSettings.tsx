@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
-import { Save, Trash2, Plus } from 'lucide-react'
+import { Save, Plus, Trash2 } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getSettings, saveSettings as persistSettings, updateSetting, getHeroImages } from '@/lib/storage'
+import { getSettings, saveSettings as persistSettings } from '@/lib/storage'
 import type { Settings as TkweenSettings } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
@@ -73,14 +73,6 @@ export default function AdminSettings() {
       </div>
 
       <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_change_password')}</h2>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
-          <input type="password" value={settings.admin_password} onChange={e => update('admin_password', e.target.value)} style={{ ...inputStyle, flex: 1 }}/>
-          <SaveBtn k="admin_password"/>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
         <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_visit_counter')}</h2>
         <div style={{ display: 'flex', gap: 8, maxWidth: 300, alignItems: 'center' }}>
           <span style={{ color: '#888', fontSize: 14 }}>Current: <strong style={{ color: '#fff' }}>{settings.visit_count}</strong></span>
@@ -106,15 +98,6 @@ export default function AdminSettings() {
           <button onClick={addHeroImage} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: GRAD, color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}>
             <Plus size={16}/> Add
           </button>
-        </div>
-      </div>
-
-      <div style={{ padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 8 }}>Vimeo Access Token</h2>
-        <p style={{ color: '#444', fontSize: 12, marginBottom: 16 }}>For private videos. Get it from developer.vimeo.com</p>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input type="password" value={(settings as any).vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)} placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
-          <SaveBtn k="vimeo_access_token"/>
         </div>
       </div>
     </div>
