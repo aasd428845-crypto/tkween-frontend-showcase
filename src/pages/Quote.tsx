@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { GRAD, BG, BORDER, gradText, gradBorder } from '@/lib/brand'
+import { GRAD, WARM_GRAD, BG, BORDER, warmGradText, gradBorder } from '@/lib/brand'
 import { addRequest } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
@@ -44,7 +44,7 @@ export default function Quote() {
       <Navbar />
       <div style={{ paddingTop: 64 }}>
         <div style={{ padding: '80px 32px 60px', maxWidth: 700, margin: '0 auto' }}>
-          <span style={{ ...gradText, fontSize: 10, letterSpacing: '0.35em' }}>
+          <span style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em' }}>
             {isAr ? 'تكوين' : 'TKWEEN'}
           </span>
           <h1 style={{ fontSize: 'clamp(2.5rem,6vw,5rem)', fontWeight: 200, color: '#fff', marginTop: 12, marginBottom: 12 }}>
