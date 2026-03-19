@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getProjects, saveProjects } from '@/lib/storage'
-import type { Project as TkweenProject } from '@/lib/storage'
+import { fetchProjects, addProject, updateProject, deleteProject } from '@/lib/supabase-data'
+import type { TkweenProject } from '@/lib/supabase-data'
 
 const emptyProject: TkweenProject = {
   id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
@@ -12,24 +12,55 @@ const emptyProject: TkweenProject = {
 
 export default function AdminProjects() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState(getProjects)
+  const [projects, setProjects] = useState<TkweenProject[]>([])
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const save = (p: TkweenProject[]) => { setProjects(p); saveProjects(p) }
-  const handleSave = () => {
-    if (!modal) return
-    const updated = modal.id ? projects.map(p => p.id === modal.id ? modal : p) : [...projects, { ...modal, id: Date.now().toString() }]
-    save(updated); setModal(null)
+  const load = async () => {
+    setLoading(true)
+    const data = await fetchProjects()
+    setProjects(data)
+    setLoading(false)
   }
-  const handleDelete = (id: string) => { save(projects.filter(p => p.id !== id)); setConfirmDelete(null) }
-  const toggleFeatured = (id: string) => save(projects.map(p => p.id === id ? { ...p, featured: !p.featured } : p))
-  const toggleVisible = (id: string) => save(projects.map(p => p.id === id ? { ...p, visible: !p.visible } : p))
+
+  useEffect(() => { load() }, [])
+
+  const handleSave = async () => {
+    if (!modal) return
+    if (modal.id) {
+      const { id, ...rest } = modal
+      await updateProject(id, rest)
+    } else {
+      const { id, ...rest } = modal
+      await addProject(rest)
+    }
+    setModal(null)
+    await load()
+  }
+
+  const handleDelete = async (id: string) => {
+    await deleteProject(id)
+    setConfirmDelete(null)
+    await load()
+  }
+
+  const toggleFeatured = async (id: string) => {
+    const p = projects.find(x => x.id === id)
+    if (p) { await updateProject(id, { featured: !p.featured }); await load() }
+  }
+
+  const toggleVisible = async (id: string) => {
+    const p = projects.find(x => x.id === id)
+    if (p) { await updateProject(id, { visible: !p.visible }); await load() }
+  }
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', background: BG,
     border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none',
   }
+
+  if (loading) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   return (
     <div>
@@ -98,10 +129,11 @@ export default function AdminProjects() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[{ key: 'title_en', label: t('admin_title_en') }, { key: 'title_ar', label: t('admin_title_ar') },
-                { key: 'thumbnail', label: t('admin_thumbnail') }, { key: 'video_url', label: t('admin_video') }].map(f => (
+                { key: 'thumbnail', label: t('admin_thumbnail') + ' (URL)' }, { key: 'video_url', label: t('admin_video') + ' (URL)' }].map(f => (
                 <div key={f.key}>
                   <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{f.label}</label>
-                  <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })} style={inputStyle}/>
+                  <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })} style={inputStyle}
+                    placeholder={f.key === 'thumbnail' ? 'https://example.com/image.jpg' : f.key === 'video_url' ? 'https://vimeo.com/123456' : ''}/>
                 </div>
               ))}
               <div>

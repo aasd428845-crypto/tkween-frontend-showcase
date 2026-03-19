@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Save, Trash2, Plus } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getSettings, saveSettings as persistSettings, updateSetting, getHeroImages } from '@/lib/storage'
-import type { Settings as TkweenSettings } from '@/lib/storage'
+import { fetchSettings, saveSettingsBatch, saveSetting } from '@/lib/supabase-data'
+import type { TkweenSettings } from '@/lib/supabase-data'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', background: BG,
@@ -12,30 +12,42 @@ const inputStyle: React.CSSProperties = {
 
 export default function AdminSettings() {
   const { t } = useLanguage()
-  const [settings, setSettings] = useState<TkweenSettings>(getSettings)
+  const [settings, setSettings] = useState<TkweenSettings | null>(null)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchSettings().then(s => { setSettings(s); setLoading(false) })
+  }, [])
+
+  if (loading || !settings) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   let heroImages: string[] = []
   try { heroImages = JSON.parse(settings.hero_images || '[]') } catch {}
 
-  const saveField = (key: string) => {
-    persistSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
+  const saveField = async (key: string) => {
+    await saveSetting(key, (settings as any)[key])
+    setSaved(key)
+    setTimeout(() => setSaved(null), 2000)
   }
 
   const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
 
-  const addHeroImage = () => {
+  const addHeroImage = async () => {
     if (!newImageUrl.trim()) return
     const images = [...heroImages, newImageUrl.trim()]
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); persistSettings(updated); setNewImageUrl('')
+    setSettings(updated)
+    await saveSetting('hero_images', JSON.stringify(images))
+    setNewImageUrl('')
   }
 
-  const removeHeroImage = (idx: number) => {
+  const removeHeroImage = async (idx: number) => {
     const images = heroImages.filter((_, i) => i !== idx)
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated); persistSettings(updated)
+    setSettings(updated)
+    await saveSetting('hero_images', JSON.stringify(images))
   }
 
   const contactFields = [
@@ -102,7 +114,7 @@ export default function AdminSettings() {
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image')} style={{ ...inputStyle, flex: 1 }}/>
+          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image') + ' (URL)'} style={{ ...inputStyle, flex: 1 }}/>
           <button onClick={addHeroImage} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: GRAD, color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}>
             <Plus size={16}/> Add
           </button>
@@ -113,7 +125,7 @@ export default function AdminSettings() {
         <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 8 }}>Vimeo Access Token</h2>
         <p style={{ color: '#444', fontSize: 12, marginBottom: 16 }}>For private videos. Get it from developer.vimeo.com</p>
         <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input type="password" value={(settings as any).vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)} placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
+          <input type="password" value={settings.vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)} placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
           <SaveBtn k="vimeo_access_token"/>
         </div>
       </div>
