@@ -1,9 +1,14 @@
-import { getSettings } from '@/lib/storage'
+import { useState, useEffect } from 'react'
 import { GRAD, TEAL } from '@/lib/brand'
+import { apiGetSettings } from '@/lib/api'
 
 export default function WhatsAppButton() {
-  const settings = getSettings()
-  const number = settings.whatsapp || '966553120141'
+  const [number, setNumber] = useState('966553120141')
+
+  useEffect(() => {
+    apiGetSettings().then(s => { if (s.whatsapp) setNumber(s.whatsapp) }).catch(() => {})
+  }, [])
+
   return (
     <a
       href={`https://wa.me/${number}`}

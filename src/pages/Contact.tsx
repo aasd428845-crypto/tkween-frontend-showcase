@@ -1,14 +1,20 @@
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { Mail, Phone, MapPin, Instagram, Twitter } from 'lucide-react'
 import { warmGradText, WARM_GRAD, gradText, GRAD, TEAL, BG, BORDER } from '@/lib/brand'
-import { getSettings } from '@/lib/storage'
+import { apiGetSettings, DEFAULT_SETTINGS } from '@/lib/api'
+import type { Settings } from '@/lib/api'
 
 export default function Contact() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
-  const settings = getSettings()
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
+
+  useEffect(() => {
+    apiGetSettings().then(setSettings).catch(() => {})
+  }, [])
 
   const items = [
     { icon: Phone, label: isAr ? 'الهاتف' : 'Phone', value: settings.phone || '0553120141', href: `tel:${settings.phone || '0553120141'}` },
@@ -36,10 +42,7 @@ export default function Contact() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {items.map((item, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 20,
-                padding: '24px 0', borderBottom: `1px solid ${BORDER}`,
-              }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '24px 0', borderBottom: `1px solid ${BORDER}` }}>
                 <item.icon size={20} style={{ color: TEAL, flexShrink: 0 }} />
                 <div>
                   <p style={{ color: '#555', fontSize: 10, letterSpacing: '0.2em', marginBottom: 4 }}>
@@ -76,21 +79,9 @@ export default function Contact() {
             <div style={{ display: 'flex', gap: 16 }}>
               {social.map((s, i) => (
                 <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
-                   style={{
-                     display: 'flex', alignItems: 'center', gap: 10,
-                     padding: '14px 24px', border: `1px solid ${BORDER}`,
-                     color: '#888', fontSize: 13, transition: 'all 0.3s',
-                   }}
-                   onMouseEnter={e => {
-                     const el = e.currentTarget as HTMLElement
-                     el.style.borderColor = '#FF5F57'
-                     el.style.color = '#FF5F57'
-                   }}
-                   onMouseLeave={e => {
-                     const el = e.currentTarget as HTMLElement
-                     el.style.borderColor = BORDER
-                     el.style.color = '#888'
-                   }}>
+                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 24px', border: `1px solid ${BORDER}`, color: '#888', fontSize: 13, transition: 'all 0.3s' }}
+                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = '#FF5F57'; el.style.color = '#FF5F57' }}
+                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = BORDER; el.style.color = '#888' }}>
                   <s.icon size={16} />
                   <span>{s.handle}</span>
                 </a>
@@ -99,21 +90,9 @@ export default function Contact() {
             {settings.snapchat && (
               <div style={{ marginTop: 16 }}>
                 <a href={settings.snapchat} target="_blank" rel="noopener noreferrer"
-                   style={{
-                     display: 'inline-flex', alignItems: 'center', gap: 10,
-                     padding: '14px 24px', border: `1px solid ${BORDER}`,
-                     color: '#888', fontSize: 13, transition: 'all 0.3s',
-                   }}
-                   onMouseEnter={e => {
-                     const el = e.currentTarget as HTMLElement
-                     el.style.borderColor = '#FFFC00'
-                     el.style.color = '#FFFC00'
-                   }}
-                   onMouseLeave={e => {
-                     const el = e.currentTarget as HTMLElement
-                     el.style.borderColor = BORDER
-                     el.style.color = '#888'
-                   }}>
+                   style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '14px 24px', border: `1px solid ${BORDER}`, color: '#888', fontSize: 13, transition: 'all 0.3s' }}
+                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = '#FFFC00'; el.style.color = '#FFFC00' }}
+                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = BORDER; el.style.color = '#888' }}>
                   <span>👻</span>
                   <span>{settings.snapchat.replace(/.*snapchat\.com\/add\//, '@')}</span>
                 </a>

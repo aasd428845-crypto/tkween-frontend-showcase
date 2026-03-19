@@ -1,25 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getVideos, saveVideos } from '@/lib/storage'
-
-interface Video {
-  id: string
-  title_en: string
-  title_ar: string
-  section: 'conferences' | 'corporate_ads' | 'designs' | 'our_work'
-  vimeo_url: string
-  thumbnail_url: string
-  display_order: number
-  featured: boolean
-  visible: boolean
-}
+import { apiGetVideos, apiCreateVideo, apiUpdateVideo, apiDeleteVideo } from '@/lib/api'
+import type { Video } from '@/lib/api'
 
 const SECTIONS = ['conferences', 'corporate_ads', 'designs', 'our_work'] as const
 const SECTION_LABELS: Record<string, string> = {
   conferences: 'CONFERENCES', corporate_ads: 'CORPORATE ADS', designs: 'DESIGNS', our_work: 'OUR WORK',
 }
 
-const blank: Omit<Video, 'id'> = {
+const blank: Omit<Video, 'id' | 'created_at'> = {
   title_en: '', title_ar: '', section: 'conferences',
   vimeo_url: '', thumbnail_url: '', display_order: 0, featured: false, visible: true,
 }
@@ -30,17 +19,26 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function AdminVideos() {
-  const [videos, setVideos] = useState<Video[]>(() => getVideos() as Video[])
+  const [videos, setVideos] = useState<Video[]>([])
+  const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<string>('conferences')
   const [modal, setModal] = useState(false)
-  const [form, setForm] = useState<Omit<Video, 'id'>>(blank)
+  const [form, setForm] = useState<Omit<Video, 'id' | 'created_at'>>(blank)
   const [editId, setEditId] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    apiGetVideos().then(data => { setVideos(data); setLoading(false) }).catch(() => setLoading(false))
+  }, [])
 
   const filtered = videos.filter(v => v.section === tab).sort((a, b) => a.display_order - b.display_order)
 
   const openAdd = () => { setForm({ ...blank, section: tab as any }); setEditId(null); setModal(true) }
-  const openEdit = (v: Video) => { const { id, ...rest } = v; setForm(rest); setEditId(id); setModal(true) }
+  const openEdit = (v: Video) => {
+    const { id, created_at, ...rest } = v
+    setForm(rest); setEditId(id); setModal(true)
+  }
 
   const fetchVimeo = async () => {
     if (!form.vimeo_url) return
@@ -52,23 +50,33 @@ export default function AdminVideos() {
     } catch { alert('Failed to fetch Vimeo data.') } finally { setFetching(false) }
   }
 
-  const handleSave = () => {
-    const now = new Date().toISOString()
-    const updated = editId
-      ? videos.map(v => v.id === editId ? { ...form, id: editId, created_at: (v as any).created_at || now } : v)
-      : [...videos, { ...form, id: Date.now().toString(), created_at: now }]
-    setVideos(updated); saveVideos(updated as any); setModal(false)
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      if (editId) {
+        const updated = await apiUpdateVideo(editId, form)
+        setVideos(prev => prev.map(v => v.id === editId ? updated : v))
+      } else {
+        const created = await apiCreateVideo(form)
+        setVideos(prev => [...prev, created])
+      }
+      setModal(false)
+    } catch { alert('Failed to save video.') } finally { setSaving(false) }
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this video?')) return
-    const updated = videos.filter(v => v.id !== id)
-    setVideos(updated); saveVideos(updated as any)
+    try {
+      await apiDeleteVideo(id)
+      setVideos(prev => prev.filter(v => v.id !== id))
+    } catch { alert('Failed to delete video.') }
   }
 
-  const toggle = (id: string, field: 'featured' | 'visible') => {
-    const updated = videos.map(v => v.id === id ? { ...v, [field]: !v[field] } : v)
-    setVideos(updated); saveVideos(updated as any)
+  const toggle = async (id: string, field: 'featured' | 'visible') => {
+    const video = videos.find(v => v.id === id)
+    if (!video) return
+    const updated = await apiUpdateVideo(id, { [field]: !video[field] })
+    setVideos(prev => prev.map(v => v.id === id ? updated : v))
   }
 
   return (
@@ -76,7 +84,7 @@ export default function AdminVideos() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>Video Sections</h1>
-          <p style={{ color: '#666', fontSize: 13, marginTop: 4 }}>Manage videos stored locally</p>
+          <p style={{ color: '#666', fontSize: 13, marginTop: 4 }}>Manage videos in the database</p>
         </div>
         <button onClick={openAdd} style={{
           padding: '10px 20px', background: GRAD, border: 'none',
@@ -95,67 +103,73 @@ export default function AdminVideos() {
         ))}
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              {['THUMB', 'TITLE', 'VIMEO', 'ORDER', 'FEATURED', 'VISIBLE', 'ACTIONS'].map(h => (
-                <th key={h} style={{ padding: '10px 12px', color: '#555', fontSize: 10, letterSpacing: '0.1em', textAlign: 'left', borderBottom: `1px solid ${BORDER}` }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map(v => (
-              <tr key={v.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
-                <td style={{ padding: 8 }}>
-                  {v.thumbnail_url
-                    ? <img src={v.thumbnail_url} alt="" style={{ width: 80, height: 45, objectFit: 'cover', borderRadius: 2 }}/>
-                    : <div style={{ width: 80, height: 45, background: BG_SOFT, borderRadius: 2 }}/>}
-                </td>
-                <td style={{ padding: 8 }}>
-                  <div style={{ color: '#fff', fontSize: 13 }}>{v.title_en}</div>
-                  <div style={{ color: '#555', fontSize: 11 }}>{v.title_ar}</div>
-                </td>
-                <td style={{ padding: 8, color: '#555', fontSize: 11 }}>{v.vimeo_url ? '✓ linked' : '—'}</td>
-                <td style={{ padding: 8, color: '#555', fontSize: 12 }}>{v.display_order}</td>
-                <td style={{ padding: 8 }}>
-                  <button onClick={() => toggle(v.id, 'featured')} style={{
-                    background: v.featured ? `${GRAD_START}20` : 'transparent',
-                    border: `1px solid ${v.featured ? GRAD_START : BORDER}`,
-                    color: v.featured ? GRAD_START : '#444',
-                    padding: '3px 8px', fontSize: 9, cursor: 'pointer', borderRadius: 3,
-                  }}>{v.featured ? 'YES' : 'NO'}</button>
-                </td>
-                <td style={{ padding: 8 }}>
-                  <button onClick={() => toggle(v.id, 'visible')} style={{
-                    background: v.visible ? `${GRAD_START}20` : 'transparent',
-                    border: `1px solid ${v.visible ? GRAD_START : BORDER}`,
-                    color: v.visible ? GRAD_START : '#444',
-                    padding: '3px 8px', fontSize: 9, cursor: 'pointer', borderRadius: 3,
-                  }}>{v.visible ? 'SHOWN' : 'HIDDEN'}</button>
-                </td>
-                <td style={{ padding: 8 }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => openEdit(v)} style={{
-                      background: 'transparent', border: `1px solid ${BORDER}`,
-                      color: '#888', padding: '5px 10px', fontSize: 10, cursor: 'pointer', borderRadius: 3,
-                    }}>EDIT</button>
-                    <button onClick={() => handleDelete(v.id)} style={{
-                      background: 'transparent', border: '1px solid #500',
-                      color: '#f87171', padding: '5px 10px', fontSize: 10, cursor: 'pointer', borderRadius: 3,
-                    }}>DEL</button>
-                  </div>
-                </td>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 48, color: '#555' }}>Loading...</div>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                {['THUMB', 'TITLE', 'VIMEO URL', 'ORDER', 'FEATURED', 'VISIBLE', 'ACTIONS'].map(h => (
+                  <th key={h} style={{ padding: '10px 12px', color: '#555', fontSize: 10, letterSpacing: '0.1em', textAlign: 'left', borderBottom: `1px solid ${BORDER}` }}>{h}</th>
+                ))}
               </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr><td colSpan={7} style={{ padding: 48, textAlign: 'center', color: '#333', fontSize: 13 }}>
-                No videos in this section
-              </td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filtered.map(v => (
+                <tr key={v.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
+                  <td style={{ padding: 8 }}>
+                    {v.thumbnail_url
+                      ? <img src={v.thumbnail_url} alt="" style={{ width: 80, height: 45, objectFit: 'cover', borderRadius: 2 }}/>
+                      : <div style={{ width: 80, height: 45, background: BG_SOFT, borderRadius: 2 }}/>}
+                  </td>
+                  <td style={{ padding: 8 }}>
+                    <div style={{ color: '#fff', fontSize: 13 }}>{v.title_en}</div>
+                    <div style={{ color: '#555', fontSize: 11 }}>{v.title_ar}</div>
+                  </td>
+                  <td style={{ padding: 8, color: '#555', fontSize: 11, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {v.vimeo_url || '—'}
+                  </td>
+                  <td style={{ padding: 8, color: '#555', fontSize: 12 }}>{v.display_order}</td>
+                  <td style={{ padding: 8 }}>
+                    <button onClick={() => toggle(v.id, 'featured')} style={{
+                      background: v.featured ? `${GRAD_START}20` : 'transparent',
+                      border: `1px solid ${v.featured ? GRAD_START : BORDER}`,
+                      color: v.featured ? GRAD_START : '#444',
+                      padding: '3px 8px', fontSize: 9, cursor: 'pointer', borderRadius: 3,
+                    }}>{v.featured ? 'YES' : 'NO'}</button>
+                  </td>
+                  <td style={{ padding: 8 }}>
+                    <button onClick={() => toggle(v.id, 'visible')} style={{
+                      background: v.visible ? `${GRAD_START}20` : 'transparent',
+                      border: `1px solid ${v.visible ? GRAD_START : BORDER}`,
+                      color: v.visible ? GRAD_START : '#444',
+                      padding: '3px 8px', fontSize: 9, cursor: 'pointer', borderRadius: 3,
+                    }}>{v.visible ? 'SHOWN' : 'HIDDEN'}</button>
+                  </td>
+                  <td style={{ padding: 8 }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => openEdit(v)} style={{
+                        background: 'transparent', border: `1px solid ${BORDER}`,
+                        color: '#888', padding: '5px 10px', fontSize: 10, cursor: 'pointer', borderRadius: 3,
+                      }}>EDIT</button>
+                      <button onClick={() => handleDelete(v.id)} style={{
+                        background: 'transparent', border: '1px solid #500',
+                        color: '#f87171', padding: '5px 10px', fontSize: 10, cursor: 'pointer', borderRadius: 3,
+                      }}>DEL</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} style={{ padding: 48, textAlign: 'center', color: '#333', fontSize: 13 }}>
+                  No videos in this section
+                </td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {modal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(4,10,6,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -193,13 +207,15 @@ export default function AdminVideos() {
                     background: GRAD, border: 'none', color: '#fff',
                     padding: '10px 16px', fontSize: 11, cursor: fetching ? 'not-allowed' : 'pointer',
                     opacity: fetching || !form.vimeo_url ? 0.5 : 1, borderRadius: 4, whiteSpace: 'nowrap',
-                  }}>{fetching ? 'FETCHING...' : 'FETCH'}</button>
+                  }}>{fetching ? 'FETCHING...' : 'AUTO-FILL'}</button>
                 </div>
-                <p style={{ color: '#333', fontSize: 10, marginTop: 4 }}>Auto-fills thumbnail from Vimeo oEmbed</p>
+                <p style={{ color: '#444', fontSize: 10, marginTop: 4 }}>Paste Vimeo URL — saved as string in database. Auto-fill fetches thumbnail from Vimeo.</p>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>THUMBNAIL URL</label>
-                <input style={inputStyle} value={form.thumbnail_url} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })}/>
+                <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>THUMBNAIL URL (direct image link)</label>
+                <input style={inputStyle} value={form.thumbnail_url}
+                  onChange={e => setForm({ ...form, thumbnail_url: e.target.value })}
+                  placeholder="https://example.com/image.jpg"/>
                 {form.thumbnail_url && <img src={form.thumbnail_url} alt="preview" style={{ width: 120, height: 68, objectFit: 'cover', marginTop: 8, borderRadius: 3 }}/>}
               </div>
               <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 24 }}>
@@ -212,7 +228,9 @@ export default function AdminVideos() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button onClick={handleSave} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: 'pointer', borderRadius: 4 }}>SAVE VIDEO</button>
+              <button onClick={handleSave} disabled={saving} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: saving ? 'not-allowed' : 'pointer', borderRadius: 4, opacity: saving ? 0.7 : 1 }}>
+                {saving ? 'SAVING...' : 'SAVE VIDEO'}
+              </button>
               <button onClick={() => setModal(false)} style={{ background: 'transparent', border: `1px solid ${BORDER}`, color: '#888', padding: '13px 20px', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>CANCEL</button>
             </div>
           </div>

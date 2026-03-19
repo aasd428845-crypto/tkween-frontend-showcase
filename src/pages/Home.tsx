@@ -6,7 +6,14 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, gradText, cinematicText, warmGradText, applyGradText, removeGradText } from '@/lib/brand'
-import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
+import { apiGetProjects, apiGetSettings, apiIncrementVisit } from '@/lib/api'
+import type { Project } from '@/lib/api'
+
+const DEFAULT_HERO = [
+  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
+  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
+  'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=85',
+]
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -36,27 +43,31 @@ export default function Home() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
 
-  const heroImages = getHeroImages()
-  const projects = getProjects()
-    .filter(p => p.visible)
-    .sort((a, b) => a.display_order - b.display_order)
-
+  const [heroImages, setHeroImages] = useState<string[]>(DEFAULT_HERO)
+  const [projects, setProjects] = useState<Project[]>([])
   const [heroIdx, setHeroIdx] = useState(0)
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
+
+  useEffect(() => {
+    apiGetProjects().then(data => {
+      setProjects(data.filter(p => p.visible).sort((a, b) => a.display_order - b.display_order))
+    }).catch(() => {})
+
+    apiGetSettings().then(s => {
+      try {
+        const imgs = JSON.parse(s.hero_images)
+        if (Array.isArray(imgs) && imgs.length > 0) setHeroImages(imgs)
+      } catch {}
+    }).catch(() => {})
+
+    apiIncrementVisit().catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (heroImages.length === 0) return
     const t = setInterval(() => setHeroIdx(p => (p + 1) % heroImages.length), 6000)
     return () => clearInterval(t)
   }, [heroImages.length])
-
-  useEffect(() => {
-    try {
-      const s = getSettings()
-      const updated = { ...s, visit_count: String((parseInt(s.visit_count || '0')) + 1) }
-      localStorage.setItem('tkween_settings', JSON.stringify(updated))
-    } catch {}
-  }, [])
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
@@ -271,9 +282,7 @@ export default function Home() {
               <div key={i} style={{
                 padding: '22px 16px',
                 textAlign: 'center', fontSize: 13, color: '#444',
-                letterSpacing: '0.03em',
-                transition: 'color 0.3s',
-                cursor: 'default',
+                letterSpacing: '0.03em', transition: 'color 0.3s', cursor: 'default',
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#444' }}>
