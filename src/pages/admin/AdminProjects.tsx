@@ -16,6 +16,7 @@ export default function AdminProjects() {
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -26,33 +27,53 @@ export default function AdminProjects() {
 
   useEffect(() => { load() }, [])
 
+  const showError = (msg: string) => {
+    setSaveError(msg)
+    setTimeout(() => setSaveError(null), 5000)
+  }
+
   const handleSave = async () => {
     if (!modal) return
-    if (modal.id) {
-      const { id, ...rest } = modal
-      await updateProject(id, rest)
-    } else {
-      const { id, ...rest } = modal
-      await addProject(rest)
+    try {
+      if (modal.id) {
+        const { id, ...rest } = modal
+        await updateProject(id, rest)
+      } else {
+        const { id, ...rest } = modal
+        await addProject(rest)
+      }
+      setSaveError(null)
+      setModal(null)
+      await load()
+    } catch (e: any) {
+      showError(e.message || 'فشل الحفظ. تأكد من تسجيل الدخول أولاً.')
     }
-    setModal(null)
-    await load()
   }
 
   const handleDelete = async (id: string) => {
-    await deleteProject(id)
-    setConfirmDelete(null)
-    await load()
+    try {
+      await deleteProject(id)
+      setConfirmDelete(null)
+      await load()
+    } catch (e: any) {
+      showError(e.message || 'فشل الحذف.')
+    }
   }
 
   const toggleFeatured = async (id: string) => {
     const p = projects.find(x => x.id === id)
-    if (p) { await updateProject(id, { featured: !p.featured }); await load() }
+    if (p) {
+      try { await updateProject(id, { featured: !p.featured }); await load() }
+      catch (e: any) { showError(e.message || 'فشل التحديث.') }
+    }
   }
 
   const toggleVisible = async (id: string) => {
     const p = projects.find(x => x.id === id)
-    if (p) { await updateProject(id, { visible: !p.visible }); await load() }
+    if (p) {
+      try { await updateProject(id, { visible: !p.visible }); await load() }
+      catch (e: any) { showError(e.message || 'فشل التحديث.') }
+    }
   }
 
   const inputStyle: React.CSSProperties = {
@@ -64,6 +85,11 @@ export default function AdminProjects() {
 
   return (
     <div>
+      {saveError && (
+        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 6, color: '#ef4444', fontSize: 13 }}>
+          ⚠️ {saveError}
+        </div>
+      )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>{t('admin_projects')}</h1>
         <button onClick={() => setModal({ ...emptyProject })} style={{

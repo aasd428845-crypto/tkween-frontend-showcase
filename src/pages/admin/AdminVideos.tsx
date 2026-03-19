@@ -27,6 +27,7 @@ export default function AdminVideos() {
   const [editId, setEditId] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -62,30 +63,51 @@ export default function AdminVideos() {
   }
 
   const handleSave = async () => {
-    if (editId) {
-      await updateVideo(editId, form)
-    } else {
-      await addVideo(form as any)
+    try {
+      if (editId) {
+        await updateVideo(editId, form)
+      } else {
+        await addVideo(form as any)
+      }
+      setSaveError(null)
+      setModal(false)
+      await load()
+    } catch (e: any) {
+      setSaveError(e.message || 'فشل الحفظ. تأكد من تسجيل الدخول أولاً.')
+      setTimeout(() => setSaveError(null), 5000)
     }
-    setModal(false)
-    await load()
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this video?')) return
-    await deleteVideo(id)
-    await load()
+    try {
+      await deleteVideo(id)
+      await load()
+    } catch (e: any) {
+      setSaveError(e.message || 'فشل الحذف.')
+      setTimeout(() => setSaveError(null), 5000)
+    }
   }
 
   const handleToggle = async (id: string, field: 'featured' | 'visible') => {
     const v = videos.find(x => x.id === id)
     if (!v) return
-    await updateVideo(id, { [field]: !(v[field]) })
-    await load()
+    try {
+      await updateVideo(id, { [field]: !(v[field]) })
+      await load()
+    } catch (e: any) {
+      setSaveError(e.message || 'فشل التحديث.')
+      setTimeout(() => setSaveError(null), 5000)
+    }
   }
 
   return (
     <div>
+      {saveError && (
+        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 6, color: '#ef4444', fontSize: 13 }}>
+          ⚠️ {saveError}
+        </div>
+      )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>Video Sections</h1>

@@ -79,16 +79,19 @@ export async function fetchProjects(): Promise<TkweenProject[]> {
 }
 
 export async function addProject(p: Omit<TkweenProject, 'id'>) {
-  const { data } = await supabase.from('projects').insert(p).select().single()
+  const { data, error } = await supabase.from('projects').insert(p).select().single()
+  if (error) throw new Error(error.message)
   return data
 }
 
 export async function updateProject(id: string, updates: Partial<TkweenProject>) {
-  await supabase.from('projects').update(updates).eq('id', id)
+  const { error } = await supabase.from('projects').update(updates).eq('id', id)
+  if (error) throw new Error(error.message)
 }
 
 export async function deleteProject(id: string) {
-  await supabase.from('projects').delete().eq('id', id)
+  const { error } = await supabase.from('projects').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }
 
 // ── REQUESTS ──
@@ -154,14 +157,17 @@ export async function fetchVideos(): Promise<TkweenVideo[]> {
 }
 
 export async function addVideo(v: Omit<TkweenVideo, 'id' | 'created_at'>) {
-  const { data } = await supabase.from('videos').insert(v).select().single()
+  const { data, error } = await supabase.from('videos').insert(v).select().single()
+  if (error) throw new Error(error.message)
   return data
 }
 
 export async function updateVideo(id: string, updates: Partial<TkweenVideo>) {
-  await supabase.from('videos').update(updates).eq('id', id)
+  const { error } = await supabase.from('videos').update(updates).eq('id', id)
+  if (error) throw new Error(error.message)
 }
 
 export async function deleteVideo(id: string) {
-  await supabase.from('videos').delete().eq('id', id)
+  const { error } = await supabase.from('videos').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }
