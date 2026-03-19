@@ -1,9 +1,8 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import TkweenLogo from './TkweenLogo';
 import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 const ACCENT = '#2dd4bf'
 
@@ -11,33 +10,15 @@ const AdminLayout = ({ children }: { children?: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, lang, setLang } = useLanguage();
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/admin/login');
-      } else {
-        setAuthenticated(true);
-      }
-    };
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setAuthenticated(false);
-        navigate('/admin/login');
-      } else {
-        setAuthenticated(true);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    if (sessionStorage.getItem('tkween_admin') !== '1') {
+      navigate('/admin/login');
+    }
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    sessionStorage.removeItem('tkween_admin');
     navigate('/admin/login');
   };
 
@@ -49,7 +30,7 @@ const AdminLayout = ({ children }: { children?: ReactNode }) => {
     { path: '/admin/settings', icon: Settings, key: 'admin_settings' },
   ];
 
-  if (authenticated !== true) return null;
+  if (sessionStorage.getItem('tkween_admin') !== '1') return null;
 
   return (
     <div className="flex" style={{ minHeight: '100vh', background: '#000' }}>
