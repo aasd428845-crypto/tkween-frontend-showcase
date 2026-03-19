@@ -5,15 +5,15 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { apiGetVideos } from '@/lib/api'
+import { fetchVideos } from '@/lib/supabase-data'
 
 const PLACEHOLDER = [
   { id: 'd1', title_en: 'Motion Graphics Reel', title_ar: 'حزمة موشن جرافيك',
-    thumbnail_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', vimeo_url: '' },
   { id: 'd2', title_en: 'Event Branding 2024', title_ar: 'هوية فعالية 2024',
-    thumbnail_url: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', vimeo_url: '' },
   { id: 'd3', title_en: 'Digital Campaigns', title_ar: 'حملات رقمية',
-    thumbnail_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', vimeo_url: '' },
 ]
 
 export default function Designs() {
@@ -23,10 +23,13 @@ export default function Designs() {
   const [videos, setVideos] = useState<any[]>(PLACEHOLDER)
 
   useEffect(() => {
-    apiGetVideos('designs').then(data => {
-      const visible = data.filter(v => v.visible).sort((a, b) => a.display_order - b.display_order)
-      if (visible.length > 0) setVideos(visible)
-    }).catch(() => {})
+    fetchVideos().then(data => {
+      const filtered = data
+        .filter(v => v.section === 'designs' && v.visible)
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+        .map(v => ({ ...v, thumbnail: v.thumbnail_url || '' }))
+      if (filtered.length > 0) setVideos(filtered)
+    })
   }, [])
 
   return (
@@ -45,7 +48,7 @@ export default function Designs() {
         {videos.map((v: any) => (
           <VideoCard key={v.id}
             title={isAr ? v.title_ar || v.title_en : v.title_en}
-            thumbnail={v.thumbnail_url || ''}
+            thumbnail={v.thumbnail}
             videoUrl={v.vimeo_url || ''}
             height="65vw"
             onClick={v.vimeo_url ? () => setModal({ url: v.vimeo_url, title: isAr ? v.title_ar || v.title_en : v.title_en }) : undefined}

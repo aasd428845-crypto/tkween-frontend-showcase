@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { GRAD, CORAL, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { apiLogin } from '@/lib/api'
+import { fetchSettings } from '@/lib/supabase-data'
 
 export default function AdminLogin() {
   const { t } = useLanguage()
@@ -15,15 +15,15 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    const ok = await apiLogin(password)
-    setLoading(false)
-    if (ok) {
+    const settings = await fetchSettings()
+    if (password === settings.admin_password) {
       sessionStorage.setItem('tkween_admin', '1')
       navigate('/admin/dashboard')
     } else {
       setError(true)
       setTimeout(() => setError(false), 3000)
     }
+    setLoading(false)
   }
 
   return (
@@ -55,9 +55,11 @@ export default function AdminLogin() {
           <button type="submit" disabled={loading} style={{
             width: '100%', padding: 12, background: GRAD, color: '#fff',
             borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none',
-            cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '0.1em',
-            opacity: loading ? 0.7 : 1, transition: 'opacity 0.2s',
-          }}>
+            cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
+            opacity: loading ? 0.7 : 1,
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
             {loading ? '...' : t('admin_enter')}
           </button>
         </form>

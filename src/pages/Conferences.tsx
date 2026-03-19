@@ -5,16 +5,16 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { apiGetVideos } from '@/lib/api'
-import type { Video } from '@/lib/api'
+import { fetchVideos } from '@/lib/supabase-data'
+import type { TkweenVideo } from '@/lib/supabase-data'
 
 const PLACEHOLDER = [
   { id: 'c1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
-    thumbnail_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', vimeo_url: '' },
   { id: 'c2', title_en: 'Future Investment Forum', title_ar: 'منتدى مستقبل الاستثمار',
-    thumbnail_url: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80', vimeo_url: '' },
   { id: 'c3', title_en: 'Aramco Annual Summit', title_ar: 'قمة أرامكو السنوية',
-    thumbnail_url: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', vimeo_url: '' },
+    thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80', vimeo_url: '' },
 ]
 
 export default function Conferences() {
@@ -24,10 +24,13 @@ export default function Conferences() {
   const [videos, setVideos] = useState<any[]>(PLACEHOLDER)
 
   useEffect(() => {
-    apiGetVideos('conferences').then(data => {
-      const visible = data.filter(v => v.visible).sort((a, b) => a.display_order - b.display_order)
-      if (visible.length > 0) setVideos(visible)
-    }).catch(() => {})
+    fetchVideos().then(data => {
+      const filtered = data
+        .filter(v => v.section === 'conferences' && v.visible)
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+        .map(v => ({ ...v, thumbnail: v.thumbnail_url || '' }))
+      if (filtered.length > 0) setVideos(filtered)
+    })
   }, [])
 
   return (
@@ -46,7 +49,7 @@ export default function Conferences() {
         {videos.map((v: any) => (
           <VideoCard key={v.id}
             title={isAr ? v.title_ar || v.title_en : v.title_en}
-            thumbnail={v.thumbnail_url || ''}
+            thumbnail={v.thumbnail}
             videoUrl={v.vimeo_url || ''}
             height="65vw"
             onClick={v.vimeo_url ? () => setModal({ url: v.vimeo_url, title: isAr ? v.title_ar || v.title_en : v.title_en }) : undefined}

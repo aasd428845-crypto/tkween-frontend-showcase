@@ -1,105 +1,84 @@
 # TKWEEN Media Production Website
 
-A bilingual (Arabic/English) media production company website for TKWEEN, built with Vite + React + TypeScript + Tailwind CSS + Express + PostgreSQL.
+A bilingual (Arabic/English) media production company website for TKWEEN, built with Vite + React + TypeScript + Tailwind CSS.
 
 ## Architecture
 
-- **Frontend**: React + Vite + TypeScript
-- **Backend**: Express.js API server (TypeScript, tsx runtime)
-- **Database**: PostgreSQL (Replit built-in, via DATABASE_URL)
+- **Frontend**: React + Vite + TypeScript (pure frontend, no backend server)
 - **Styling**: Tailwind CSS + inline styles with CSS custom properties
-- **Routing**: React Router v6
-- **State**: All data fetched from PostgreSQL via REST API — no localStorage
+- **Routing**: React Router v6 (wouter not used — react-router-dom)
+- **State**: localStorage for all data (videos, projects, requests, settings)
 - **Fonts**: Inter (EN) + Tajawal (AR) from Google Fonts
-- **Vite Port**: 5000
-- **API Port**: 3001 (proxied via Vite `/api` → `localhost:3001`)
+- **Port**: 5000
+- **Data**: All data stored in browser localStorage — no external database
 
 ## Replit Setup
 
-- Run command: `npm run dev` (runs both Vite + Express concurrently)
-- Vite dev server starts on port 5000
-- Express API starts on port 3001
-- Requires: `DATABASE_URL` environment variable (auto-set by Replit PostgreSQL)
-- Database tables created automatically on first startup
+- Run command: `npm run dev`
+- Dev server starts on port 5000 (mapped to external port 80)
+- No environment variables required — fully self-contained frontend app
+- Supabase has been removed; all data uses localStorage
 
 ## Design System
 
-- Background: `#000000` / `#040A06`
-- Card/panel: `#0a0f0b` / `#111814`
-- Border: `#1a2a1e`
-- Accent: Coral `#FF5F57`, Teal `#2DD4BF`
-- Gradient: coral→teal
+- Background: `#000000` (pure black)
+- Card/panel: `#0a0a0a` / `#111111`
+- Border: `#1c1c1c`
+- Accent: `#FF3B30` (red — NOT orange, NOT teal)
+- Accent dark: `#D62828`
 - Text: `#ffffff` / `#888888`
-
-## Database Tables
-
-| Table | Purpose |
-|-------|---------|
-| `videos` | Video content per section (conferences, corporate_ads, designs, our_work) |
-| `projects` | Featured projects on homepage |
-| `requests` | Quote requests from public form |
-| `settings` | Site settings: contact, password, hero images, Vimeo token |
-
-## API Routes (Express on port 3001)
-
-| Method | Path | Purpose |
-|--------|------|---------|
-| POST | /api/auth/login | Admin password verification |
-| GET | /api/videos | All videos (optional ?section= filter) |
-| POST | /api/videos | Create video (vimeo_url stored as string) |
-| PUT | /api/videos/:id | Update video |
-| DELETE | /api/videos/:id | Delete video |
-| GET | /api/projects | All projects |
-| POST | /api/projects | Create project |
-| PUT | /api/projects/:id | Update project |
-| DELETE | /api/projects/:id | Delete project |
-| GET | /api/requests | All requests |
-| POST | /api/requests | Submit quote request |
-| PUT | /api/requests/:id | Update request status |
-| DELETE | /api/requests/:id | Delete request |
-| GET | /api/settings | Get site settings |
-| PUT | /api/settings | Update settings |
-| PATCH | /api/settings/visit | Increment visit counter |
 
 ## Routing Structure
 
 ### Public Routes
-- `/` — Home (hero slideshow from DB, featured work from DB)
-- `/conferences` — Conference coverage videos (from DB)
-- `/corporate-ads` — Corporate ads videos (from DB)
-- `/designs` — Design work videos (from DB)
-- `/our-work` — General work videos (from DB)
-- `/contact` — Contact info (from DB settings)
-- `/quote` — Quote request form (saves to DB)
+- `/` — Home (hero slideshow, featured work, section links, services, stats, clients)
+- `/conferences` — Conference coverage videos
+- `/corporate-ads` — Corporate ads videos
+- `/designs` — Design work videos
+- `/our-work` — General work videos
+- `/contact` — Contact info (phone, email, WhatsApp, social)
+- `/quote` — Quote request form (saves to localStorage `tkween_requests`)
 
-### Admin Routes
-- `/admin/login` — Password login (verified via API)
-- `/admin/dashboard` — Overview stats from DB
-- `/admin/projects` — Manage projects (thumbnail = direct URL, video = Vimeo URL)
-- `/admin/videos` — Manage videos (vimeo_url stored as string in DB)
-- `/admin/requests` — View & manage quote requests from DB
-- `/admin/settings` — Contact info, password, hero image URLs, Vimeo token
+### Admin Routes (nested under AdminLayout)
+- `/admin/login` — Password login (default: `tkween2025`)
+- `/admin/dashboard` — Overview stats, recent requests
+- `/admin/projects` — Manage showcase projects (localStorage `tkween_projects`)
+- `/admin/videos` — Manage video sections (localStorage `tkween_videos`) with Vimeo oEmbed
+- `/admin/requests` — View & manage quote requests (localStorage `tkween_requests`)
+- `/admin/settings` — Contact info, password, hero images, Vimeo token
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `server/index.ts` | Express API server with all routes + DB init |
-| `src/lib/api.ts` | Frontend async API client + TypeScript interfaces |
-| `src/lib/storage.ts` | Re-exports types from api.ts (backward compat) |
 | `src/App.tsx` | Routes — public + nested admin |
+| `src/index.css` | CSS variables, fonts, scrollbar |
 | `src/context/LanguageContext.tsx` | Bilingual EN/AR translations |
+| `src/components/Navbar.tsx` | Fixed navbar, WORK dropdown, lang switcher |
+| `src/components/TkweenLogo.tsx` | SVG logo with gradient red |
+| `src/components/VideoCard.tsx` | Full-width video card with hover |
 | `src/components/VideoModal.tsx` | Vimeo/YouTube/HTML5 video modal |
+| `src/components/WhatsAppButton.tsx` | Fixed WhatsApp CTA |
+| `src/components/admin/AdminLayout.tsx` | Admin layout with `<Outlet>` for nested routes |
+| `src/pages/admin/AdminVideos.tsx` | localStorage-based video manager |
+
+## localStorage Keys
+
+| Key | Content |
+|-----|---------|
+| `tkween_videos` | Array of video objects per section |
+| `tkween_projects` | Featured projects shown on homepage |
+| `tkween_requests` | Quote requests from form |
+| `tkween_settings` | Site settings: password, contact, hero images |
+| `tkween-lang` | User language preference (`en` or `ar`) |
 
 ## Admin Access
 
 - URL: `/admin/login`
-- Default password: `tkween2025` (stored in DB `settings` table)
+- Default password: `tkween2025`
+- Password stored in localStorage `tkween_settings.admin_password`
 - Session stored in `sessionStorage.tkween_admin = '1'`
 
-## Video / Image URL Policy
+## WhatsApp
 
-- **Vimeo URLs**: Stored as plain text strings in `videos.vimeo_url`. VideoModal extracts the video ID and builds the embed URL.
-- **Thumbnail URLs**: Direct image URLs stored in `videos.thumbnail_url` / `projects.thumbnail`. No file uploads.
-- **Hero Images**: Array of direct image URLs stored as JSON string in `settings.hero_images`.
-- **Auto-fill**: Admin Videos page has "AUTO-FILL" button that calls Vimeo oEmbed API to auto-populate thumbnail + title from a Vimeo URL.
+Number: `966553120141` (hardcoded in WhatsAppButton component)

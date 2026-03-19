@@ -2,37 +2,41 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
 import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
-import { apiGetProjects, apiGetRequests, apiGetSettings } from '@/lib/api'
-import type { Project, Request, Settings } from '@/lib/api'
+import { fetchProjects, fetchRequests, fetchSettings } from '@/lib/supabase-data'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState<Project[]>([])
-  const [requests, setRequests] = useState<Request[]>([])
-  const [settings, setSettings] = useState<Settings | null>(null)
+  const [projects, setProjects] = useState<any[]>([])
+  const [requests, setRequests] = useState<any[]>([])
+  const [visitCount, setVisitCount] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    apiGetProjects().then(setProjects).catch(() => {})
-    apiGetRequests().then(setRequests).catch(() => {})
-    apiGetSettings().then(setSettings).catch(() => {})
+    (async () => {
+      const [p, r, s] = await Promise.all([fetchProjects(), fetchRequests(), fetchSettings()])
+      setProjects(p)
+      setRequests(r)
+      setVisitCount(parseInt(s.visit_count) || 0)
+      setLoading(false)
+    })()
   }, [])
 
-  const newReqs = requests.filter(r => r.status === 'new')
+  const newReqs = requests.filter((r: any) => r.status === 'new')
 
   const cards = [
     { icon: Film, label: t('admin_total_projects'), value: projects.length, color: CORAL },
     { icon: MessageSquare, label: t('admin_total_requests'), value: requests.length, color: '#60a5fa' },
     { icon: Bell, label: t('admin_new_requests'), value: newReqs.length, color: '#f59e0b' },
-    { icon: Eye, label: t('admin_visits'), value: settings?.visit_count ?? 0, color: '#a78bfa' },
+    { icon: Eye, label: t('admin_visits'), value: visitCount, color: '#a78bfa' },
   ]
 
-  const recent = [...requests]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 8)
+  const recent = [...requests].slice(0, 8)
 
   const statusColors: Record<string, string> = {
     new: '#f59e0b', reviewed: '#60a5fa', contacted: CORAL, closed: '#666',
   }
+
+  if (loading) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   return (
     <div>
@@ -64,7 +68,7 @@ export default function AdminDashboard() {
             <tbody>
               {recent.length === 0 ? (
                 <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: '#555' }}>No requests yet</td></tr>
-              ) : recent.map(r => (
+              ) : recent.map((r: any) => (
                 <tr key={r.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
                   <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{r.full_name}</td>
                   <td style={{ padding: '12px 16px', color: '#888', fontSize: 14 }}>{r.organization}</td>

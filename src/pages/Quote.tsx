@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, WARM_GRAD, BG, BORDER, warmGradText, gradBorder } from '@/lib/brand'
-import { apiCreateRequest } from '@/lib/api'
+import { addRequest } from '@/lib/supabase-data'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
@@ -17,7 +17,6 @@ export default function Quote() {
   const { lang, t } = useLanguage()
   const isAr = lang === 'ar'
   const [sent, setSent] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     full_name: '', organization: '', phone: '', email: '',
     event_date: '', location: '', service_type: '', details: '',
@@ -25,11 +24,7 @@ export default function Quote() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitting(true)
-    try {
-      await apiCreateRequest(formData)
-    } catch {}
-    setSubmitting(false)
+    await addRequest(formData)
     setSent(true)
     setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
     setTimeout(() => setSent(false), 5000)
@@ -56,12 +51,16 @@ export default function Quote() {
             {isAr ? 'طلب عرض سعر' : 'Get a Quote'}
           </h1>
           <p style={{ color: '#555', fontSize: 14, marginBottom: 52 }}>
-            {isAr ? 'أخبرنا عن مشروعك وسنعود إليك خلال 24 ساعة.' : "Tell us about your project and we'll get back to you within 24 hours."}
+            {isAr ? 'أخبرنا عن مشروعك وسنعود إليك خلال 24 ساعة.' : 'Tell us about your project and we\'ll get back to you within 24 hours.'}
           </p>
 
           {sent && (
-            <div style={{ padding: '16px 20px', ...gradBorder(BG), color: '#FF5F57', fontSize: 14, marginBottom: 32 }}>
-              {isAr ? 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' : "Your request has been submitted! We'll be in touch soon."}
+            <div style={{
+              padding: '16px 20px',
+              ...gradBorder(BG),
+              color: '#FF5F57', fontSize: 14, marginBottom: 32,
+            }}>
+              {isAr ? 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' : 'Your request has been submitted! We\'ll be in touch soon.'}
             </div>
           )}
 
@@ -110,13 +109,14 @@ export default function Quote() {
               />
             </div>
 
-            <button type="submit" disabled={submitting} style={{
+            <button type="submit" style={{
               width: '100%', padding: '16px', background: GRAD,
               border: 'none', color: '#fff', fontSize: 11,
-              letterSpacing: '0.2em', cursor: submitting ? 'not-allowed' : 'pointer',
-              opacity: submitting ? 0.7 : 1, transition: 'opacity 0.3s',
-            }}>
-              {submitting ? '...' : isAr ? 'إرسال الطلب' : 'SEND REQUEST'}
+              letterSpacing: '0.2em', cursor: 'pointer', transition: 'opacity 0.3s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              {isAr ? 'إرسال الطلب' : 'SEND REQUEST'}
             </button>
           </form>
         </div>
