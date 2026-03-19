@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { getVideos } from '@/lib/storage'
+import { fetchVideos } from '@/lib/supabase-data'
+import type { TkweenVideo } from '@/lib/supabase-data'
 
 const PLACEHOLDER = [
   { id: 'c1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
@@ -20,13 +21,17 @@ export default function Conferences() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
+  const [videos, setVideos] = useState<any[]>(PLACEHOLDER)
 
-  const saved = getVideos()
-    .filter((v: any) => v.section === 'conferences' && v.visible)
-    .sort((a: any, b: any) => a.display_order - b.display_order)
-    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
-
-  const videos = saved.length > 0 ? saved : PLACEHOLDER
+  useEffect(() => {
+    fetchVideos().then(data => {
+      const filtered = data
+        .filter(v => v.section === 'conferences' && v.visible)
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
+        .map(v => ({ ...v, thumbnail: v.thumbnail_url || '' }))
+      if (filtered.length > 0) setVideos(filtered)
+    })
+  }, [])
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
