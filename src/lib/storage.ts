@@ -31,10 +31,8 @@ export interface Settings {
   instagram: string
   twitter: string
   snapchat: string
-  admin_password: string
   visit_count: string
   hero_images: string
-  vimeo_access_token?: string
 }
 
 export interface Request {
