@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { LayoutDashboard, Film, Video, MessageSquare, Settings, LogOut, ExternalLink } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { supabase } from '@/integrations/supabase/client'
 
 const links = [
   { path: '/admin/dashboard', icon: LayoutDashboard, key: 'admin_overview' },
@@ -18,37 +17,17 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t, lang, setLang } = useLanguage()
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        navigate('/admin/login')
-      } else {
-        setAuthenticated(true)
-      }
-    }
-    checkAuth()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setAuthenticated(false)
-        navigate('/admin/login')
-      } else {
-        setAuthenticated(true)
-      }
-    })
-
-    return () => subscription.unsubscribe()
+    if (sessionStorage.getItem('tkween_admin') !== '1') navigate('/admin/login')
   }, [navigate])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
+  const handleLogout = () => {
+    sessionStorage.removeItem('tkween_admin')
     navigate('/admin/login')
   }
 
-  if (authenticated !== true) return null
+  if (sessionStorage.getItem('tkween_admin') !== '1') return null
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: BG }}>
@@ -135,7 +114,7 @@ export default function AdminLayout() {
             </button>
           </div>
         </header>
-        <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+        <main style={{ flex: 1, padding: '32px', overflowAuto: 'auto' } as React.CSSProperties}>
           <Outlet />
         </main>
       </div>

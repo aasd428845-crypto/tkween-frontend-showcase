@@ -3,32 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
 import { GRAD, CORAL, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { supabase } from '@/integrations/supabase/client'
+import { getSettings } from '@/lib/storage'
 
 export default function AdminLogin() {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError(false)
-
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (authError) {
-      setError(true)
-      setLoading(false)
-      setTimeout(() => setError(false), 3000)
-    } else {
+    if (password === getSettings().admin_password) {
+      sessionStorage.setItem('tkween_admin', '1')
       navigate('/admin/dashboard')
+    } else {
+      setError(true)
+      setTimeout(() => setError(false), 3000)
     }
   }
 
@@ -40,19 +30,6 @@ export default function AdminLogin() {
         </div>
         <h2 style={{ textAlign: 'center', marginBottom: 24, fontSize: 18, fontWeight: 300, color: '#fff' }}>{t('admin_login')}</h2>
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder={t('admin_email') || 'Email'}
-            style={{
-              width: '100%', padding: '12px 16px', background: BG,
-              border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff',
-              fontSize: 14, outline: 'none', marginBottom: 12, transition: 'border-color 0.2s',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = CORAL)}
-            onBlur={e => (e.currentTarget.style.borderColor = BORDER)}
-          />
           <input
             type="password"
             value={password}
@@ -71,15 +48,14 @@ export default function AdminLogin() {
               {t('admin_wrong')}
             </p>
           )}
-          <button type="submit" disabled={loading} style={{
+          <button type="submit" style={{
             width: '100%', padding: 12, background: GRAD, color: '#fff',
             borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none',
-            cursor: loading ? 'not-allowed' : 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
-            opacity: loading ? 0.7 : 1,
+            cursor: 'pointer', letterSpacing: '0.1em', transition: 'opacity 0.2s',
           }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-            {loading ? '...' : t('admin_enter')}
+            {t('admin_enter')}
           </button>
         </form>
       </div>
