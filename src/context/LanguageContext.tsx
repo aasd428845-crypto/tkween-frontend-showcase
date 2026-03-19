@@ -75,7 +75,7 @@ const translations: Record<string, Record<string, string>> = {
     form_svc_live: 'تغطية مباشرة', form_svc_other: 'أخرى',
     footer_desc: 'شركة إنتاج إعلامي احترافية مقرها الرياض، المملكة العربية السعودية.',
     footer_quick: 'روابط سريعة', footer_follow: 'تابعنا', footer_rights: '© 2025 تكوين للإنتاج الإعلامي. جميع الحقوق محفوظة.',
-    admin_login: 'تسجيل دخول المدير', admin_password: 'كلمة المرور', admin_enter: 'دخول',
+    admin_login: 'تسجيل دخول المدير', admin_email: 'البريد الإلكتروني', admin_password: 'كلمة المرور', admin_enter: 'دخول',
     admin_wrong: 'كلمة المرور غير صحيحة', admin_overview: 'نظرة عامة', admin_projects: 'المشاريع والفيديو',
     admin_requests: 'طلبات العملاء', admin_settings: 'إعدادات الموقع', admin_videos: 'أقسام الفيديو', admin_logout: 'خروج',
     admin_total_projects: 'إجمالي المشاريع', admin_total_requests: 'إجمالي الطلبات',
