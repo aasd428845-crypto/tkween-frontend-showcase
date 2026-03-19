@@ -4,8 +4,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import TkweenLogo from '@/components/TkweenLogo';
 import VideoModal from '@/components/VideoModal';
 import VideoSections from '@/components/VideoSections';
-import { fetchSettings, fetchProjects, addRequest, incrementVisitCount } from '@/lib/supabase-data';
-import type { TkweenSettings, TkweenProject } from '@/lib/supabase-data';
+import { getSettings, getProjects, getRequests, saveRequests, incrementVisitCount } from '@/data/defaults';
+import type { TkweenRequest } from '@/data/defaults';
 import { Menu, X, Play, Camera, Video, Plane, Radio, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const clients = [
@@ -15,17 +15,11 @@ const clients = [
   'Saudi Airlines', 'Al Rajhi Bank', 'Mobily', 'Zain KSA',
 ];
 
-const DEFAULT_HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',
-  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1920&q=85',
-  'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1920&q=85',
-];
-
 const PublicSite = () => {
   const { lang, setLang, t } = useLanguage();
-  const [settings, setSettings] = useState<TkweenSettings | null>(null);
-  const [projects, setProjects] = useState<TkweenProject[]>([]);
-  const [heroImages, setHeroImages] = useState<string[]>(DEFAULT_HERO_IMAGES);
+  const settings = getSettings();
+  const projects = getProjects().filter(p => p.visible).sort((a, b) => a.display_order - b.display_order);
+  const heroImages: string[] = JSON.parse(settings.hero_images);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -37,16 +31,7 @@ const PublicSite = () => {
   const statsRef = useRef<HTMLDivElement>(null);
   const [statsVisible, setStatsVisible] = useState(false);
 
-  useEffect(() => {
-    incrementVisitCount();
-    (async () => {
-      const [s, p] = await Promise.all([fetchSettings(), fetchProjects()]);
-      setSettings(s);
-      setProjects(p.filter(x => x.visible).sort((a, b) => a.display_order - b.display_order));
-      try { setHeroImages(JSON.parse(s.hero_images)); } catch {}
-    })();
-  }, []);
-
+  useEffect(() => { incrementVisitCount(); }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
@@ -62,9 +47,24 @@ const PublicSite = () => {
     return () => obs.disconnect();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const getVideoEmbed = (url: string) => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const id = url.includes('youtu.be') ? url.split('/').pop() : new URL(url).searchParams.get('v');
+      return `https://www.youtube.com/embed/${id}?autoplay=1`;
+    }
+    if (url.includes('vimeo.com')) {
+      const id = url.split('/').pop();
+      return `https://player.vimeo.com/video/${id}?autoplay=1`;
+    }
+    return url;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    await addRequest(formData);
+    const req: TkweenRequest = { ...formData, id: Date.now().toString(), status: 'new', created_at: new Date().toISOString() };
+    const reqs = getRequests();
+    reqs.push(req);
+    saveRequests(reqs);
     setFormSent(true);
     setFormData({ full_name: '', organization: '', service_type: '', event_date: '', location: '', details: '', phone: '', email: '' });
     setTimeout(() => setFormSent(false), 4000);
@@ -143,7 +143,7 @@ const PublicSite = () => {
         )}
       </nav>
 
-      {/* HERO */}
+      {/* HERO - Full screen themill style */}
       <section id="home" style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
         {heroImages.map((img, i) => (
           <div key={i} style={{
@@ -170,7 +170,7 @@ const PublicSite = () => {
         </div>
       </section>
 
-      {/* WORK */}
+      {/* WORK - themill style full-width cards */}
       <section id="work">
         <div style={{ padding: '80px 0 20px', textAlign: 'center' }}>
           <span style={{ color: '#FF4500', fontSize: 11, letterSpacing: '0.2em' }}>SELECTED WORK</span>
@@ -209,11 +209,11 @@ const PublicSite = () => {
         ))}
       </section>
 
-      {/* VIDEO SECTIONS from database */}
+      {/* VIDEO SECTIONS from Supabase */}
       <VideoSections />
 
       {/* VIDEO MODAL */}
-      {videoModal && <VideoModal url={videoModal} title="" onClose={() => setVideoModal(null)} />}
+      {videoModal && <VideoModal url={videoModal} onClose={() => setVideoModal(null)} />}
 
       {/* SERVICES */}
       <section id="services" style={{ background: '#0a0a0a', paddingTop: 100, paddingBottom: 80 }}>
@@ -316,16 +316,16 @@ const PublicSite = () => {
               <input type={f.type} required={f.key === 'full_name' || f.key === 'phone'}
                 value={(formData as any)[f.key]} onChange={e => setFormData({ ...formData, [f.key]: e.target.value })}
                 style={{ width: '100%', padding: '10px 14px', background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none' }}
-              />
+                onFocus={e => (e.currentTarget.style.borderColor = '#FF4500')} onBlur={e => (e.currentTarget.style.borderColor = '#1a1a1a')} />
             </div>
           ))}
-          <div className="md:col-span-2">
+          <div>
             <label style={{ color: '#999', fontSize: 11, display: 'block', marginBottom: 6, letterSpacing: '0.05em' }}>{t('form_service')}</label>
             <select value={formData.service_type} onChange={e => setFormData({ ...formData, service_type: e.target.value })}
               style={{ width: '100%', padding: '10px 14px', background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none' }}>
               <option value="">{t('form_service')}</option>
-              {['form_svc_photo','form_svc_video','form_svc_aerial','form_svc_live','form_svc_other'].map(s => (
-                <option key={s} value={s}>{t(s)}</option>
+              {['form_svc_photo', 'form_svc_video', 'form_svc_aerial', 'form_svc_live', 'form_svc_other'].map(k => (
+                <option key={k} value={k}>{t(k)}</option>
               ))}
             </select>
           </div>
@@ -333,29 +333,41 @@ const PublicSite = () => {
             <label style={{ color: '#999', fontSize: 11, display: 'block', marginBottom: 6, letterSpacing: '0.05em' }}>{t('form_details')}</label>
             <textarea rows={4} value={formData.details} onChange={e => setFormData({ ...formData, details: e.target.value })}
               style={{ width: '100%', padding: '10px 14px', background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none', resize: 'vertical' }}
-            />
+              onFocus={e => (e.currentTarget.style.borderColor = '#FF4500')} onBlur={e => (e.currentTarget.style.borderColor = '#1a1a1a')} />
           </div>
           <div className="md:col-span-2">
-            <button type="submit" style={{ width: '100%', padding: 14, background: '#FF4500', color: '#fff', borderRadius: 4, fontSize: 13, fontWeight: 500, border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}>
-              {t('nav_quote')}
+            <button type="submit" style={{ width: '100%', padding: '14px', background: '#FF4500', color: '#fff', borderRadius: 4, fontSize: 12, fontWeight: 500, border: 'none', cursor: 'pointer', letterSpacing: '0.15em', transition: 'opacity 0.3s' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+              {t('form_submit')}
             </button>
           </div>
         </form>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ borderTop: '1px solid #1a1a1a', padding: '40px 0', textAlign: 'center' }}>
-        <TkweenLogo size={32} showText={true} />
-        <div className="flex justify-center gap-6 mt-6">
-          {settings?.instagram && <a href={settings.instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#666' }}><Instagram size={18} /></a>}
-          {settings?.twitter && <a href={settings.twitter} target="_blank" rel="noopener noreferrer" style={{ color: '#666' }}><Twitter size={18} /></a>}
+      {/* FOOTER - minimal themill style */}
+      <footer style={{ background: '#000', borderTop: '1px solid #1a1a1a', paddingTop: 40, paddingBottom: 30 }}>
+        <div className="px-4 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6" style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <TkweenLogo size={32} showText={true} />
+          <div className="flex items-center gap-6">
+            <a href={settings.instagram} target="_blank" rel="noopener" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>Instagram</a>
+            <a href={settings.twitter} target="_blank" rel="noopener" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>Twitter</a>
+            <span style={{ color: '#555', fontSize: 13 }}>{settings.email}</span>
+          </div>
+          <Link to="/contact" style={{ color: '#FF4500', fontSize: 12, textDecoration: 'none', letterSpacing: '0.1em' }}>CONTACT →</Link>
         </div>
-        <div className="flex justify-center gap-4 mt-4">
-          {settings?.phone && <a href={`tel:${settings.phone}`} style={{ color: '#666', fontSize: 13 }}><Phone size={14} className="inline mr-1" />{settings.phone}</a>}
-          {settings?.email && <a href={`mailto:${settings.email}`} style={{ color: '#666', fontSize: 13 }}><Mail size={14} className="inline mr-1" />{settings.email}</a>}
+        <div className="text-center mt-8">
+          <p style={{ color: '#333', fontSize: 11 }}>{t('footer_rights')}</p>
         </div>
-        <p style={{ color: '#333', fontSize: 12, marginTop: 24 }}>© {new Date().getFullYear()} TKWEEN. All rights reserved.</p>
       </footer>
+
+      {/* WHATSAPP */}
+      <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener"
+        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 90, width: 56, height: 56, borderRadius: '50%', background: '#25d366', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(37,211,102,0.4)', transition: 'transform 0.3s' }}
+        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
     </div>
   );
 };

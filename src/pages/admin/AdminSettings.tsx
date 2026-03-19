@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
-import { Save, Trash2, Plus } from 'lucide-react'
+import { Save, Plus, Trash2 } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { fetchSettings, saveSettingsBatch, saveSetting } from '@/lib/supabase-data'
-import type { TkweenSettings } from '@/lib/supabase-data'
+import { getSettings, saveSettings as persistSettings } from '@/lib/storage'
+import type { Settings as TkweenSettings } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', background: BG,
@@ -12,49 +12,30 @@ const inputStyle: React.CSSProperties = {
 
 export default function AdminSettings() {
   const { t } = useLanguage()
-  const [settings, setSettings] = useState<TkweenSettings | null>(null)
+  const [settings, setSettings] = useState<TkweenSettings>(getSettings)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
-  const [saveError, setSaveError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchSettings().then(s => { setSettings(s); setLoading(false) })
-  }, [])
-
-  if (loading || !settings) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   let heroImages: string[] = []
   try { heroImages = JSON.parse(settings.hero_images || '[]') } catch {}
 
-  const saveField = async (key: string) => {
-    try {
-      await saveSetting(key, (settings as any)[key])
-      setSaved(key)
-      setSaveError(null)
-      setTimeout(() => setSaved(null), 2000)
-    } catch (e: any) {
-      setSaveError(e.message || 'Failed to save')
-      setTimeout(() => setSaveError(null), 4000)
-    }
+  const saveField = (key: string) => {
+    persistSettings(settings); setSaved(key); setTimeout(() => setSaved(null), 2000)
   }
 
   const update = (key: string, value: string) => setSettings({ ...settings, [key]: value })
 
-  const addHeroImage = async () => {
+  const addHeroImage = () => {
     if (!newImageUrl.trim()) return
     const images = [...heroImages, newImageUrl.trim()]
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated)
-    await saveSetting('hero_images', JSON.stringify(images))
-    setNewImageUrl('')
+    setSettings(updated); persistSettings(updated); setNewImageUrl('')
   }
 
-  const removeHeroImage = async (idx: number) => {
+  const removeHeroImage = (idx: number) => {
     const images = heroImages.filter((_, i) => i !== idx)
     const updated = { ...settings, hero_images: JSON.stringify(images) }
-    setSettings(updated)
-    await saveSetting('hero_images', JSON.stringify(images))
+    setSettings(updated); persistSettings(updated)
   }
 
   const contactFields = [
@@ -75,11 +56,6 @@ export default function AdminSettings() {
   return (
     <div>
       <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff', marginBottom: 24 }}>{t('admin_settings')}</h1>
-      {saveError && (
-        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 6, color: '#ef4444', fontSize: 13 }}>
-          ⚠️ فشل الحفظ: {saveError}. تأكد من تسجيل الدخول مجدداً.
-        </div>
-      )}
 
       <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
         <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_contact_social')}</h2>
@@ -93,14 +69,6 @@ export default function AdminSettings() {
               <div style={{ alignSelf: 'flex-end' }}><SaveBtn k={f.key}/></div>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 24, padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 20 }}>{t('admin_change_password')}</h2>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
-          <input type="password" value={settings.admin_password} onChange={e => update('admin_password', e.target.value)} style={{ ...inputStyle, flex: 1 }}/>
-          <SaveBtn k="admin_password"/>
         </div>
       </div>
 
@@ -126,19 +94,10 @@ export default function AdminSettings() {
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image') + ' (URL)'} style={{ ...inputStyle, flex: 1 }}/>
+          <input value={newImageUrl} onChange={e => setNewImageUrl(e.target.value)} placeholder={t('admin_add_image')} style={{ ...inputStyle, flex: 1 }}/>
           <button onClick={addHeroImage} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: GRAD, color: '#fff', borderRadius: 4, border: 'none', cursor: 'pointer' }}>
             <Plus size={16}/> Add
           </button>
-        </div>
-      </div>
-
-      <div style={{ padding: 24, background: BG_SOFT, border: `1px solid ${BORDER}`, borderRadius: 6 }}>
-        <h2 style={{ fontSize: 15, fontWeight: 400, color: GRAD_START, marginBottom: 8 }}>Vimeo Access Token</h2>
-        <p style={{ color: '#444', fontSize: 12, marginBottom: 16 }}>For private videos. Get it from developer.vimeo.com</p>
-        <div style={{ display: 'flex', gap: 8, maxWidth: 500 }}>
-          <input type="password" value={settings.vimeo_access_token || ''} onChange={e => update('vimeo_access_token', e.target.value)} placeholder="Enter Vimeo access token" style={{ ...inputStyle, flex: 1 }}/>
-          <SaveBtn k="vimeo_access_token"/>
         </div>
       </div>
     </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Search, Trash2, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { fetchRequests, updateRequest, deleteRequest } from '@/lib/supabase-data'
-import type { TkweenRequest } from '@/lib/supabase-data'
+import { getRequests, saveRequests } from '@/lib/storage'
+import type { Request as TkweenRequest } from '@/lib/storage'
 
 const statusColors: Record<string, string> = {
   new: '#f59e0b', reviewed: '#60a5fa', contacted: GRAD_START, closed: '#555',
@@ -11,40 +11,30 @@ const statusColors: Record<string, string> = {
 
 export default function AdminRequests() {
   const { t } = useLanguage()
-  const [requests, setRequests] = useState<TkweenRequest[]>([])
+  const [requests, setRequests] = useState(getRequests)
   const [filter, setFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<TkweenRequest | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
 
-  const load = async () => {
-    setLoading(true)
-    const data = await fetchRequests()
-    setRequests(data)
-    setLoading(false)
-  }
-
-  useEffect(() => { load() }, [])
+  const save = (r: TkweenRequest[]) => { setRequests(r); saveRequests(r) }
 
   const filtered = requests
     .filter(r => filter === 'ALL' || r.status === filter)
     .filter(r => !search || r.full_name.toLowerCase().includes(search.toLowerCase()) || r.organization.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  const handleUpdateStatus = async (id: string, status: string) => {
-    await updateRequest(id, { status })
+  const updateStatus = (id: string, status: TkweenRequest['status']) => {
+    const updated = requests.map(r => r.id === id ? { ...r, status } : r)
+    save(updated)
     if (selected?.id === id) setSelected({ ...selected, status })
-    await load()
   }
 
-  const handleDelete = async (id: string) => {
-    await deleteRequest(id)
+  const handleDelete = (id: string) => {
+    save(requests.filter(r => r.id !== id))
     if (selected?.id === id) setSelected(null)
     setConfirmDelete(null)
-    await load()
   }
-
-  if (loading) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   return (
     <div>
@@ -130,7 +120,7 @@ export default function AdminRequests() {
             )}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
               {(['new', 'reviewed', 'contacted', 'closed'] as const).map(s => (
-                <button key={s} onClick={() => handleUpdateStatus(selected.id, s)} style={{
+                <button key={s} onClick={() => updateStatus(selected.id, s)} style={{
                   padding: '5px 12px', borderRadius: 4, fontSize: 12, cursor: 'pointer',
                   border: selected.status === s ? 'none' : `1px solid ${BORDER}`,
                   background: selected.status === s ? statusColors[s] : 'transparent',

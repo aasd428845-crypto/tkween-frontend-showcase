@@ -1,9 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import VideoModal from './VideoModal';
 import { GRAD, WARM_GRAD } from '@/lib/brand';
-import { fetchVideos } from '@/lib/supabase-data';
-import type { TkweenVideo } from '@/lib/supabase-data';
+
+interface Video {
+  id: string;
+  title_en: string;
+  title_ar: string;
+  description_en: string | null;
+  description_ar: string | null;
+  section: string;
+  vimeo_url: string | null;
+  thumbnail_url: string | null;
+  featured: boolean | null;
+  visible: boolean;
+  display_order: number;
+}
 
 const sectionTitles: Record<string, { en: string; ar: string }> = {
   conferences: { en: 'Conference Coverage', ar: 'تغطية المؤتمرات' },
@@ -11,6 +23,14 @@ const sectionTitles: Record<string, { en: string; ar: string }> = {
   designs: { en: 'Our Designs', ar: 'تصاميمنا' },
   our_work: { en: 'Our Work', ar: 'أعمالنا' },
 };
+
+function loadVideos(): Video[] {
+  try {
+    return JSON.parse(localStorage.getItem('tkween_videos') || '[]');
+  } catch {
+    return [];
+  }
+}
 
 function getVimeoEmbedUrl(url: string | null): string | null {
   if (!url || !url.includes('vimeo.com')) return null;
@@ -23,19 +43,16 @@ const VideoSections = () => {
   const { lang } = useLanguage();
   const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string } | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
-  const [videos, setVideos] = useState<TkweenVideo[]>([]);
 
-  useEffect(() => {
-    fetchVideos().then(data => {
-      setVideos(data.filter(v => v.visible).sort((a, b) => (a.display_order || 0) - (b.display_order || 0)));
-    });
-  }, []);
+  const videos = loadVideos()
+    .filter(v => v.visible)
+    .sort((a, b) => a.display_order - b.display_order);
 
   const grouped = videos.reduce((acc, video) => {
     if (!acc[video.section]) acc[video.section] = [];
     acc[video.section].push(video);
     return acc;
-  }, {} as Record<string, TkweenVideo[]>);
+  }, {} as Record<string, Video[]>);
 
   const sections = ['conferences', 'corporate_ads', 'designs', 'our_work'];
 
@@ -74,9 +91,15 @@ const VideoSections = () => {
                   onMouseEnter={() => setHovered(video.id)}
                   onMouseLeave={() => setHovered(null)}
                   style={{
-                    width: '100%', height: '56vw', minHeight: 400, maxHeight: 700,
-                    position: 'relative', cursor: video.vimeo_url ? 'pointer' : 'default',
-                    borderBottom: '1px solid #1a1a1a', overflow: 'hidden', background: '#111',
+                    width: '100%',
+                    height: '56vw',
+                    minHeight: 400,
+                    maxHeight: 700,
+                    position: 'relative',
+                    cursor: video.vimeo_url ? 'pointer' : 'default',
+                    borderBottom: '1px solid #1a1a1a',
+                    overflow: 'hidden',
+                    background: '#111',
                   }}
                 >
                   {embedUrl ? (
@@ -86,10 +109,14 @@ const VideoSections = () => {
                         allow="autoplay; fullscreen"
                         title={videoTitle}
                         style={{
-                          position: 'absolute', top: '50%', left: '50%',
+                          position: 'absolute',
+                          top: '50%', left: '50%',
                           transform: 'translate(-50%, -50%)',
-                          minWidth: '177.78%', minHeight: '100%', width: '177.78%',
-                          border: 'none', pointerEvents: 'none',
+                          minWidth: '177.78%',
+                          minHeight: '100%',
+                          width: '177.78%',
+                          border: 'none',
+                          pointerEvents: 'none',
                         }}
                       />
                     </div>
@@ -97,7 +124,8 @@ const VideoSections = () => {
                     <div style={{
                       position: 'absolute', inset: 0,
                       backgroundImage: `url(${video.thumbnail_url})`,
-                      backgroundSize: 'cover', backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
                     }} />
                   )}
 
@@ -132,7 +160,8 @@ const VideoSections = () => {
                       background: GRAD,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       boxShadow: '0 0 32px rgba(248,112,96,0.5)',
-                      opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s',
+                      opacity: isHovered ? 1 : 0,
+                      transition: 'opacity 0.3s',
                     }}>
                       <svg width="22" height="22" viewBox="0 0 22 22" fill="white">
                         <polygon points="5,2 19,11 5,20"/>
@@ -146,7 +175,11 @@ const VideoSections = () => {
         );
       })}
       {selectedVideo && (
-        <VideoModal url={selectedVideo.url} title={selectedVideo.title} onClose={() => setSelectedVideo(null)} />
+        <VideoModal
+          url={selectedVideo.url}
+          title={selectedVideo.title}
+          onClose={() => setSelectedVideo(null)}
+        />
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, WARM_GRAD, BG, BORDER, warmGradText, gradBorder } from '@/lib/brand'
-import { addRequest } from '@/lib/supabase-data'
+import { addRequest } from '@/lib/storage'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
@@ -22,9 +22,9 @@ export default function Quote() {
     event_date: '', location: '', service_type: '', details: '',
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    await addRequest(formData)
+    try { addRequest(formData) } catch {}
     setSent(true)
     setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
     setTimeout(() => setSent(false), 5000)

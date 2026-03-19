@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom'
 import { useLanguage } from '@/context/LanguageContext'
 import TkweenLogo from '@/components/TkweenLogo'
@@ -18,18 +18,37 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t, lang, setLang } = useLanguage()
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
-    if (sessionStorage.getItem('tkween_admin') !== '1') navigate('/admin/login')
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        navigate('/admin/login')
+      } else {
+        setAuthenticated(true)
+      }
+    }
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setAuthenticated(false)
+        navigate('/admin/login')
+      } else {
+        setAuthenticated(true)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [navigate])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    sessionStorage.removeItem('tkween_admin')
     navigate('/admin/login')
   }
 
-  if (sessionStorage.getItem('tkween_admin') !== '1') return null
+  if (authenticated !== true) return null
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: BG }}>
@@ -116,7 +135,7 @@ export default function AdminLayout() {
             </button>
           </div>
         </header>
-        <main style={{ flex: 1, padding: '32px', overflowAuto: 'auto' } as React.CSSProperties}>
+        <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
           <Outlet />
         </main>
       </div>

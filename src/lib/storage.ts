@@ -31,10 +31,8 @@ export interface Settings {
   instagram: string
   twitter: string
   snapchat: string
-  admin_password: string
   visit_count: string
   hero_images: string
-  vimeo_access_token?: string
 }
 
 export interface Request {
@@ -59,7 +57,6 @@ const DEFAULT_SETTINGS: Settings = {
   instagram: 'https://instagram.com/Tkweensa',
   twitter: 'https://twitter.com/Tkweensa',
   snapchat: 'https://snapchat.com/add/Tkweensa',
-  admin_password: 'tkween2025',
   visit_count: '0',
   hero_images: JSON.stringify([
     'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=85',

@@ -1,42 +1,29 @@
-import { useState, useEffect } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
 import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
-import { fetchProjects, fetchRequests, fetchSettings } from '@/lib/supabase-data'
+import { getProjects, getRequests, getSettings } from '@/lib/storage'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState<any[]>([])
-  const [requests, setRequests] = useState<any[]>([])
-  const [visitCount, setVisitCount] = useState(0)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    (async () => {
-      const [p, r, s] = await Promise.all([fetchProjects(), fetchRequests(), fetchSettings()])
-      setProjects(p)
-      setRequests(r)
-      setVisitCount(parseInt(s.visit_count) || 0)
-      setLoading(false)
-    })()
-  }, [])
-
+  const projects = getProjects()
+  const requests = getRequests()
+  const settings = getSettings()
   const newReqs = requests.filter((r: any) => r.status === 'new')
 
   const cards = [
     { icon: Film, label: t('admin_total_projects'), value: projects.length, color: CORAL },
     { icon: MessageSquare, label: t('admin_total_requests'), value: requests.length, color: '#60a5fa' },
     { icon: Bell, label: t('admin_new_requests'), value: newReqs.length, color: '#f59e0b' },
-    { icon: Eye, label: t('admin_visits'), value: visitCount, color: '#a78bfa' },
+    { icon: Eye, label: t('admin_visits'), value: settings.visit_count || 0, color: '#a78bfa' },
   ]
 
-  const recent = [...requests].slice(0, 8)
+  const recent = [...requests]
+    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 8)
 
   const statusColors: Record<string, string> = {
     new: '#f59e0b', reviewed: '#60a5fa', contacted: CORAL, closed: '#666',
   }
-
-  if (loading) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
 
   return (
     <div>

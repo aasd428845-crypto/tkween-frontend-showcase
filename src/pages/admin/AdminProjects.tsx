@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { fetchProjects, addProject, updateProject, deleteProject } from '@/lib/supabase-data'
-import type { TkweenProject } from '@/lib/supabase-data'
+import { getProjects, saveProjects } from '@/lib/storage'
+import type { Project as TkweenProject } from '@/lib/storage'
 
 const emptyProject: TkweenProject = {
   id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
@@ -12,84 +12,27 @@ const emptyProject: TkweenProject = {
 
 export default function AdminProjects() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState<TkweenProject[]>([])
+  const [projects, setProjects] = useState(getProjects)
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [saveError, setSaveError] = useState<string | null>(null)
 
-  const load = async () => {
-    setLoading(true)
-    const data = await fetchProjects()
-    setProjects(data)
-    setLoading(false)
-  }
-
-  useEffect(() => { load() }, [])
-
-  const showError = (msg: string) => {
-    setSaveError(msg)
-    setTimeout(() => setSaveError(null), 5000)
-  }
-
-  const handleSave = async () => {
+  const save = (p: TkweenProject[]) => { setProjects(p); saveProjects(p) }
+  const handleSave = () => {
     if (!modal) return
-    try {
-      if (modal.id) {
-        const { id, ...rest } = modal
-        await updateProject(id, rest)
-      } else {
-        const { id, ...rest } = modal
-        await addProject(rest)
-      }
-      setSaveError(null)
-      setModal(null)
-      await load()
-    } catch (e: any) {
-      showError(e.message || 'فشل الحفظ. تأكد من تسجيل الدخول أولاً.')
-    }
+    const updated = modal.id ? projects.map(p => p.id === modal.id ? modal : p) : [...projects, { ...modal, id: Date.now().toString() }]
+    save(updated); setModal(null)
   }
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteProject(id)
-      setConfirmDelete(null)
-      await load()
-    } catch (e: any) {
-      showError(e.message || 'فشل الحذف.')
-    }
-  }
-
-  const toggleFeatured = async (id: string) => {
-    const p = projects.find(x => x.id === id)
-    if (p) {
-      try { await updateProject(id, { featured: !p.featured }); await load() }
-      catch (e: any) { showError(e.message || 'فشل التحديث.') }
-    }
-  }
-
-  const toggleVisible = async (id: string) => {
-    const p = projects.find(x => x.id === id)
-    if (p) {
-      try { await updateProject(id, { visible: !p.visible }); await load() }
-      catch (e: any) { showError(e.message || 'فشل التحديث.') }
-    }
-  }
+  const handleDelete = (id: string) => { save(projects.filter(p => p.id !== id)); setConfirmDelete(null) }
+  const toggleFeatured = (id: string) => save(projects.map(p => p.id === id ? { ...p, featured: !p.featured } : p))
+  const toggleVisible = (id: string) => save(projects.map(p => p.id === id ? { ...p, visible: !p.visible } : p))
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', background: BG,
     border: `1px solid ${BORDER}`, borderRadius: 4, color: '#fff', fontSize: 14, outline: 'none',
   }
 
-  if (loading) return <p style={{ color: '#555', textAlign: 'center', padding: 48 }}>Loading...</p>
-
   return (
     <div>
-      {saveError && (
-        <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 6, color: '#ef4444', fontSize: 13 }}>
-          ⚠️ {saveError}
-        </div>
-      )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>{t('admin_projects')}</h1>
         <button onClick={() => setModal({ ...emptyProject })} style={{
@@ -155,11 +98,10 @@ export default function AdminProjects() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[{ key: 'title_en', label: t('admin_title_en') }, { key: 'title_ar', label: t('admin_title_ar') },
-                { key: 'thumbnail', label: t('admin_thumbnail') + ' (URL)' }, { key: 'video_url', label: t('admin_video') + ' (URL)' }].map(f => (
+                { key: 'thumbnail', label: t('admin_thumbnail') }, { key: 'video_url', label: t('admin_video') }].map(f => (
                 <div key={f.key}>
                   <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{f.label}</label>
-                  <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })} style={inputStyle}
-                    placeholder={f.key === 'thumbnail' ? 'https://example.com/image.jpg' : f.key === 'video_url' ? 'https://vimeo.com/123456' : ''}/>
+                  <input value={(modal as any)[f.key]} onChange={e => setModal({ ...modal, [f.key]: e.target.value })} style={inputStyle}/>
                 </div>
               ))}
               <div>
