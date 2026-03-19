@@ -4,8 +4,8 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { warmGradText, WARM_GRAD, BG } from '@/lib/brand'
-import { useSupabaseVideos } from '@/hooks/useSupabaseVideos'
+import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
+import { getVideos } from '@/lib/storage'
 
 const PLACEHOLDER = [
   { id: 'w1', title_en: 'Red Sea Film Series', title_ar: 'سلسلة أفلام البحر الأحمر',
@@ -21,9 +21,12 @@ export default function OurWork() {
   const isAr = lang === 'ar'
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
-  const { videos: saved } = useSupabaseVideos('our_work')
-  const mapped = saved.map(v => ({ ...v, thumbnail: v.thumbnail_url || '' }))
-  const videos = mapped.length > 0 ? mapped : PLACEHOLDER
+  const saved = getVideos()
+    .filter((v: any) => v.section === 'our_work' && v.visible)
+    .sort((a: any, b: any) => a.display_order - b.display_order)
+    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
+
+  const videos = saved.length > 0 ? saved : PLACEHOLDER
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
