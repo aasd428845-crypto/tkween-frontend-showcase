@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { LanguageProvider } from '@/context/LanguageContext'
+import SplashScreen from '@/components/SplashScreen'
 import Home from '@/pages/Home'
 import Conferences from '@/pages/Conferences'
 import CorporateAds from '@/pages/CorporateAds'
@@ -18,6 +19,7 @@ import AdminVideos from '@/pages/admin/AdminVideos'
 export default function App() {
   return (
     <LanguageProvider>
+      <SplashScreen />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />

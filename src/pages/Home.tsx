@@ -6,7 +6,6 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, GRAD_HOVER, gradText, cinematicText, warmGradText, applyGradText, removeGradText, getActiveGrad } from '@/lib/brand'
-import TkweenLogo from '@/components/TkweenLogo'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
 
 const SERVICES = [
@@ -91,11 +90,6 @@ export default function Home() {
           alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', padding: '0 24px',
         }}>
-          {/* شعار متحرك */}
-          <div style={{ marginBottom: 16 }}>
-            <TkweenLogo size={52} showText={false} animate={true} />
-          </div>
-
           <h1 className="hero-h1-anim" style={{
             fontSize: 'clamp(2.8rem, 7vw, 6rem)',
             fontWeight: 200, lineHeight: 1.1, marginBottom: 8,
