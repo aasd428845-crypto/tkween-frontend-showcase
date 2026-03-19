@@ -4,8 +4,8 @@ import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { getVideos } from '@/lib/storage'
+import { warmGradText, WARM_GRAD, BG } from '@/lib/brand'
+import { useSupabaseVideos } from '@/hooks/useSupabaseVideos'
 
 const PLACEHOLDER = [
   { id: 'd1', title_en: 'Motion Graphics Reel', title_ar: 'حزمة موشن جرافيك',
@@ -21,12 +21,9 @@ export default function Designs() {
   const isAr = lang === 'ar'
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
 
-  const saved = getVideos()
-    .filter((v: any) => v.section === 'designs' && v.visible)
-    .sort((a: any, b: any) => a.display_order - b.display_order)
-    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
-
-  const videos = saved.length > 0 ? saved : PLACEHOLDER
+  const { videos: saved } = useSupabaseVideos('designs')
+  const mapped = saved.map(v => ({ ...v, thumbnail: v.thumbnail_url || '' }))
+  const videos = mapped.length > 0 ? mapped : PLACEHOLDER
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
