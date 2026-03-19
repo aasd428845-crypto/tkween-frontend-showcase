@@ -2,10 +2,10 @@ import express from 'express'
 import cors from 'cors'
 import pg from 'pg'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'fs'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const IS_PROD = process.env.NODE_ENV === 'production'
+const DIST_PATH = path.join(process.cwd(), 'dist')
 
 const { Pool } = pg
 
@@ -286,10 +286,10 @@ app.patch('/api/settings/visit', async (req, res) => {
 })
 
 if (IS_PROD) {
-  const distPath = path.resolve(__dirname, '../dist')
-  app.use(express.static(distPath))
+  console.log('Serving static files from:', DIST_PATH, '| exists:', fs.existsSync(DIST_PATH))
+  app.use(express.static(DIST_PATH))
   app.get(/.*/, (_req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'))
+    res.sendFile(path.join(DIST_PATH, 'index.html'))
   })
 }
 
