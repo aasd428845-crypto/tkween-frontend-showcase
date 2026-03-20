@@ -1,24 +1,19 @@
 import { useEffect, useState } from 'react'
 
 export default function SplashScreen() {
-  const [phase, setPhase] = useState<'in' | 'hold' | 'fadeout' | 'done'>('in')
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
-    // Logo animates in:   0 → 950ms
-    // Hold fully visible: 950ms → 1700ms
-    // Overlay fades out:  1700ms → 2600ms  ← site is revealed here
-    // Unmount:            2600ms
-    const holdTimer  = setTimeout(() => setPhase('hold'),    950)
-    const fadeTimer  = setTimeout(() => setPhase('fadeout'), 1700)
-    const doneTimer  = setTimeout(() => setPhase('done'),    2650)
-    return () => {
-      clearTimeout(holdTimer)
-      clearTimeout(fadeTimer)
-      clearTimeout(doneTimer)
-    }
+    // Total animation duration: 2.5s → then unmount and enable scrolling
+    document.body.style.overflow = 'hidden'
+    const timer = setTimeout(() => {
+      setDone(true)
+      document.body.style.overflow = ''
+    }, 2500)
+    return () => clearTimeout(timer)
   }, [])
 
-  if (phase === 'done') return null
+  if (done) return null
 
   return (
     <div
@@ -26,13 +21,11 @@ export default function SplashScreen() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: '#060606',
+        background: 'rgba(0, 0, 0, 0.5)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: phase === 'fadeout' ? 0 : 1,
-        transition: phase === 'fadeout' ? 'opacity 0.9s ease-out' : 'none',
-        pointerEvents: phase === 'fadeout' ? 'none' : 'all',
+        pointerEvents: 'all',
       }}
     >
       <img
@@ -40,14 +33,16 @@ export default function SplashScreen() {
         alt="TKWEEN"
         style={{
           width: 'min(280px, 58vw)',
-          animation: 'splashLogoIn 0.95s cubic-bezier(0.0, 0.0, 0.2, 1.0) forwards',
+          animation: 'introLogo 2.5s cubic-bezier(.17,.67,.83,.67) forwards',
         }}
       />
 
       <style>{`
-        @keyframes splashLogoIn {
-          0%   { opacity: 0; transform: scale(0.82); }
-          100% { opacity: 1; transform: scale(1); }
+        @keyframes introLogo {
+          0%   { opacity: 0; transform: scale(0.8); }
+          50%  { opacity: 1; transform: scale(1.0); }
+          80%  { opacity: 1; transform: scale(1.0); }
+          100% { opacity: 0; transform: scale(1.0); }
         }
       `}</style>
     </div>
