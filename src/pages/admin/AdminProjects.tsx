@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getProjects, saveProjects } from '@/lib/storage'
 import type { Project as TkweenProject } from '@/lib/storage'
+import {
+  createCloudProject,
+  deleteCloudProject,
+  fetchCloudProjects,
+  updateCloudProject,
+} from '@/lib/cloud-content'
 
 const emptyProject: TkweenProject = {
   id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
@@ -12,19 +17,92 @@ const emptyProject: TkweenProject = {
 
 export default function AdminProjects() {
   const { t } = useLanguage()
-  const [projects, setProjects] = useState(getProjects)
+  const [projects, setProjects] = useState<TkweenProject[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [modal, setModal] = useState<TkweenProject | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
-  const save = (p: TkweenProject[]) => { setProjects(p); saveProjects(p) }
-  const handleSave = () => {
-    if (!modal) return
-    const updated = modal.id ? projects.map(p => p.id === modal.id ? modal : p) : [...projects, { ...modal, id: Date.now().toString() }]
-    save(updated); setModal(null)
+  const loadProjects = async () => {
+    setLoading(true)
+    try {
+      const cloudProjects = await fetchCloudProjects()
+      setProjects(cloudProjects)
+    } finally {
+      setLoading(false)
+    }
   }
-  const handleDelete = (id: string) => { save(projects.filter(p => p.id !== id)); setConfirmDelete(null) }
-  const toggleFeatured = (id: string) => save(projects.map(p => p.id === id ? { ...p, featured: !p.featured } : p))
-  const toggleVisible = (id: string) => save(projects.map(p => p.id === id ? { ...p, visible: !p.visible } : p))
+
+  useEffect(() => {
+    void loadProjects()
+  }, [])
+
+  const handleSave = async () => {
+    if (!modal || saving) return
+
+    setSaving(true)
+    try {
+      const payload = {
+        title_en: modal.title_en.trim(),
+        title_ar: modal.title_ar.trim(),
+        category: modal.category,
+        thumbnail: modal.thumbnail,
+        video_url: modal.video_url,
+        visible: modal.visible,
+        featured: modal.featured,
+        display_order: modal.display_order,
+      }
+
+      if (modal.id) {
+        await updateCloudProject(modal.id, payload)
+      } else {
+        await createCloudProject(payload)
+      }
+
+      await loadProjects()
+      setModal(null)
+    } catch {
+      alert('Failed to save project. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCloudProject(id)
+      setProjects(prev => prev.filter(p => p.id !== id))
+      setConfirmDelete(null)
+    } catch {
+      alert('Failed to delete project. Please try again.')
+    }
+  }
+
+  const toggleFeatured = async (id: string) => {
+    const current = projects.find(p => p.id === id)
+    if (!current) return
+
+    try {
+      await updateCloudProject(id, { featured: !current.featured })
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, featured: !current.featured } : p))
+    } catch {
+      alert('Failed to update featured status.')
+    }
+  }
+
+  const toggleVisible = async (id: string) => {
+    const current = projects.find(p => p.id === id)
+    if (!current) return
+
+    try {
+      await updateCloudProject(id, { visible: !current.visible })
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, visible: !current.visible } : p))
+    } catch {
+      alert('Failed to update visibility.')
+    }
+  }
+
+  const sortedProjects = [...projects].sort((a, b) => a.display_order - b.display_order)
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', background: BG,
@@ -54,7 +132,11 @@ export default function AdminProjects() {
               </tr>
             </thead>
             <tbody>
-              {projects.sort((a, b) => a.display_order - b.display_order).map(p => (
+              {loading ? (
+                <tr>
+                  <td colSpan={8} style={{ padding: '24px 16px', color: '#777', textAlign: 'center' }}>Loading projects...</td>
+                </tr>
+              ) : sortedProjects.map(p => (
                 <tr key={p.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
                   <td style={{ padding: '8px 16px' }}>
                     <img src={p.thumbnail} alt="" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 3 }}/>
@@ -72,7 +154,7 @@ export default function AdminProjects() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <button onClick={() => toggleVisible(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: p.visible ? GRAD_START : '#555' }}>
-                      {p.visible ? <Eye size={18}/> : <EyeOff size={18}/>}
+                      {p.visible ? <Eye size={18}/> : <EyeOff size={18}/>} 
                     </button>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -83,6 +165,11 @@ export default function AdminProjects() {
                   </td>
                 </tr>
               ))}
+              {!loading && sortedProjects.length === 0 && (
+                <tr>
+                  <td colSpan={8} style={{ padding: '24px 16px', color: '#777', textAlign: 'center' }}>No projects yet.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -123,7 +210,7 @@ export default function AdminProjects() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button onClick={handleSave} style={{ flex: 1, padding: 10, background: GRAD, color: '#fff', borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none', cursor: 'pointer' }}>{t('admin_save')}</button>
+              <button disabled={saving} onClick={handleSave} style={{ flex: 1, padding: 10, background: GRAD, color: '#fff', borderRadius: 4, fontSize: 14, fontWeight: 500, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1 }}>{saving ? 'Saving...' : t('admin_save')}</button>
               <button onClick={() => setModal(null)} style={{ flex: 1, padding: 10, background: 'transparent', border: `1px solid ${BORDER}`, color: '#888', borderRadius: 4, fontSize: 14, cursor: 'pointer' }}>{t('admin_cancel')}</button>
             </div>
           </div>
