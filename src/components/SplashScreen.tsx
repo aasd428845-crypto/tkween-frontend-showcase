@@ -1,19 +1,31 @@
 import { useEffect, useState } from 'react'
 
 export default function SplashScreen() {
-  const [done, setDone] = useState(false)
+  const [phase, setPhase] = useState<'drawing' | 'hold' | 'fadeout' | 'done'>('drawing')
 
   useEffect(() => {
-    // Total animation duration: 2.5s → then unmount and enable scrolling
     document.body.style.overflow = 'hidden'
-    const timer = setTimeout(() => {
-      setDone(true)
+
+    // Drawing:  0 → 1800ms  (clip-path circle expands from center)
+    // Hold:     1800 → 2300ms
+    // Fade out: 2300 → 3100ms
+    // Done:     3100ms
+    const holdTimer  = setTimeout(() => setPhase('hold'),    1800)
+    const fadeTimer  = setTimeout(() => setPhase('fadeout'), 2300)
+    const doneTimer  = setTimeout(() => {
+      setPhase('done')
       document.body.style.overflow = ''
-    }, 2500)
-    return () => clearTimeout(timer)
+    }, 3150)
+
+    return () => {
+      clearTimeout(holdTimer)
+      clearTimeout(fadeTimer)
+      clearTimeout(doneTimer)
+      document.body.style.overflow = ''
+    }
   }, [])
 
-  if (done) return null
+  if (phase === 'done') return null
 
   return (
     <div
@@ -25,7 +37,9 @@ export default function SplashScreen() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        pointerEvents: 'all',
+        opacity: phase === 'fadeout' ? 0 : 1,
+        transition: phase === 'fadeout' ? 'opacity 0.8s ease-out' : 'none',
+        pointerEvents: phase === 'fadeout' ? 'none' : 'all',
       }}
     >
       <img
@@ -33,16 +47,14 @@ export default function SplashScreen() {
         alt="TKWEEN"
         style={{
           width: 'min(280px, 58vw)',
-          animation: 'introLogo 2.5s cubic-bezier(.17,.67,.83,.67) forwards',
+          animation: 'logoReveal 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards',
         }}
       />
 
       <style>{`
-        @keyframes introLogo {
-          0%   { opacity: 0; transform: scale(0.8); }
-          50%  { opacity: 1; transform: scale(1.0); }
-          80%  { opacity: 1; transform: scale(1.0); }
-          100% { opacity: 0; transform: scale(1.0); }
+        @keyframes logoReveal {
+          0%   { clip-path: circle(0%   at 50% 50%); }
+          100% { clip-path: circle(100% at 50% 50%); }
         }
       `}</style>
     </div>
