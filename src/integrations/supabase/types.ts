@@ -14,6 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      projects: {
+        Row: {
+          category: string
+          created_at: string | null
+          display_order: number | null
+          featured: boolean | null
+          id: string
+          thumbnail: string
+          title_ar: string
+          title_en: string
+          video_url: string
+          visible: boolean | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          display_order?: number | null
+          featured?: boolean | null
+          id?: string
+          thumbnail?: string
+          title_ar?: string
+          title_en: string
+          video_url?: string
+          visible?: boolean | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          display_order?: number | null
+          featured?: boolean | null
+          id?: string
+          thumbnail?: string
+          title_ar?: string
+          title_en?: string
+          video_url?: string
+          visible?: boolean | null
+        }
+        Relationships: []
+      }
+      requests: {
+        Row: {
+          created_at: string | null
+          details: string | null
+          email: string | null
+          event_date: string | null
+          full_name: string
+          id: string
+          location: string | null
+          organization: string | null
+          phone: string
+          service_type: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          details?: string | null
+          email?: string | null
+          event_date?: string | null
+          full_name: string
+          id?: string
+          location?: string | null
+          organization?: string | null
+          phone: string
+          service_type?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string | null
+          details?: string | null
+          email?: string | null
+          event_date?: string | null
+          full_name?: string
+          id?: string
+          location?: string | null
+          organization?: string | null
+          phone?: string
+          service_type?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           created_at: string | null
