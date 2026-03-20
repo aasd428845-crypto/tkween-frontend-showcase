@@ -7,6 +7,7 @@ import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, GRAD_HOVER, gradText, cinematicText, warmGradText, applyGradText, removeGradText, getActiveGrad } from '@/lib/brand'
 import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
+import { fetchCloudProjects } from '@/lib/cloud-content'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -38,9 +39,11 @@ export default function Home() {
   const activeGrad = getActiveGrad(lang)
 
   const heroImages = getHeroImages()
-  const projects = getProjects()
-    .filter(p => p.visible)
-    .sort((a, b) => a.display_order - b.display_order)
+  const [projects, setProjects] = useState(() =>
+    getProjects()
+      .filter(p => p.visible)
+      .sort((a, b) => a.display_order - b.display_order),
+  )
 
   const [heroIdx, setHeroIdx] = useState(0)
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
@@ -50,6 +53,24 @@ export default function Home() {
     const t = setInterval(() => setHeroIdx(p => (p + 1) % heroImages.length), 6000)
     return () => clearInterval(t)
   }, [heroImages.length])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadProjects = async () => {
+      const cloudProjects = await fetchCloudProjects()
+      if (cancelled) return
+
+      setProjects(
+        cloudProjects
+          .filter(p => p.visible)
+          .sort((a, b) => a.display_order - b.display_order),
+      )
+    }
+
+    void loadProjects()
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     try {

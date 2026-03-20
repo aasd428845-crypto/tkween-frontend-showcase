@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import VideoCard from '@/components/VideoCard'
 import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
-import { warmGradText, WARM_GRAD, BG, BORDER } from '@/lib/brand'
-import { getVideos } from '@/lib/storage'
+import { warmGradText, WARM_GRAD, BG } from '@/lib/brand'
+import { fetchCloudVideos } from '@/lib/cloud-content'
 
 const PLACEHOLDER = [
   { id: 'd1', title_en: 'Motion Graphics Reel', title_ar: 'حزمة موشن جرافيك',
@@ -20,13 +20,23 @@ export default function Designs() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
+  const [videos, setVideos] = useState<any[]>(PLACEHOLDER)
 
-  const saved = getVideos()
-    .filter((v: any) => v.section === 'designs' && v.visible)
-    .sort((a: any, b: any) => a.display_order - b.display_order)
-    .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
+  useEffect(() => {
+    let cancelled = false
 
-  const videos = saved.length > 0 ? saved : PLACEHOLDER
+    const load = async () => {
+      const saved = (await fetchCloudVideos())
+        .filter((v: any) => v.section === 'designs' && v.visible)
+        .sort((a: any, b: any) => a.display_order - b.display_order)
+        .map((v: any) => ({ ...v, thumbnail: v.thumbnail_url || v.thumbnail || '' }))
+
+      if (!cancelled && saved.length > 0) setVideos(saved)
+    }
+
+    void load()
+    return () => { cancelled = true }
+  }, [])
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>

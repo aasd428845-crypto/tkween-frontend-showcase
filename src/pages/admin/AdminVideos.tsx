@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getVideos, saveVideos } from '@/lib/storage'
+import {
+  createCloudVideo,
+  deleteCloudVideo,
+  fetchCloudVideos,
+  updateCloudVideo,
+} from '@/lib/cloud-content'
 
 interface Video {
   id: string
@@ -12,6 +17,7 @@ interface Video {
   display_order: number
   featured: boolean
   visible: boolean
+  created_at?: string
 }
 
 const SECTIONS = ['conferences', 'corporate_ads', 'designs', 'our_work'] as const
@@ -30,12 +36,28 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function AdminVideos() {
-  const [videos, setVideos] = useState<Video[]>(() => getVideos() as Video[])
+  const [videos, setVideos] = useState<Video[]>([])
+  const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<string>('conferences')
   const [modal, setModal] = useState(false)
   const [form, setForm] = useState<Omit<Video, 'id'>>(blank)
   const [editId, setEditId] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const loadVideos = async () => {
+    setLoading(true)
+    try {
+      const cloudVideos = await fetchCloudVideos()
+      setVideos(cloudVideos as Video[])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadVideos()
+  }, [])
 
   const filtered = videos.filter(v => v.section === tab).sort((a, b) => a.display_order - b.display_order)
 
@@ -49,26 +71,66 @@ export default function AdminVideos() {
       const res = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(form.vimeo_url)}`)
       const data = await res.json()
       setForm(prev => ({ ...prev, thumbnail_url: data.thumbnail_url || prev.thumbnail_url, title_en: prev.title_en || data.title || '' }))
-    } catch { alert('Failed to fetch Vimeo data.') } finally { setFetching(false) }
+    } catch {
+      alert('Failed to fetch Vimeo data.')
+    } finally {
+      setFetching(false)
+    }
   }
 
-  const handleSave = () => {
-    const now = new Date().toISOString()
-    const updated = editId
-      ? videos.map(v => v.id === editId ? { ...form, id: editId, created_at: (v as any).created_at || now } : v)
-      : [...videos, { ...form, id: Date.now().toString(), created_at: now }]
-    setVideos(updated); saveVideos(updated as any); setModal(false)
+  const handleSave = async () => {
+    if (saving) return
+
+    setSaving(true)
+    try {
+      const payload = {
+        title_en: form.title_en.trim(),
+        title_ar: form.title_ar.trim(),
+        section: form.section,
+        vimeo_url: form.vimeo_url,
+        thumbnail_url: form.thumbnail_url,
+        display_order: form.display_order,
+        featured: form.featured,
+        visible: form.visible,
+      }
+
+      if (editId) {
+        await updateCloudVideo(editId, payload)
+      } else {
+        await createCloudVideo(payload)
+      }
+
+      await loadVideos()
+      setModal(false)
+    } catch {
+      alert('Failed to save video. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this video?')) return
-    const updated = videos.filter(v => v.id !== id)
-    setVideos(updated); saveVideos(updated as any)
+
+    try {
+      await deleteCloudVideo(id)
+      setVideos(prev => prev.filter(v => v.id !== id))
+    } catch {
+      alert('Failed to delete video. Please try again.')
+    }
   }
 
-  const toggle = (id: string, field: 'featured' | 'visible') => {
-    const updated = videos.map(v => v.id === id ? { ...v, [field]: !v[field] } : v)
-    setVideos(updated); saveVideos(updated as any)
+  const toggle = async (id: string, field: 'featured' | 'visible') => {
+    const target = videos.find(v => v.id === id)
+    if (!target) return
+
+    const nextValue = !target[field]
+    try {
+      await updateCloudVideo(id, { [field]: nextValue })
+      setVideos(prev => prev.map(v => v.id === id ? { ...v, [field]: nextValue } : v))
+    } catch {
+      alert('Failed to update video status.')
+    }
   }
 
   return (
@@ -76,7 +138,7 @@ export default function AdminVideos() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 300, color: '#fff' }}>Video Sections</h1>
-          <p style={{ color: '#666', fontSize: 13, marginTop: 4 }}>Manage videos stored locally</p>
+          <p style={{ color: '#666', fontSize: 13, marginTop: 4 }}>Manage published videos</p>
         </div>
         <button onClick={openAdd} style={{
           padding: '10px 20px', background: GRAD, border: 'none',
@@ -105,7 +167,9 @@ export default function AdminVideos() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(v => (
+            {loading ? (
+              <tr><td colSpan={7} style={{ padding: 32, textAlign: 'center', color: '#444', fontSize: 13 }}>Loading videos...</td></tr>
+            ) : filtered.map(v => (
               <tr key={v.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
                 <td style={{ padding: 8 }}>
                   {v.thumbnail_url
@@ -148,7 +212,7 @@ export default function AdminVideos() {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
+            {!loading && filtered.length === 0 && (
               <tr><td colSpan={7} style={{ padding: 48, textAlign: 'center', color: '#333', fontSize: 13 }}>
                 No videos in this section
               </td></tr>
@@ -200,7 +264,7 @@ export default function AdminVideos() {
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ color: '#555', fontSize: 10, letterSpacing: '0.1em', display: 'block', marginBottom: 4 }}>THUMBNAIL URL</label>
                 <input style={inputStyle} value={form.thumbnail_url} onChange={e => setForm({ ...form, thumbnail_url: e.target.value })}/>
-                {form.thumbnail_url && <img src={form.thumbnail_url} alt="preview" style={{ width: 120, height: 68, objectFit: 'cover', marginTop: 8, borderRadius: 3 }}/>}
+                {form.thumbnail_url && <img src={form.thumbnail_url} alt="preview" style={{ width: 120, height: 68, objectFit: 'cover', marginTop: 8, borderRadius: 3 }}/>} 
               </div>
               <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 24 }}>
                 {[{ k: 'featured', l: 'Featured' }, { k: 'visible', l: 'Visible' }].map(f => (
@@ -212,7 +276,7 @@ export default function AdminVideos() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button onClick={handleSave} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: 'pointer', borderRadius: 4 }}>SAVE VIDEO</button>
+              <button disabled={saving} onClick={handleSave} style={{ flex: 1, background: GRAD, border: 'none', color: '#fff', padding: 13, fontSize: 12, letterSpacing: '0.1em', cursor: saving ? 'not-allowed' : 'pointer', borderRadius: 4, opacity: saving ? 0.7 : 1 }}>{saving ? 'SAVING...' : 'SAVE VIDEO'}</button>
               <button onClick={() => setModal(false)} style={{ background: 'transparent', border: `1px solid ${BORDER}`, color: '#888', padding: '13px 20px', fontSize: 12, cursor: 'pointer', borderRadius: 4 }}>CANCEL</button>
             </div>
           </div>
