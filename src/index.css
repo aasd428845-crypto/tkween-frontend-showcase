@@ -40,7 +40,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cocon Next Arabic', 'Tajawal', 'Inter', sans-serif;
   font-weight: 300;
   overflow-x: hidden;
 }
@@ -50,8 +50,14 @@ body.lang-ar {
   direction: rtl;
 }
 
-button { border: none !important; outline: none !important; }
-button:focus { outline: none !important; }
+button {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none;
+}
+button:focus { outline: none !important; box-shadow: none !important; }
+a { border: none !important; outline: none; }
+a:focus { outline: none !important; }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

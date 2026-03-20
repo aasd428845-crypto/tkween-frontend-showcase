@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 
 export default function SplashScreen() {
-  const [phase, setPhase] = useState<'intro' | 'hold' | 'fadeout' | 'done'>('intro')
+  const [phase, setPhase] = useState<'in' | 'hold' | 'fadeout' | 'done'>('in')
 
   useEffect(() => {
-    // Logo animates in: 0 → 900ms
-    // Hold fully visible: 900ms → 1800ms
-    // Overlay fades out: 1800ms → 2600ms
-    // Done (unmount): 2600ms
-    const holdTimer    = setTimeout(() => setPhase('hold'),    900)
-    const fadeTimer    = setTimeout(() => setPhase('fadeout'), 1800)
-    const doneTimer    = setTimeout(() => setPhase('done'),    2700)
+    // Logo animates in:   0 → 950ms
+    // Hold fully visible: 950ms → 1700ms
+    // Overlay fades out:  1700ms → 2600ms  ← site is revealed here
+    // Unmount:            2600ms
+    const holdTimer  = setTimeout(() => setPhase('hold'),    950)
+    const fadeTimer  = setTimeout(() => setPhase('fadeout'), 1700)
+    const doneTimer  = setTimeout(() => setPhase('done'),    2650)
     return () => {
       clearTimeout(holdTimer)
       clearTimeout(fadeTimer)
@@ -26,14 +26,12 @@ export default function SplashScreen() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'rgba(6,6,6,0.88)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        background: '#060606',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         opacity: phase === 'fadeout' ? 0 : 1,
-        transition: phase === 'fadeout' ? 'opacity 0.85s ease-out' : 'none',
+        transition: phase === 'fadeout' ? 'opacity 0.9s ease-out' : 'none',
         pointerEvents: phase === 'fadeout' ? 'none' : 'all',
       }}
     >
@@ -42,14 +40,14 @@ export default function SplashScreen() {
         alt="TKWEEN"
         style={{
           width: 'min(280px, 58vw)',
-          animation: 'splashLogoIn 0.9s cubic-bezier(0.0, 0.0, 0.2, 1.0) forwards',
+          animation: 'splashLogoIn 0.95s cubic-bezier(0.0, 0.0, 0.2, 1.0) forwards',
         }}
       />
 
       <style>{`
         @keyframes splashLogoIn {
           0%   { opacity: 0; transform: scale(0.82); }
-          100% { opacity: 1; transform: scale(1);    }
+          100% { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
