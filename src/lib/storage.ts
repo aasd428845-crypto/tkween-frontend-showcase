@@ -3,6 +3,7 @@ export interface Project {
   title_en: string
   title_ar: string
   category: string
+  type: string
   thumbnail: string
   video_url: string
   visible: boolean

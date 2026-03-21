@@ -59,6 +59,7 @@ export async function createCloudProject(project: Omit<Project, 'id'>): Promise<
       title_en: project.title_en,
       title_ar: project.title_ar,
       category: project.category,
+      type: project.type,
       thumbnail: project.thumbnail,
       video_url: project.video_url,
       visible: project.visible,

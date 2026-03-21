@@ -199,6 +199,12 @@ export default function AdminProjects() {
                 </select>
               </div>
               <div>
+                <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>Type</label>
+                <select value={modal.type} onChange={e => setModal({ ...modal, type: e.target.value })} style={inputStyle}>
+                  {['video', 'photo'].map(t => <option key={t} value={t} style={{ background: BG_SOFT }}>{t.toUpperCase()}</option>)}
+                </select>
+              </div>
+              <div>
                 <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_order')}</label>
                 <input type="number" value={modal.display_order} onChange={e => setModal({ ...modal, display_order: +e.target.value })} style={inputStyle}/>
               </div>
