@@ -1,24 +1,48 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Film, MessageSquare, Bell, Eye } from 'lucide-react'
 import { CORAL, TEAL, BG_SOFT, BORDER } from '@/lib/brand'
-import { getProjects, getRequests, getSettings } from '@/lib/storage'
+import { fetchCloudProjects, fetchCloudRequests, fetchCloudSettings } from '@/lib/cloud-content'
+import type { Request as TkweenRequest } from '@/lib/storage'
 
 export default function AdminDashboard() {
   const { t } = useLanguage()
-  const projects = getProjects()
-  const requests = getRequests()
-  const settings = getSettings()
-  const newReqs = requests.filter((r: any) => r.status === 'new')
+  const [projectsCount, setProjectsCount] = useState(0)
+  const [requests, setRequests] = useState<TkweenRequest[]>([])
+  const [visits, setVisits] = useState('0')
+
+  useEffect(() => {
+    let cancelled = false
+
+    const load = async () => {
+      const [projects, cloudRequests, settings] = await Promise.all([
+        fetchCloudProjects(),
+        fetchCloudRequests(),
+        fetchCloudSettings(),
+      ])
+
+      if (cancelled) return
+
+      setProjectsCount(projects.length)
+      setRequests(cloudRequests)
+      setVisits(settings.visit_count || '0')
+    }
+
+    void load()
+    return () => { cancelled = true }
+  }, [])
+
+  const newReqs = useMemo(() => requests.filter(r => r.status === 'new'), [requests])
 
   const cards = [
-    { icon: Film, label: t('admin_total_projects'), value: projects.length, color: CORAL },
+    { icon: Film, label: t('admin_total_projects'), value: projectsCount, color: CORAL },
     { icon: MessageSquare, label: t('admin_total_requests'), value: requests.length, color: '#60a5fa' },
     { icon: Bell, label: t('admin_new_requests'), value: newReqs.length, color: '#f59e0b' },
-    { icon: Eye, label: t('admin_visits'), value: settings.visit_count || 0, color: '#a78bfa' },
+    { icon: Eye, label: t('admin_visits'), value: visits || 0, color: '#a78bfa' },
   ]
 
   const recent = [...requests]
-    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 8)
 
   const statusColors: Record<string, string> = {
@@ -55,7 +79,7 @@ export default function AdminDashboard() {
             <tbody>
               {recent.length === 0 ? (
                 <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: '#555' }}>No requests yet</td></tr>
-              ) : recent.map((r: any) => (
+              ) : recent.map(r => (
                 <tr key={r.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
                   <td style={{ padding: '12px 16px', color: '#fff', fontSize: 14 }}>{r.full_name}</td>
                   <td style={{ padding: '12px 16px', color: '#888', fontSize: 14 }}>{r.organization}</td>
