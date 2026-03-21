@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, WARM_GRAD, BG, BORDER, warmGradText, gradBorder } from '@/lib/brand'
-import { addRequest } from '@/lib/storage'
+import { createCloudRequest } from '@/lib/cloud-content'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 0',
@@ -17,17 +17,28 @@ export default function Quote() {
   const { lang, t } = useLanguage()
   const isAr = lang === 'ar'
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     full_name: '', organization: '', phone: '', email: '',
     event_date: '', location: '', service_type: '', details: '',
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try { addRequest(formData) } catch {}
-    setSent(true)
-    setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
-    setTimeout(() => setSent(false), 5000)
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      await createCloudRequest(formData)
+      setSent(true)
+      setFormData({ full_name: '', organization: '', phone: '', email: '', event_date: '', location: '', service_type: '', details: '' })
+      setTimeout(() => setSent(false), 5000)
+    } catch {
+      setError(isAr ? 'حدث خطأ أثناء الإرسال. حاول مرة أخرى.' : 'Failed to submit request. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const fields = [
@@ -61,6 +72,18 @@ export default function Quote() {
               color: '#FF5F57', fontSize: 14, marginBottom: 32,
             }}>
               {isAr ? 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.' : 'Your request has been submitted! We\'ll be in touch soon.'}
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              padding: '16px 20px',
+              border: '1px solid #ef4444',
+              color: '#ef4444',
+              fontSize: 14,
+              marginBottom: 32,
+            }}>
+              {error}
             </div>
           )}
 
@@ -109,14 +132,15 @@ export default function Quote() {
               />
             </div>
 
-            <button type="submit" style={{
+            <button type="submit" disabled={submitting} style={{
               width: '100%', padding: '16px', background: GRAD,
               border: 'none', color: '#fff', fontSize: 11,
-              letterSpacing: '0.2em', cursor: 'pointer', transition: 'opacity 0.3s',
+              letterSpacing: '0.2em', cursor: submitting ? 'not-allowed' : 'pointer', transition: 'opacity 0.3s',
+              opacity: submitting ? 0.7 : 1,
             }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-              {isAr ? 'إرسال الطلب' : 'SEND REQUEST'}
+              {submitting ? (isAr ? 'جارٍ الإرسال...' : 'SENDING...') : (isAr ? 'إرسال الطلب' : 'SEND REQUEST')}
             </button>
           </form>
         </div>

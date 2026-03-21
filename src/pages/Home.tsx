@@ -6,8 +6,8 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, GRAD_HOVER, gradText, cinematicText, warmGradText, applyGradText, removeGradText, getActiveGrad } from '@/lib/brand'
-import { getProjects, getHeroImages, getSettings } from '@/lib/storage'
-import { fetchCloudProjects } from '@/lib/cloud-content'
+import { DEFAULT_HERO_IMAGES, parseHeroImages } from '@/lib/storage'
+import { fetchCloudProjects, fetchCloudSettings, incrementCloudVisitCount } from '@/lib/cloud-content'
 
 const SERVICES = [
   { num: '01', ar: 'التصوير الفوتوغرافي', en: 'Photography',
@@ -38,12 +38,8 @@ export default function Home() {
   const isAr = lang === 'ar'
   const activeGrad = getActiveGrad(lang)
 
-  const heroImages = getHeroImages()
-  const [projects, setProjects] = useState(() =>
-    getProjects()
-      .filter(p => p.visible)
-      .sort((a, b) => a.display_order - b.display_order),
-  )
+  const [heroImages, setHeroImages] = useState<string[]>(DEFAULT_HERO_IMAGES)
+  const [projects, setProjects] = useState<any[]>([])
 
   const [heroIdx, setHeroIdx] = useState(0)
   const [modal, setModal] = useState<{ url: string; title: string } | null>(null)
@@ -57,8 +53,12 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false
 
-    const loadProjects = async () => {
-      const cloudProjects = await fetchCloudProjects()
+    const loadContent = async () => {
+      const [cloudProjects, settings] = await Promise.all([
+        fetchCloudProjects(),
+        fetchCloudSettings(),
+      ])
+
       if (cancelled) return
 
       setProjects(
@@ -66,18 +66,16 @@ export default function Home() {
           .filter(p => p.visible)
           .sort((a, b) => a.display_order - b.display_order),
       )
+
+      setHeroImages(parseHeroImages(settings.hero_images))
     }
 
-    void loadProjects()
+    void loadContent()
     return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
-    try {
-      const s = getSettings()
-      const updated = { ...s, visit_count: String((parseInt(s.visit_count || '0')) + 1) }
-      localStorage.setItem('tkween_settings', JSON.stringify(updated))
-    } catch {}
+    void incrementCloudVisitCount()
   }, [])
 
   return (

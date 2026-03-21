@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { Search, Trash2, X } from 'lucide-react'
 import { GRAD, GRAD_START, BG, BG_SOFT, BORDER } from '@/lib/brand'
-import { getRequests, saveRequests } from '@/lib/storage'
 import type { Request as TkweenRequest } from '@/lib/storage'
+import { deleteCloudRequest, fetchCloudRequests, updateCloudRequest } from '@/lib/cloud-content'
 
 const statusColors: Record<string, string> = {
   new: '#f59e0b', reviewed: '#60a5fa', contacted: GRAD_START, closed: '#555',
@@ -11,29 +11,51 @@ const statusColors: Record<string, string> = {
 
 export default function AdminRequests() {
   const { t } = useLanguage()
-  const [requests, setRequests] = useState(getRequests)
+  const [requests, setRequests] = useState<TkweenRequest[]>([])
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<TkweenRequest | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
-  const save = (r: TkweenRequest[]) => { setRequests(r); saveRequests(r) }
+  const loadRequests = async () => {
+    setLoading(true)
+    try {
+      const cloudRequests = await fetchCloudRequests()
+      setRequests(cloudRequests)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadRequests()
+  }, [])
 
   const filtered = requests
     .filter(r => filter === 'ALL' || r.status === filter)
     .filter(r => !search || r.full_name.toLowerCase().includes(search.toLowerCase()) || r.organization.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  const updateStatus = (id: string, status: TkweenRequest['status']) => {
-    const updated = requests.map(r => r.id === id ? { ...r, status } : r)
-    save(updated)
-    if (selected?.id === id) setSelected({ ...selected, status })
+  const updateStatus = async (id: string, status: TkweenRequest['status']) => {
+    try {
+      await updateCloudRequest(id, { status })
+      setRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      if (selected?.id === id) setSelected({ ...selected, status })
+    } catch {
+      alert('Failed to update request status.')
+    }
   }
 
-  const handleDelete = (id: string) => {
-    save(requests.filter(r => r.id !== id))
-    if (selected?.id === id) setSelected(null)
-    setConfirmDelete(null)
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCloudRequest(id)
+      setRequests(prev => prev.filter(r => r.id !== id))
+      if (selected?.id === id) setSelected(null)
+      setConfirmDelete(null)
+    } catch {
+      alert('Failed to delete request.')
+    }
   }
 
   return (
@@ -71,7 +93,9 @@ export default function AdminRequests() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {loading ? (
+                  <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: '#555' }}>Loading...</td></tr>
+                ) : filtered.length === 0 ? (
                   <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: '#555' }}>No requests</td></tr>
                 ) : filtered.map(r => (
                   <tr key={r.id} onClick={() => setSelected(r)} style={{
