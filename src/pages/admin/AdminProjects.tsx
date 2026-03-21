@@ -11,7 +11,7 @@ import {
 } from '@/lib/cloud-content'
 
 const emptyProject: TkweenProject = {
-  id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
+  id: '', title_en: '', title_ar: '', category: 'CONFERENCES', type: 'video',
   thumbnail: '', video_url: '', visible: true, featured: false, display_order: 1,
 }
 
