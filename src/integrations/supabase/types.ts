@@ -24,6 +24,7 @@ export type Database = {
           thumbnail: string
           title_ar: string
           title_en: string
+          type: string | null
           video_url: string
           visible: boolean | null
         }
@@ -36,6 +37,7 @@ export type Database = {
           thumbnail?: string
           title_ar?: string
           title_en: string
+          type?: string | null
           video_url?: string
           visible?: boolean | null
         }
@@ -48,6 +50,7 @@ export type Database = {
           thumbnail?: string
           title_ar?: string
           title_en?: string
+          type?: string | null
           video_url?: string
           visible?: boolean | null
         }

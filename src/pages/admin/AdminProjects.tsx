@@ -11,7 +11,7 @@ import {
 } from '@/lib/cloud-content'
 
 const emptyProject: TkweenProject = {
-  id: '', title_en: '', title_ar: '', category: 'CONFERENCES',
+  id: '', title_en: '', title_ar: '', category: 'CONFERENCES', type: 'video',
   thumbnail: '', video_url: '', visible: true, featured: false, display_order: 1,
 }
 
@@ -46,6 +46,7 @@ export default function AdminProjects() {
         title_en: modal.title_en.trim(),
         title_ar: modal.title_ar.trim(),
         category: modal.category,
+        type: modal.type,
         thumbnail: modal.thumbnail,
         video_url: modal.video_url,
         visible: modal.visible,
@@ -195,6 +196,12 @@ export default function AdminProjects() {
                 <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>{t('admin_category')}</label>
                 <select value={modal.category} onChange={e => setModal({ ...modal, category: e.target.value })} style={inputStyle}>
                   {['CONFERENCES', 'CORPORATE', 'BRAND', 'EVENTS'].map(c => <option key={c} value={c} style={{ background: BG_SOFT }}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ color: '#555', fontSize: 12, display: 'block', marginBottom: 4 }}>Type</label>
+                <select value={modal.type} onChange={e => setModal({ ...modal, type: e.target.value })} style={inputStyle}>
+                  {['video', 'photo'].map(t => <option key={t} value={t} style={{ background: BG_SOFT }}>{t.toUpperCase()}</option>)}
                 </select>
               </div>
               <div>

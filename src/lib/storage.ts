@@ -3,6 +3,7 @@ export interface Project {
   title_en: string
   title_ar: string
   category: string
+  type: string
   thumbnail: string
   video_url: string
   visible: boolean
@@ -67,16 +68,16 @@ const DEFAULT_SETTINGS: Settings = {
 
 const DEFAULT_PROJECTS: Project[] = [
   { id: '1', title_en: 'Saudi Vision Forum 2024', title_ar: 'منتدى رؤية السعودية 2024',
-    category: 'CONFERENCES', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    category: 'CONFERENCES', type: 'video', thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
     video_url: '', visible: true, featured: true, display_order: 1 },
   { id: '2', title_en: 'Aramco Annual Summit', title_ar: 'قمة أرامكو السنوية',
-    category: 'CONFERENCES', thumbnail: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
+    category: 'CONFERENCES', type: 'video', thumbnail: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80',
     video_url: '', visible: true, featured: false, display_order: 2 },
   { id: '3', title_en: 'NEOM Brand Campaign', title_ar: 'حملة علامة نيوم',
-    category: 'CORPORATE', thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
+    category: 'CORPORATE', type: 'video', thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80',
     video_url: '', visible: true, featured: false, display_order: 3 },
   { id: '4', title_en: 'Red Sea Film Series', title_ar: 'سلسلة أفلام البحر الأحمر',
-    category: 'BRAND', thumbnail: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    category: 'BRAND', type: 'video', thumbnail: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     video_url: '', visible: true, featured: true, display_order: 4 },
 ]
 
