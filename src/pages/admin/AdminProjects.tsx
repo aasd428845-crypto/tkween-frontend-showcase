@@ -46,6 +46,7 @@ export default function AdminProjects() {
         title_en: modal.title_en.trim(),
         title_ar: modal.title_ar.trim(),
         category: modal.category,
+        type: modal.type,
         thumbnail: modal.thumbnail,
         video_url: modal.video_url,
         visible: modal.visible,
