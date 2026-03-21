@@ -10,6 +10,7 @@ const normalizeProject = (row: any): Project => ({
   title_en: row.title_en ?? '',
   title_ar: row.title_ar ?? '',
   category: row.category ?? '',
+  type: row.type ?? 'video',
   thumbnail: row.thumbnail ?? '',
   video_url: row.video_url ?? '',
   visible: row.visible ?? true,
