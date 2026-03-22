@@ -34,12 +34,25 @@ export default function VideoCard({
         cursor: onClick ? 'pointer' : 'default', display: 'block',
       }}
     >
-      {embedUrl ? (
+      {/* Always show thumbnail as background/fallback */}
+      {thumbnail && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: `url(${thumbnail})`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          transform: hovered ? 'scale(1.04)' : 'scale(1)',
+          transition: 'transform 0.8s ease',
+          filter: hovered ? 'brightness(0.65)' : 'brightness(0.82)',
+        }}/>
+      )}
+      {/* Overlay iframe on top if vimeo embed available */}
+      {embedUrl && (
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
           <iframe
             src={embedUrl}
             allow="autoplay; fullscreen"
             title={title}
+            loading="lazy"
             style={{
               position: 'absolute',
               top: '50%', left: '50%',
@@ -52,15 +65,6 @@ export default function VideoCard({
             }}
           />
         </div>
-      ) : (
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `url(${thumbnail})`,
-          backgroundSize: 'cover', backgroundPosition: 'center',
-          transform: hovered ? 'scale(1.04)' : 'scale(1)',
-          transition: 'transform 0.8s ease',
-          filter: hovered ? 'brightness(0.65)' : 'brightness(0.82)',
-        }}/>
       )}
 
       <div style={{
