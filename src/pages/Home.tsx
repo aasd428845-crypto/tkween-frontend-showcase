@@ -296,24 +296,21 @@ export default function Home() {
           <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}
                className="clients-grid">
             {CLIENT_LOGOS.map((c, i) => (
               <div key={i} style={{
-                padding: '20px 16px',
+                padding: '16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(255,255,255,0.04)',
-                borderRadius: 12,
-                transition: 'all 0.3s',
+                background: 'transparent',
+                transition: 'transform 0.3s',
                 cursor: 'default',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'
-                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1.05)'
+                (e.currentTarget as HTMLElement).style.transform = 'scale(1.08)'
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
-                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+                (e.currentTarget as HTMLElement).style.transform = 'scale(1)'
               }}>
                 <img
                   src={c.logo}
@@ -323,7 +320,7 @@ export default function Home() {
                     maxWidth: 120, maxHeight: 80,
                     width: 'auto', height: 'auto',
                     objectFit: 'contain',
-                    filter: 'brightness(0.9)',
+                    filter: 'brightness(1)',
                   }}
                 />
               </div>
