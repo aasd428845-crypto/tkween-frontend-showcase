@@ -138,3 +138,23 @@ a { color: inherit; text-decoration: none; }
   animation: heroBtnPop 0.7s ease forwards 1s;
   opacity: 0;
 }
+
+/* ── Hero responsive ─────────────────────────── */
+.hero-section {
+  height: 100vh;
+  height: 100svh;
+}
+
+@media (max-width: 767px) {
+  .hero-section {
+    height: 75svh;
+    min-height: 420px;
+    max-height: 680px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-section {
+    height: 85svh;
+  }
+}
