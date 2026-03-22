@@ -296,18 +296,36 @@ export default function Home() {
           <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
-            {CLIENTS.map((c, i) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}
+               className="clients-grid">
+            {CLIENT_LOGOS.map((c, i) => (
               <div key={i} style={{
-                padding: '22px 16px',
-                textAlign: 'center', fontSize: 13, color: '#444',
-                letterSpacing: '0.03em',
-                transition: 'color 0.3s',
+                padding: '20px 16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(255,255,255,0.04)',
+                borderRadius: 12,
+                transition: 'all 0.3s',
                 cursor: 'default',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#444' }}>
-                {c}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1.05)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+              }}>
+                <img
+                  src={c.logo}
+                  alt={c.name}
+                  loading="lazy"
+                  style={{
+                    maxWidth: 120, maxHeight: 80,
+                    width: 'auto', height: 'auto',
+                    objectFit: 'contain',
+                    filter: 'brightness(0.9)',
+                  }}
+                />
               </div>
             ))}
           </div>
