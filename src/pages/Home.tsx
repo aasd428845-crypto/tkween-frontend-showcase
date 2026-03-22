@@ -83,12 +83,12 @@ export default function Home() {
       <Navbar />
 
       {/* HERO */}
-      <section style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+      <section className="hero-section" style={{ position: 'relative', overflow: 'hidden' }}>
         {heroImages.map((src, i) => (
           <div key={src + i} style={{
             position: 'absolute', inset: 0,
             backgroundImage: `url(${src})`,
-            backgroundSize: 'cover', backgroundPosition: 'center',
+            backgroundSize: 'cover', backgroundPosition: 'center center',
             opacity: i === heroIdx ? 1 : 0,
             transform: i === heroIdx ? 'scale(1)' : 'scale(1.05)',
             transition: 'opacity 1.4s ease, transform 1.4s ease',
