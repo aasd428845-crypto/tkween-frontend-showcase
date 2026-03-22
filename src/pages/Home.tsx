@@ -6,6 +6,16 @@ import VideoModal from '@/components/VideoModal'
 import WhatsAppButton from '@/components/WhatsAppButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { GRAD, GRAD_CINEMATIC, MIXED_GRAD, TEAL, BG, BG_SOFT, BORDER, WARM_GRAD, GRAD_HOVER, gradText, cinematicText, warmGradText, applyGradText, removeGradText, getActiveGrad } from '@/lib/brand'
+
+import logoDefense from '@/assets/clients/ministry-of-defense.png'
+import logoHR from '@/assets/clients/ministry-of-hr.jpg'
+import logoAlanood from '@/assets/clients/alanood-foundation.png'
+import logoHealth from '@/assets/clients/ministry-of-health.png'
+import logoEducation from '@/assets/clients/ministry-of-education.png'
+import logoArts from '@/assets/clients/royal-institute-arts.png'
+import logoSuqia from '@/assets/clients/suqia.png'
+import logoSalman from '@/assets/clients/king-salman-academy.webp'
+import logoIndustry from '@/assets/clients/ministry-of-industry.png'
 import { DEFAULT_HERO_IMAGES, parseHeroImages } from '@/lib/storage'
 import { fetchCloudProjects, fetchCloudSettings, incrementCloudVisitCount } from '@/lib/cloud-content'
 
@@ -24,13 +34,16 @@ const SERVICES = [
     descEn: 'Live event coverage with multi-camera broadcast.' },
 ]
 
-const CLIENTS = [
-  'وزارة الدفاع', 'وزارة التعليم', 'مؤسسة الأميرة العنود',
-  'وزارة الصحة', 'التنفيذي', 'مركز المصالحة',
-  'الموارد البشرية', 'IDWS', 'هيئة الحكومة الرقمية',
-  'أصول', 'جمعية سُقيا', 'المعهد الملكي للفنون',
-  'وزارة الصناعة', 'الصندوق الصناعي',
-  'بنك الرياض', 'مجمع الملك سلمان للغة',
+const CLIENT_LOGOS = [
+  { name: 'وزارة الدفاع', logo: logoDefense },
+  { name: 'وزارة التعليم العالي', logo: logoEducation },
+  { name: 'مؤسسة الأميرة العنود', logo: logoAlanood },
+  { name: 'وزارة الصحة', logo: logoHealth },
+  { name: 'وزارة الموارد البشرية', logo: logoHR },
+  { name: 'المعهد الملكي للفنون', logo: logoArts },
+  { name: 'جمعية سُقيا', logo: logoSuqia },
+  { name: 'وزارة الصناعة', logo: logoIndustry },
+  { name: 'مجمع الملك سلمان للغة', logo: logoSalman },
 ]
 
 export default function Home() {
@@ -283,18 +296,36 @@ export default function Home() {
           <p style={{ ...warmGradText, fontSize: 10, letterSpacing: '0.35em', textAlign: 'center', marginBottom: 48 }}>
             {isAr ? 'عملاؤنا' : 'OUR CLIENTS'}
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
-            {CLIENTS.map((c, i) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}
+               className="clients-grid">
+            {CLIENT_LOGOS.map((c, i) => (
               <div key={i} style={{
-                padding: '22px 16px',
-                textAlign: 'center', fontSize: 13, color: '#444',
-                letterSpacing: '0.03em',
-                transition: 'color 0.3s',
+                padding: '20px 16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(255,255,255,0.04)',
+                borderRadius: 12,
+                transition: 'all 0.3s',
                 cursor: 'default',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fff' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#444' }}>
-                {c}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1.05)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'scale(1)'
+              }}>
+                <img
+                  src={c.logo}
+                  alt={c.name}
+                  loading="lazy"
+                  style={{
+                    maxWidth: 120, maxHeight: 80,
+                    width: 'auto', height: 'auto',
+                    objectFit: 'contain',
+                    filter: 'brightness(0.9)',
+                  }}
+                />
               </div>
             ))}
           </div>
