@@ -34,13 +34,16 @@ const SERVICES = [
     descEn: 'Live event coverage with multi-camera broadcast.' },
 ]
 
-const CLIENTS = [
-  'وزارة الدفاع', 'وزارة التعليم', 'مؤسسة الأميرة العنود',
-  'وزارة الصحة', 'التنفيذي', 'مركز المصالحة',
-  'الموارد البشرية', 'IDWS', 'هيئة الحكومة الرقمية',
-  'أصول', 'جمعية سُقيا', 'المعهد الملكي للفنون',
-  'وزارة الصناعة', 'الصندوق الصناعي',
-  'بنك الرياض', 'مجمع الملك سلمان للغة',
+const CLIENT_LOGOS = [
+  { name: 'وزارة الدفاع', logo: logoDefense },
+  { name: 'وزارة التعليم العالي', logo: logoEducation },
+  { name: 'مؤسسة الأميرة العنود', logo: logoAlanood },
+  { name: 'وزارة الصحة', logo: logoHealth },
+  { name: 'وزارة الموارد البشرية', logo: logoHR },
+  { name: 'المعهد الملكي للفنون', logo: logoArts },
+  { name: 'جمعية سُقيا', logo: logoSuqia },
+  { name: 'وزارة الصناعة', logo: logoIndustry },
+  { name: 'مجمع الملك سلمان للغة', logo: logoSalman },
 ]
 
 export default function Home() {
