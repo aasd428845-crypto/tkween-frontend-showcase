@@ -68,12 +68,15 @@ export default function VideoSections() {
                   onClick={() => video.vimeo_url && setSelectedVideo({ url: video.vimeo_url, title: videoTitle })}
                   style={{ width: '100%', height: '56vw', minHeight: 400, maxHeight: 700, position: 'relative', cursor: video.vimeo_url ? 'pointer' : 'default', borderBottom: '1px solid #1a1a1a', overflow: 'hidden', background: '#111' }}
                 >
-                  {embedUrl ? (
-                    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-                      <iframe src={embedUrl} allow="autoplay; fullscreen" title={videoTitle} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '177.78%', minHeight: '100%', width: '177.78%', border: 'none', pointerEvents: 'none' }} />
-                    </div>
-                  ) : (
+                  {/* Always show thumbnail as background/fallback */}
+                  {video.thumbnail_url && (
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${video.thumbnail_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                  )}
+                  {/* Overlay iframe on top if vimeo embed available */}
+                  {embedUrl && (
+                    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                      <iframe src={embedUrl} allow="autoplay; fullscreen" loading="lazy" title={videoTitle} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '177.78%', minHeight: '100%', width: '177.78%', border: 'none', pointerEvents: 'none' }} />
+                    </div>
                   )}
 
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'clamp(24px, 4vw, 60px)' }}>
